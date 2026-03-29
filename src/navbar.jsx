@@ -20,6 +20,7 @@ function Navbar() {
   const activeMenu = useMenuStore((state) => state.activeMenu);
   const setActiveMenu = useMenuStore((state) => state.setActiveMenu);
   const setActivePage = useMenuStore((state) => state.setActivePage);
+  const setIsLoginModalOpen = useMenuStore((state) => state.setIsLoginModalOpen);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSubMenu, setMobileSubMenu] = useState(null);
   const [signedInUser, setSignedInUser] = useState(null);
@@ -116,7 +117,7 @@ function Navbar() {
               <ArrowUpRight size={'18px'} />
             </button>
 
-            <button type="button" className="nav-signup-btn">
+            <button type="button" className="nav-signup-btn" onClick={() => setIsLoginModalOpen(true)}>
               Sign Up
             </button>
           </div>
@@ -140,11 +141,11 @@ function Navbar() {
         {mobileOpen && (
           <div className="mobile-menu">
             <div className="navbar-actions">
-              <button type="button" className="nav-login-btn">
+              <button type="button" className="nav-login-btn" onClick={() => setIsLoginModalOpen(true)}>
                 Login
               </button>
 
-              <button type="button" className="nav-signup-btn">
+              <button type="button" className="nav-signup-btn" onClick={() => setIsLoginModalOpen(true)}>
                 Sign Up
               </button>
             </div>

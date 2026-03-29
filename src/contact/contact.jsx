@@ -4,10 +4,10 @@ import FeedForm from './component/feedform';
 
 const Contact = () => {
   return (
-    <>
+    <div className="contact-page">
       <ContactLand />
       <FeedForm />
-    </>
+    </div>
   );
 };
 

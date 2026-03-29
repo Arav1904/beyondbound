@@ -576,6 +576,7 @@
   /* ✅ PROMO CARD */
   .howit-card--promo {
     padding: 18px;
+    height: 190px;
   }
 
   .howit-promo-title {

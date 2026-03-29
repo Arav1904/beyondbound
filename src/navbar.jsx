@@ -6,11 +6,6 @@ import useMenuStore from './useMenuStore';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons'
 import { ArrowUpRight } from "lucide-react";
-const scienceItems = [
-  { title: "Our Research", subtitle: "Peer-reviewed studies" },
-  { title: "Ingredients", subtitle: "Botanical sourcing & purity" },
-  { title: "Clinical Results", subtitle: "Real-world outcomes" },
-];
 
 const accountMenuItems = [
   "View Details",
@@ -80,36 +75,14 @@ function Navbar() {
               </li>
             )}
 
-            <li
-              className="menu-item"
-            /* onMouseEnter={() => setActiveMenu("science")} */
-            >
+            <li className="menu-item">
               <button
                 type="button"
                 className="menu-trigger"
-                onClick={() => {
-                  toggleMenu("science");
-                  setActivePage("science");
-                }}
-                aria-expanded={activeMenu === "science"}
+                onClick={() => setActivePage("science")}
               >
                 Science
-                {/* <span className="menu-caret">⌄</span> */}
               </button>
-              {activeMenu === "science" ? (
-                <div className="dropdown-panel compact-panel">
-                  {scienceItems.map((item) => (
-                    <button
-                      key={item.title}
-                      type="button"
-                      className="compact-item"
-                    >
-                      <span className="panel-title">{item.title}</span>
-                      <span className="panel-subtitle">{item.subtitle}</span>
-                    </button>
-                  ))}
-                </div>
-              ) : null}
             </li>
 
             <li
@@ -127,7 +100,11 @@ function Navbar() {
             </li>
 
             <li className="menu-item">
-              <button type="button" className="menu-trigger">
+              <button 
+                type="button" 
+                className="menu-trigger"
+                onClick={() => setActivePage("contact")}
+              >
                 Contact
               </button>
             </li>
@@ -254,7 +231,15 @@ function Navbar() {
               </div>
             )}
 
-            <button type="button" className="mobile-link">
+            <button 
+              type="button" 
+              className="mobile-link"
+              onClick={() => {
+                setActivePage("contact");
+                setMobileOpen(false);
+                setMobileSubMenu(null);
+              }}
+            >
               Contact
             </button>
           </div>

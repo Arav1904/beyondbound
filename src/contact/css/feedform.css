@@ -1,0 +1,108 @@
+/* Feed Form Page - Fully Responsive */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.feedform-container {
+  width: 100%;
+  background-color: white;
+  padding: 5px;
+  font-family: 'inter', sans-serif;
+}
+
+.feedform-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+/* ==================== SECTION HEADER ==================== */
+
+.section-header {
+  margin-bottom: 1p0x;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #999;
+  letter-spacing: 1px;
+  margin-bottom: 0px;
+  text-transform: uppercase;
+}
+
+.header-line {
+  width: 100%;
+  height: 1px;
+  background-color: #e0e0e0;
+}
+
+/* ==================== TABLET - 768px and below ==================== */
+
+@media (max-width: 768px) {
+  .feedform-container {
+    padding: 10px;
+  }
+
+  .feedform-wrapper {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .section-header {
+    margin-bottom: 7px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    margin-bottom: 7px;
+  }
+}
+
+/* ==================== MOBILE - 480px and below ==================== */
+
+@media (max-width: 480px) {
+  .feedform-container {
+    padding: 7px;
+  }
+
+  .feedform-wrapper {
+    gap: 0;
+  }
+
+  .section-header {
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    font-size: 10px;
+    margin-bottom: 7px;
+  }
+}
+
+/* ==================== LARGE DESKTOP - 1200px and above ==================== */
+
+@media (min-width: 1200px) {
+  .feedform-container {
+    padding: 25px;
+  }
+
+  .feedform-wrapper {
+    gap: 50px;
+  }
+
+  .section-header {
+    margin-bottom: 25px;
+  }
+
+  .section-title {
+    font-size: 17px;
+    margin-bottom: 10px;
+    font-family: 'inter', sans-serif;
+  }
+}

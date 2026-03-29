@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import frontImg from '../assets/bottles.png';
-import backImg from '../assets/Gemini_Generated_Image_5wdmlg5wdmlg5wdm 1.jpg';
-import sideImg from '../assets/Gemini_Generated_Image_5wdmlg5wdmlg5wdm 3.jpg';
+import backImg from '../assets/back.jpg';
+import sideImg from '../assets/side.jpg';
 import labelImg from '../assets/101.png';
 import { ShieldIcon, ArrowRight } from 'lucide-react';
 

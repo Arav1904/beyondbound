@@ -1,10 +1,10 @@
 
 import './trust.css'
-import whoGmp from './assets/1 (1) 1.png'
-import iso from './assets/iso 1.png'
-import qualityBadge from './assets/Gemini_Generated_Image_iwrg9hiwrg9hiwrg (1) (14) 1.png'
-import haccp from './assets/haccp 1.png'
-import gmo from './assets/gmo 1.png'
+import whoGmp from '../home/1 (1) 1.png'
+import iso from '../home/iso 1.png'
+import qualityBadge from '../home/Gemini_Generated_Image_iwrg9hiwrg9hiwrg (1) (14) 1.png'
+import haccp from '../home/haccp 1.png'
+import gmo from '../home/gmo 1.png'
 
 const certifications = [
 	{

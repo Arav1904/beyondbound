@@ -1,8 +1,8 @@
 import React, { useState } from 'react'; // <--- Is this exactly like this?
-import frontImg from './assets/bottles.png';
-import backImg from './assets/back.jpg';
-import sideImg from './assets/side.png';
-import labelImg from './assets/label.png';
+import frontImg from '../home/bottles.png';
+import backImg from '../home/back.jpg';
+import sideImg from '../home/side.jpg';
+import labelImg from '../home/101.png';
 import { ShieldIcon, ArrowRight } from 'lucide-react';
 
 import './ProductPage.css';

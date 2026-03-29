@@ -5,6 +5,7 @@ import Science from './science/Science.jsx'
 import './App.css'
 import Navbar from './navbar.jsx'
 import Footer from './footer.jsx'
+import Contact from './contact/contact.jsx'
 import useMenuStore from './useMenuStore';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -25,6 +26,7 @@ function App() {
         {activePage === 'about' && <AboutUs />}
         {activePage === 'home' && <Home />}
         {activePage === 'science' && <Science />}
+        {activePage === 'contact' && <Contact />}
       </div>
       <Footer />
 

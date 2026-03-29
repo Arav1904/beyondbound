@@ -1,0 +1,247 @@
+/* ==================== MESSAGE FORM SECTION ==================== */
+
+.message-section {
+  padding-right: 15px;
+  background: none;
+}
+
+/* Form Styling */
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'inter', sans-serif;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  font-size: 15px;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  padding: 0px;
+  font-family: 'inter', sans-serif;
+  transition: all 0.3s ease;
+  background: none;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #2c7a9e;
+  box-shadow: 0 0 0 3px rgba(44, 122, 158, 0.1);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: #999;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+}
+
+.form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 35px;
+}
+
+/* Submit Button */
+.submit-btn {
+  background-color: #2c7a9e;
+  color: white;
+  border: none;
+  padding: 9px 25px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: capitalize;
+  margin-top: 5px;
+  font-family: 'inter', sans-serif;
+}
+
+.submit-btn:hover {
+  background-color: #1a5278;
+  box-shadow: 0 4px 12px rgba(44, 122, 158, 0.3);
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+}
+
+/* Form Footer */
+.form-footer {
+  font-size: 13px;
+  color: #999;
+  text-align: center;
+  margin-top: 3px;
+  font-family: 'inter', sans-serif;
+}
+
+/* ==================== TABLET - 768px and below ==================== */
+
+@media (max-width: 768px) {
+  .message-section {
+    padding-right: 0;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+    background: none;
+  }
+
+  .feedback-form {
+    gap: 0;
+  }
+
+  .form-row {
+    gap: 0;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    font-size: 14px;
+    padding: 5px;
+  }
+
+  .form-textarea {
+    min-height: 50px;
+  }
+
+  .submit-btn {
+    padding: 7px 19px;
+    font-size: 14px;
+  }
+
+  .form-label {
+    font-size: 12px;
+  }
+
+  .form-footer {
+    font-size: 12px;
+  }
+}
+
+/* ==================== MOBILE - 480px and below ==================== */
+
+@media (max-width: 480px) {
+  .message-section {
+    padding-bottom: 20px;
+  }
+
+  .feedback-form {
+    gap: 0;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .form-label {
+    font-size: 11px;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    font-size: 13px;
+    padding: 4px;
+  }
+
+  .form-textarea {
+    min-height: 40px;
+  }
+
+  .submit-btn {
+    padding: 5px 15px;
+    font-size: 13px;
+  }
+
+  .form-footer {
+    font-size: 11px;
+  }
+}
+
+/* ==================== LARGE DESKTOP - 1200px and above ==================== */
+
+@media (min-width: 1200px) {
+  .message-section {
+    padding-right: 30px;
+  }
+
+  .feedback-form {
+    gap: 20px;
+  }
+
+  .form-row {
+    gap: 25px;
+  }
+
+  .form-label {
+    font-size: 14px;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    font-size: 16px;
+    padding: 14px;
+  }
+
+  .form-textarea {
+    min-height: 140px;
+  }
+
+  .submit-btn {
+    padding: 16px 35px;
+    font-size: 16px;
+    margin-top: 12px;
+  }
+
+  .form-footer {
+    font-size: 14px;
+  }
+}
+
+/* ==================== ANIMATIONS ==================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus,
+  .submit-btn {
+    transition: none;
+  }
+}

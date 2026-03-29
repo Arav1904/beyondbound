@@ -1,0 +1,285 @@
+/* ==================== FAQ SECTION ==================== */
+
+.faq-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #ffffff;
+}
+
+.faq-section .section-header {
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
+.faq-section .section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #999;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: -10px;
+}
+
+.faq-section .header-line {
+  display: none;
+}
+
+/* ==================== ACCORDION ==================== */
+
+.accordion {
+  width: 100%;
+  position: relative;
+  padding: 1px;
+}
+
+.accordion__item {
+  background: white;
+  
+  border-top: 1px solid #888888;
+  border-bottom: 1px solid #888888;
+  border-radius: 0;
+  overflow: hidden;
+  padding: 0 15px;
+  position: relative;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin: 0;
+}
+
+.accordion__item + .accordion__item {
+  margin-top: -1px;
+}
+
+.accordion__item:first-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.accordion__item:last-child {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.accordion__item--open {
+  background-color: #ffffff;
+  border-radius: 0;
+  z-index: 10;
+}
+
+.accordion__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: color 0.2s;
+  position: relative;
+  border-radius: inherit;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 400;
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
+}
+
+.accordion__header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #f5f5f5;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.accordion__header:hover::before {
+  opacity: 1;
+}
+
+.accordion__header::-webkit-details-marker {
+  display: none;
+}
+
+.accordion__header:hover {
+  color: #eff0f0;
+}
+
+.accordion__header:hover .accordion__toggle {
+  color: #2c7a9e;
+}
+
+.accordion__title {
+  flex: 1;
+  font-family: 'inter', sans-serif;
+  position: relative;
+  z-index: 1;
+  color: #0c0c0c;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.accordion__toggle {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  z-index: 1;
+  color: #5c5b5b;
+  flex-shrink: 0;
+}
+
+.accordion__item--open .accordion__toggle {
+  transform: rotate(45deg);
+  color: #080808;
+}
+
+.accordion__content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+.accordion__item--open .accordion__content {
+  grid-template-rows: 1fr;
+}
+
+.accordion__content-inner {
+  min-height: 0;
+  padding: 0 0 0 0;
+  line-height: 1.6;
+  font-size: 14px;
+  transition: opacity 0.4s ease 0.1s,
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s;
+}
+
+.accordion__item:not(.accordion__item--open) .accordion__content-inner {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.accordion__item--open .accordion__content-inner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.accordion__text {
+  margin: 0;
+  color: #0c0c0c;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ==================== TABLET - 768px and below ==================== */
+
+@media (max-width: 768px) {
+  .accordion__header {
+    padding: 15px 0;
+    font-size: 12px;
+    gap: 10px;
+  }
+
+  .accordion__title {
+    font-size: 12px;
+    color: #000000;
+  }
+
+  .accordion__toggle {
+    width: 18px;
+    height: 18px;
+  }
+
+  .accordion__content-inner {
+    padding: 0;
+    font-size: 12px;
+  }
+
+  .accordion__text {
+    font-size: 12px;
+  }
+}
+
+/* ==================== MOBILE - 480px and below ==================== */
+
+@media (max-width: 480px) {
+  .accordion__header {
+    padding: 13px 0;
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .accordion__title {
+    font-size: 12px;
+    color: #0b0b0b;
+  }
+
+  .accordion__toggle {
+    width: 16px;
+    height: 16px;
+  }
+
+  .accordion__content-inner {
+    padding: 0;
+    font-size: 11px;
+  }
+
+  .accordion__text {
+    font-size: 11px;
+  }
+}
+
+/* ==================== LARGE DESKTOP - 1200px and above ==================== */
+
+@media (min-width: 1200px) {
+  .accordion__header {
+    padding: 18px 0;
+    font-size: 16px;
+  }
+
+  .accordion__title {
+    font-size: 16px;
+    color: #111212;
+  }
+
+  .accordion__toggle {
+    width: 20px;
+    height: 20px;
+  }
+
+  .accordion__content-inner {
+    padding: 0;
+    font-size: 14px;
+  }
+
+  .accordion__text {
+    font-size: 14px;
+  }
+}
+
+/* ==================== ANIMATIONS ==================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .accordion__item {
+    transition: none;
+  }
+
+  .accordion__toggle {
+    transition: none;
+  }
+
+  .accordion__content {
+    transition: none;
+  }
+
+  .accordion__content-inner {
+    transition: none;
+  }
+}

@@ -1,5 +1,7 @@
 
 import './footer.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFacebookF, faInstagram, faXTwitter, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'
 
 const quickLinks = ['About Us', 'Products', 'Science', 'FAQ']
 const supportLinks = ['Contact', 'Shipping', 'Returns', 'Privacy Policy']
@@ -45,16 +47,16 @@ function Footer() {
 						</p>
 						<div className="site-footer__socials" aria-label="Social links">
 							<a href="#" className="site-footer__social" aria-label="Facebook">
-								<i className="fa-brands fa-facebook-f" aria-hidden="true" />
+								<FontAwesomeIcon icon={faFacebookF} />
 							</a>
 							<a href="#" className="site-footer__social" aria-label="Instagram">
-								<i className="fa-brands fa-instagram" aria-hidden="true" />
+								<FontAwesomeIcon icon={faInstagram} />
 							</a>
 							<a href="#" className="site-footer__social" aria-label="X">
-								<i className="fa-brands fa-x-twitter" aria-hidden="true" />
+								<FontAwesomeIcon icon={faXTwitter} />
 							</a>
 							<a href="#" className="site-footer__social" aria-label="LinkedIn">
-								<i className="fa-brands fa-linkedin-in" aria-hidden="true" />
+								<FontAwesomeIcon icon={faLinkedinIn} />
 							</a>
 						</div>
 					</div>

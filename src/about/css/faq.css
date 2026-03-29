@@ -83,12 +83,22 @@
 	color: #0f1f3d;
 }
 
+.faq-answer-container {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.3s ease;
+}
+
+.faq-item--open .faq-answer-container {
+	max-height: 500px;
+}
+
 .faq-answer {
 	padding: 0 20px 18px;
 	font-size: 14px;
 	line-height: 1.7;
 	color: #4b5563;
-	animation: faqFadeIn 0.2s ease both;
+	margin: 0;
 }
 
 @keyframes faqFadeIn {

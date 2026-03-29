@@ -1,12 +1,13 @@
 import React from 'react';
 import './Ingredients.css';
-import berberineImg from './assets/berberine.png';
-import gurmarImg from './assets/gurmar.png';
-import vijaysarImg from './assets/vijaysar.png';import {useRef, useEffect} from "react";
-import amlaImg from "./assets/amla.png";
-import haldiImg from "./assets/haldi.png";
-import jambuImg from "./assets/jambuseeds.png";
-import karelaImg from "./assets/karela.png";
+import berberineImg from '../product/assets/berberine.png';
+import gurmarImg from '../product/assets/gurmar.png';
+import vijaysarImg from '../product/assets/vijaysar.png';
+import {useRef, useEffect} from "react";
+import amlaImg from "../product/assets/amla.png";
+import haldiImg from "../product/assets/haldi.png";
+import jambuImg from "../product/assets/jambuseeds.png";
+import karelaImg from "../product/assets/karela.png";
 
 
 const Ingredients = () => {

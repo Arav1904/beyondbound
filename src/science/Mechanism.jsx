@@ -1,6 +1,6 @@
 import React from 'react';
 import './Mechanism.css';
-import bottleImg from './assets/bottle.png';
+import bottleImg from '../product/assets/bottle.png';
 
 const Mechanism = () => {
   const steps = [

@@ -30,9 +30,19 @@ const faqs = [
 ]
 
 function FAQ() {
-	const [openIndex, setOpenIndex] = useState(0)
+	const [openIndices, setOpenIndices] = useState(new Set([0]))
 
-	const toggle = (i) => setOpenIndex((prev) => (prev === i ? null : i))
+	const toggle = (i) => {
+		setOpenIndices((prev) => {
+			const newSet = new Set(prev)
+			if (newSet.has(i)) {
+				newSet.delete(i)
+			} else {
+				newSet.add(i)
+			}
+			return newSet
+		})
+	}
 
 	return (
 		<section className="faq-section">
@@ -46,20 +56,20 @@ function FAQ() {
 					{faqs.map((faq, i) => (
 						<div
 							key={faq.question}
-							className={`faq-item${openIndex === i ? ' faq-item--open' : ''}`}
+							className={`faq-item${openIndices.has(i) ? ' faq-item--open' : ''}`}
 						>
 							<button
 								type="button"
 								className="faq-question"
 								onClick={() => toggle(i)}
-								aria-expanded={openIndex === i}
+								aria-expanded={openIndices.has(i)}
 							>
 								{faq.question}
 								<i className="fa-solid fa-chevron-down faq-icon" aria-hidden="true" />
 							</button>
-							{openIndex === i && (
+							<div className="faq-answer-container">
 								<p className="faq-answer">{faq.answer}</p>
-							)}
+							</div>
 						</div>
 					))}
 				</div>

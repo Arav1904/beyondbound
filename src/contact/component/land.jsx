@@ -3,15 +3,15 @@ import '../css/land.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faPhone } from '@fortawesome/free-solid-svg-icons';
+import TrackOrder from './TrackOrder';
 
 const ContactLand = () => {
   const [orderId, setOrderId] = useState('');
+  const [showTrackOrderDetails, setShowTrackOrderDetails] = useState(false);
 
-  const handleTrackOrder = () => {
-    if (orderId.trim()) {
-      console.log('Tracking order:', orderId);
-      // Add your order tracking logic here
-    }
+  const handleToggleTrackOrder = (id) => {
+    setOrderId(id);
+    setShowTrackOrderDetails(!showTrackOrderDetails);
   };
 
   return (
@@ -78,26 +78,14 @@ const ContactLand = () => {
       {/* Divider */}
       <div className="divider"></div>
 
-      {/* Track Order Section */}
+      {/* Track Order Component */}
       <div className="track-order-section">
         <h2 className="track-order-title">TRACK YOUR ORDER</h2>
-        
-        <div className="track-order-container">
-          <input
-            type="text"
-            className="track-order-input"
-            placeholder="Order ID (e.g. #1092) or registered phone number"
-            value={orderId}
-            onChange={(e) => setOrderId(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleTrackOrder()}
-          />
-          <button 
-            className="check-status-btn"
-            onClick={handleTrackOrder}
-          >
-            Check status
-          </button>
-        </div>
+        <TrackOrder 
+          isOpen={showTrackOrderDetails}
+          orderId={orderId}
+          onToggle={handleToggleTrackOrder}
+        />
       </div>
     </div>
   );

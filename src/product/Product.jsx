@@ -12,7 +12,7 @@ import GlycomicsComparison from "./GlycomicsComparison";
 function App() {
   return (
     <>
-      <div style={{display:'flex', flexDirection: 'column', alignItems: 'center', padding: '80px',
+      <div style={{display:'flex', flexDirection: 'column', alignItems: 'center', padding: 'clamp(40px, 8vw, 80px)',
       }}>
  
         <ProductPage />

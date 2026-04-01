@@ -7,6 +7,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons'
 import { ArrowUpRight } from "lucide-react";
 
+const aboutItems = [
+  { title: "Our Story", subtitle: "How Beyond Bound began" },
+  { title: "Mission & Values", subtitle: "What drives us" },
+  { title: "Certifications", subtitle: "Quality standards" },
+];
+
 const accountMenuItems = [
   "View Details",
   "Delivery Status",
@@ -175,62 +181,27 @@ function Navbar() {
 
             <button
               type="button"
-              className="mobile-link mobile-link--has-sub"
+              className="mobile-link"
               onClick={() => {
                 setActivePage("science");
                 setMobileOpen(false);
-                setMobileSubMenu((p) => (p === "science" ? null : "science"));
+                setMobileSubMenu(null);
               }}
-              aria-expanded={mobileSubMenu === "science"}
             >
               Science
-              <span
-                className={`mobile-caret${mobileSubMenu === "science" ? " mobile-caret--open" : ""}`}
-              >
-                ⌄
-              </span>
             </button>
-            {mobileSubMenu === "science" && (
-              <div className="mobile-submenu">
-                {scienceItems.map((item) => (
-                  <button
-                    key={item.title}
-                    type="button"
-                    className="mobile-sub-item"
-                  >
-                    <span className="panel-title">{item.title}</span>
-                    <span className="panel-subtitle">{item.subtitle}</span>
-                  </button>
-                ))}
-              </div>
-            )}
 
             <button
               type="button"
-              className="mobile-link mobile-link--has-sub"
+              className="mobile-link"
               onClick={() => {
                 setActivePage("about");
                 setMobileOpen(false);
-                setMobileSubMenu((p) => (p === "about" ? null : "about"));
+                setMobileSubMenu(null);
               }}
-              aria-expanded={mobileSubMenu === "about"}
             >
               About
             </button>
-            {mobileSubMenu === "about" && (
-              <div className="mobile-submenu">
-                {aboutItems.map((item) => (
-                  <button
-                    key={item.title}
-                    type="button"
-                    className="mobile-sub-item"
-                  >
-                    <span className="panel-title">{item.title}</span>
-                    <span className="panel-subtitle">{item.subtitle}</span>
-                  </button>
-                ))}
-              </div>
-            )}
 
             <button 
               type="button" 

@@ -3,12 +3,6 @@ import "../css/navbar.css";
 import beyondLogo from "../assets/beyond.svg";
 import GoogleSignIn from "./GoogleSignIn";
 
-const scienceItems = [
-  { title: "Our Research", subtitle: "Peer-reviewed studies" },
-  { title: "Ingredients", subtitle: "Botanical sourcing & purity" },
-  { title: "Clinical Results", subtitle: "Real-world outcomes" },
-];
-
 const aboutItems = [
   { title: "Our Story", subtitle: "How Beyond Bound began" },
   { title: "Mission & Values", subtitle: "What drives us" },
@@ -68,33 +62,10 @@ function Navbar() {
               </li>
             )}
 
-            <li
-              className="menu-item"
-              onMouseEnter={() => setActiveMenu("science")}
-            >
-              <button
-                type="button"
-                className="menu-trigger"
-                onClick={() => toggleMenu("science")}
-                aria-expanded={activeMenu === "science"}
-              >
+            <li className="menu-item">
+              <button type="button" className="menu-trigger">
                 Science
-                <span className="menu-caret">⌄</span>
               </button>
-              {activeMenu === "science" ? (
-                <div className="dropdown-panel compact-panel">
-                  {scienceItems.map((item) => (
-                    <button
-                      key={item.title}
-                      type="button"
-                      className="compact-item"
-                    >
-                      <span className="panel-title">{item.title}</span>
-                      <span className="panel-subtitle">{item.subtitle}</span>
-                    </button>
-                  ))}
-                </div>
-              ) : null}
             </li>
 
             <li
@@ -108,22 +79,8 @@ function Navbar() {
                 aria-expanded={activeMenu === "about"}
               >
                 About
-                <span className="menu-caret">⌄</span>
               </button>
-              {activeMenu === "about" ? (
-                <div className="dropdown-panel compact-panel">
-                  {aboutItems.map((item) => (
-                    <button
-                      key={item.title}
-                      type="button"
-                      className="compact-item"
-                    >
-                      <span className="panel-title">{item.title}</span>
-                      <span className="panel-subtitle">{item.subtitle}</span>
-                    </button>
-                  ))}
-                </div>
-              ) : null}
+             
             </li>
 
             <li className="menu-item">

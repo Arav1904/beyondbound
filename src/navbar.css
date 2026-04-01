@@ -645,6 +645,13 @@
 }
 
 @media (max-width: 768px) {
+  .navbar-wrapper {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
   .navbar {
     height: clamp(50px, 10vw, 60px);
     padding: 0 clamp(12px, 2vw, 16px);
@@ -698,8 +705,9 @@
 
   .mobile-menu {
     display: flex;
-    max-height: calc(100vh - 60px);
+    max-height: calc(100vh - clamp(50px, 10vw, 60px));
     overflow-y: auto;
+    margin-top: clamp(50px, 10vw, 60px);
   }
 
   .mega-panel {
@@ -721,6 +729,13 @@
 }
 
 @media (max-width: 600px) {
+  .navbar-wrapper {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
   .navbar {
     height: clamp(48px, 10vw, 56px);
     padding: 0 clamp(10px, 2vw, 12px);
@@ -752,6 +767,8 @@
 
   .mobile-menu {
     padding: 8px 10px 12px;
+    max-height: calc(100vh - clamp(48px, 10vw, 56px));
+    margin-top: clamp(48px, 10vw, 56px);
   }
 
   .mobile-link {
@@ -767,6 +784,13 @@
 }
 
 @media (max-width: 480px) {
+  .navbar-wrapper {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
   .navbar {
     height: clamp(44px, 10vw, 56px);
     padding: 0 clamp(8px, 1.5vw, 12px);
@@ -798,6 +822,8 @@
 
   .mobile-menu {
     padding: 8px 10px 12px;
+    max-height: calc(100vh - clamp(44px, 10vw, 56px));
+    margin-top: clamp(44px, 10vw, 56px);
   }
 
   .mobile-link {
@@ -823,6 +849,13 @@
 }
 
 @media (max-width: 360px) {
+  .navbar-wrapper {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
   .navbar {
     height: clamp(40px, 10vw, 48px);
     padding: 0 6px;
@@ -845,6 +878,11 @@
   .hamburger .bar {
     width: 16px;
     height: 1.5px;
+  }
+
+  .mobile-menu {
+    max-height: calc(100vh - clamp(40px, 10vw, 48px));
+    margin-top: clamp(40px, 10vw, 48px);
   }
 
   .cart-fab-2 {

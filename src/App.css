@@ -1,0 +1,28 @@
+.app {
+  width: 100%;
+}
+
+/* Add padding-top to accommodate fixed navbar on mobile */
+@media (max-width: 768px) {
+  .app {
+    padding-top: clamp(50px, 10vw, 60px);
+  }
+}
+
+@media (max-width: 600px) {
+  .app {
+    padding-top: clamp(48px, 10vw, 56px);
+  }
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding-top: clamp(44px, 10vw, 56px);
+  }
+}
+
+@media (max-width: 360px) {
+  .app {
+    padding-top: clamp(40px, 10vw, 48px);
+  }
+}

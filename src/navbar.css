@@ -905,7 +905,7 @@
   .mobile-menu {
     padding: 12px 10px;
     max-height: calc(100vh - clamp(62px, 10vw, 70px));
-    margin-top: clamp(62px, 10vw, 70px);
+    margin-top: clamp(12px, 10vw, 12px);
   }
 
   .mobile-menu > .navbar-actions {
@@ -1014,7 +1014,7 @@
   .mobile-menu {
     padding: 12px 10px;
     max-height: calc(100vh - clamp(62px, 10vw, 72px));
-    margin-top: clamp(62px, 10vw, 72px);
+    margin-top: clamp(12px, 10vw, 12px);
   }
 
   .mobile-menu > .navbar-actions {
@@ -1123,7 +1123,7 @@
   .mobile-menu {
     padding: 10px 8px;
     max-height: calc(100vh - clamp(52px, 10vw, 62px));
-    margin-top: clamp(52px, 10vw, 62px);
+    margin-top: clamp(42px, 10vw, 42px);
   }
 
   .mobile-menu > .navbar-actions {

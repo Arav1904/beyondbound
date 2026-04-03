@@ -61,6 +61,18 @@ function TrustStandards() {
               />
             </div>
           ))}
+          {/* Duplicate all items for seamless carousel loop */}
+          {certifications.map((cert) => (
+            <div key={`${cert.id}-duplicate`} className="trust-card" role="listitem" aria-hidden="true">
+              <img
+                src={cert.imageSrc}
+                alt={cert.imageAlt}
+                className={`trust-icon ${cert.className}`}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          ))}
         </div>
       </div>
     </section>

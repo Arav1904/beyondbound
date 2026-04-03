@@ -406,13 +406,15 @@
   .product-container {
     flex-direction: column;
     gap: 20px;
-    padding: 20px 14px;
-    max-width: 100%;
+    padding: 20px;
+    width: 100vw;
+    margin: 0;
   }
 
   .gallery-section {
     flex-direction: column-reverse;
-    gap: 12px;
+    gap: 15px;
+    width: 100%;
   }
 
   .thumbnails {
@@ -436,6 +438,7 @@
 
   .details-section {
     width: 100%;
+    padding: 0 16px;
   }
 
   .badge-row {
@@ -452,28 +455,28 @@
   .product-title {
     font-size: clamp(28px, 8vw, 40px);
     line-height: 1.2;
-    margin-bottom: 8px;
+    margin: 0 0 8px 0;
   }
 
   .price {
     font-size: 16px;
-    margin-bottom: 16px;
+    margin: 0 0 16px 0;
   }
 
   .description {
     font-size: 15px;
     line-height: 1.5;
-    padding-top: 16px;
-    margin-bottom: 20px;
+    padding: 16px 0 0 0;
+    margin: 0 0 20px 0;
   }
 
   .size-selector {
-    margin-bottom: 20px;
+    margin: 0;
   }
 
   .size-selector label {
     font-size: 11px;
-    margin-bottom: 8px;
+    margin: 0 0 8px 0;
   }
 
   .size-buttons-group {
@@ -490,7 +493,7 @@
   .purchase-actions {
     flex-direction: column;
     gap: 10px;
-    margin: 20px 0;
+    margin: 0;
   }
 
   .quantity-counter {
@@ -517,11 +520,11 @@
 
   .shipping-link {
     font-size: 11px;
-    margin-bottom: 20px;
+    margin: 0;
   }
 
   .accordion-section {
-    margin-top: 15px;
+    margin: 0;
   }
 
   .accordion-item {
@@ -532,5 +535,166 @@
   .accordion-content {
     padding: 12px 0;
     font-size: 13px;
+  }
+}
+
+/* ── MEDIUM MOBILE (max-width: 480px) ── */
+@media (max-width: 480px) {
+  .product-container {
+    gap: 16px;
+    padding: 16px;
+    width: 100vw;
+  }
+
+  .gallery-section {
+    gap: 12px;
+  }
+
+  .main-display {
+    min-height: 350px;
+    width: 100%;
+  }
+
+  .details-section {
+    width: 100%;
+  }
+
+  .product-title {
+    font-size: clamp(24px, 7vw, 36px);
+    margin-bottom: 6px;
+  }
+
+  .price {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .description {
+    font-size: 14px;
+    padding-top: 12px;
+    margin-bottom: 16px;
+  }
+
+  .size-buttons-group {
+    gap: 8px;
+  }
+
+  .purchase-actions {
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .accordion-item {
+    padding: 12px 0;
+    font-size: 13px;
+  }
+
+  .accordion-content {
+    padding: 10px 0;
+    font-size: 12px;
+  }
+}
+
+/* ── SMALL MOBILE (max-width: 375px) ── */
+@media (max-width: 375px) {
+  .product-container {
+    gap: 10px;
+    padding: 5px;
+    margin: 0;
+    width: 100vw;
+  }
+
+  .gallery-section {
+    gap: 10px;
+    padding: 0 10px;
+  }
+
+  .details-section {
+    padding: 0 10px;
+  }
+
+  .thumbnails {
+    gap: 6px;
+  }
+
+  .thumb-box {
+    width: 60px;
+    height: 60px;
+  }
+
+  .main-display {
+    min-height: 280px;
+    border-radius: 12px;
+    width: 100%;
+  }
+
+  .badge {
+    font-size: 11px;
+    padding: 5px 6px;
+  }
+
+  .product-title {
+    font-size: clamp(20px, 6vw, 28px);
+    margin: 0;
+  }
+
+  .price {
+    font-size: 13px;
+    margin: 0;
+  }
+
+  .description {
+    font-size: 13px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .size-selector label {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  .size-buttons-group {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .size-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .purchase-actions {
+    gap: 6px;
+    margin: 12px 0;
+  }
+
+  .quantity-counter button {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .add-to-cart-btn {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .shipping-link {
+    font-size: 10px;
+    margin-bottom: 16px;
+  }
+
+  .accordion-section {
+    margin-top: 12px;
+  }
+
+  .accordion-item {
+    padding: 0;
+    font-size: 12px;
+  }
+
+  .accordion-content {
+    padding: 0;
+    font-size: 11px;
   }
 }

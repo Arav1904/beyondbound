@@ -25,6 +25,7 @@ const accountMenuItems = [
 function Navbar() {
   const activeMenu = useMenuStore((state) => state.activeMenu);
   const setActiveMenu = useMenuStore((state) => state.setActiveMenu);
+  const activePage = useMenuStore((state) => state.activePage);
   const setActivePage = useMenuStore((state) => state.setActivePage);
   const setIsLoginModalOpen = useMenuStore((state) => state.setIsLoginModalOpen);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -33,6 +34,16 @@ function Navbar() {
 
   const toggleMenu = (menuName) => {
     setActiveMenu((prev) => (prev === menuName ? null : menuName));
+  };
+
+  const handleLogoClick = () => {
+    if (activePage === "home") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      setActivePage("home");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    setMobileOpen(false);
   };
 
   return (
@@ -47,7 +58,14 @@ function Navbar() {
         }}
       >
         <nav className="navbar">
-          <div className="navbar-brand">
+          <img 
+            src={beyondLogo} 
+            alt="Beyond Bound" 
+            className="navbar-logo-separate"
+            onClick={handleLogoClick}
+            style={{ cursor: "pointer" }}
+          />
+          <div className="navbar-brand" onClick={handleLogoClick} style={{ cursor: "pointer" }}>
             <img src={beyondLogo} alt="Beyond Bound" className="navbar-logo" />
             BEYOND BOUND<span>®</span>
           </div>
@@ -134,7 +152,11 @@ function Navbar() {
           <button
             type="button"
             className={`hamburger${mobileOpen ? " hamburger--open" : ""}`}
-            onClick={() => setMobileOpen((prev) => !prev)}
+            onClick={() => {
+              setMobileOpen((prev) => !prev);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              setActivePage("home");
+            }}
             aria-label="Toggle navigation"
             aria-expanded={mobileOpen}
           >

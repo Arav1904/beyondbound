@@ -168,15 +168,7 @@ function Navbar() {
 
         {mobileOpen && (
           <div className="mobile-menu">
-            <div className="navbar-actions">
-              <button type="button" className="nav-login-btn" onClick={() => setIsLoginModalOpen(true)}>
-                Login
-              </button>
-
-              <button type="button" className="nav-signup-btn" onClick={() => setIsLoginModalOpen(true)}>
-                Sign Up
-              </button>
-            </div>
+          
 
             <button
               type="button"
@@ -236,6 +228,14 @@ function Navbar() {
             >
               Contact
             </button>
+
+<br />
+              <div className="navbar-actions">
+            
+              <button type="button" className="nav-signup-btn" onClick={() => setIsLoginModalOpen(true)}>
+                Sign Up
+              </button>
+            </div>
           </div>
         )}
       </header>

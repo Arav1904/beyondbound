@@ -146,6 +146,7 @@
 
   .trust-header {
     gap: 10px;
+    margin-bottom: 20px;
   }
 
   .trust-label {
@@ -175,13 +176,14 @@
     height: auto;
     align-items: center;
     justify-content: flex-start;
+    gap: 12px;
   }
 
   .trust-card {
     min-height: 108px;
-    padding: 0px;
+    padding: 8px;
     flex: 0 0 33.33%;
-    animation: slideCarouselSeamless 60s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    animation: slideCarouselSeamless 40s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -219,7 +221,7 @@
     display: flex;
     overflow: hidden;
     width: 100%;
-    gap: 0;
+    gap: 10px;
     align-items: center;
     justify-content: flex-start;
   }
@@ -227,7 +229,7 @@
   .trust-card {
     min-height: 72px;
     flex: 0 0 33.33%;
-    animation: slideCarouselSeamless 50s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    animation: slideCarouselSeamless 35s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -288,16 +290,16 @@
     display: flex;
     overflow: hidden;
     width: 100%;
-    gap: 0;
+    gap: 8px;
     align-items: center;
     justify-content: flex-start;
   }
 
   .trust-card {
     min-height: 60px;
-    padding: 2px;
+    padding: 4px;
     flex: 0 0 33.33%;
-    animation: slideCarouselSeamless 40s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    animation: slideCarouselSeamless 25s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
     display: flex;
     align-items: center;
     justify-content: center;

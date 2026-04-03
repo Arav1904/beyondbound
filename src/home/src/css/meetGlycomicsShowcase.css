@@ -125,7 +125,7 @@
 .mgs-ingredient-track {
   display: flex;
   flex-direction: column;
-  animation: mgs-ingredient-rotate 14.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: mgs-ingredient-rotate 30s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   gap: 8px;
 }
 

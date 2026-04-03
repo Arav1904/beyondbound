@@ -284,7 +284,9 @@
   padding: 48px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
   box-sizing: border-box;
 }
 
@@ -292,8 +294,8 @@
   margin: 0;
   width: min(566px, 100%);
   font-weight: 500;
-  font-size: 18px;
-  line-height: 25.2px;
+  font-size: 26px;
+  line-height: 36px;
   letter-spacing: -0.54px;
   color: #545454;
 }

@@ -115,7 +115,6 @@
 	}
 }
 
-<<<<<<< HEAD
 /* ── Small Mobile (480px and below) ── */
 @media (max-width: 480px) {
 	.trust-section {
@@ -153,9 +152,7 @@
 
 /* ── Small Mobile (344px width) ── */
 @media (max-width: 375px) {
-=======
 @media (max-width: 768px) {
->>>>>>> 4e54cd3aa9318730efbd3ef5262cd122599ba2bd
 	.trust-section {
 		padding: 44px 16px 40px;
 	}
@@ -230,6 +227,6 @@
 		max-width: 142px;
 	}
 }
+	
 
-
-
+}

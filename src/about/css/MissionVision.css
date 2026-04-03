@@ -144,23 +144,31 @@
     width: 90%;
     white-space: normal;
     word-break: break-word;
+    
   }
 
   .mission-vision h2 {
-    font-size: 2.5rem;
-  }
+  font-size: 2.5rem;
+  margin-bottom: px; /* 🔥 correct spacing */
+}
 
   .bg-text-mission,
   .bg-text-vision {
     font-size: 2rem;
   }
 
-  .mv-container {
-    grid-template-columns: 1fr;
-    gap: 50px;
-    max-width: 100%;
-    padding: 0 15px;
-  }
+ .mv-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  margin-top: 110px; /* 🔥 reduced gap */
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
+}
 
   .mv-card {
     min-height: 360px;
@@ -181,6 +189,7 @@
 
   .mv-content h3 {
     font-size: 1.4rem;
+    margin-top: 20%;
   }
 }
 

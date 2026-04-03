@@ -6,6 +6,7 @@
   margin: 0 auto;
   position: relative;
   overflow: hidden;
+  text-align: center; /* ✅ force center */
 }
 
 .journey-container {
@@ -21,37 +22,37 @@
   margin-bottom: 50px;
   font-weight: 400;
   line-height: 52px;
-  font-style: regular;
   font-family: "bree Serif", serif;
-  position: relative;
-  z-index: 1;
 }
 
+/* ✅ FIXED */
 .journey-subtitle {
-  text-align: center;
+  text-align: center; /* 🔥 changed */
   font-size: 30px;
   width: 75%;
   color: #636366;
-  margin: 60px 0;
-  text-align: left;
+  margin: 40px auto; /* 🔥 center properly */
   font-family: "Inter", sans-serif;
   line-height: 1.6;
-  position: relative;
-  z-index: 1;
 }
 
+/* DESKTOP */
 .timeline {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 30px;
-  position: relative;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .timeline-item {
-  position: relative;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.timeline-item.active .timeline-line {
+  background: #2a7c7c; /* highlight color */
 }
 
 .timeline-year {
@@ -60,91 +61,130 @@
   color: #2a7c7c;
   margin-bottom: 15px;
   font-family: "Inter", sans-serif;
-  transition: color 0.3s ease;
-}
-
-.timeline-item.hovered .timeline-year {
-  color: #2a7c7c;
 }
 
 .timeline-line {
-  width: 100%;
+  width: 80%;
   height: 3px;
   background: #d0d0d0;
-  margin-bottom: 20px;
-  transition: all 0.3s ease;
-}
-
-.timeline-item.hovered .timeline-line {
-  background: #2a7c7c;
-}
-
-.timeline-item.active .timeline-line {
-  background: #2a7c7c;
-}
-
-.timeline-item.hovered .timeline-content h3 {
-  color: #1a1a1a;
-  opacity: 100%;
-}
-
-.timeline-item.hovered .timeline-content p {
-  color: #1a1a1a;
-  font-weight: 600;
+  margin: 0 auto 20px; /* 🔥 center line */
 }
 
 .timeline-content h3 {
-  font-size: 24;
+  font-size: 24px;
   color: #1a1a1a;
-  opacity: 70%;
+  opacity: 0.8;
   margin-bottom: 8px;
-  margin-top: 0;
-  font-weight: 400;
-  font-family: "bree Serif", serif;
-  line-height: 1.4;
+  font-weight: 600;
+  text-align: center;
 }
 
 .timeline-content p {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: #666;
-  line-height: 1.5;
-  font-family: "Inter", sans-serif;
-  font-weight: 800;
-  margin: 0;
+  text-align: center;
 }
 
+/* ================= TABLET ================= */
 @media (max-width: 1024px) {
   .timeline {
     grid-template-columns: repeat(2, 1fr);
-    gap: 40px;
   }
 }
 
+/* ================= MOBILE ================= */
 @media (max-width: 768px) {
-  .journey-bg-text {
-    font-size: 2.5rem;
-    letter-spacing: 2px;
-    width: 90%;
-    white-space: normal;
-    word-break: break-word;
+
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px; /* 🔥 more breathing space */
+    width: 100%;
+    max-width: 90vw;
+    margin: 0 auto;
+    padding: 0 10px;
+    box-sizing: border-box;
   }
 
-  .the-journey h2 {
-    font-size: 2rem;
+  .timeline-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 320px;
+    padding: 18px 10px 22px;
+    margin: 0 auto;
+    position: relative;
   }
 
-  .journey-subtitle {
-    margin: 15px 0;
+  /* ❌ REMOVE ANY LEFT LINE */
+  .timeline-item::before {
+    display: none !important;
+    content: none !important;
   }
 
   .timeline {
-    grid-template-columns: 1fr;
-    gap: 30px;
+    border-left: none !important;
   }
 
+  /* 🔥 YEAR */
   .timeline-year {
-    font-size: 1.5rem;
+  font-size: 24px;
+  color: #2a7c7c;
+  margin: 8px 0 10px;
+  font-weight: 700;
+
+  text-align: center;      /* ✅ force center */
+  width: 100%;             /* ✅ full width */
+  display: block;          /* ✅ proper alignment */
+}
+
+  /* 🔥 LINE ABOVE */
+  .timeline-line {
+    width: 70%;
+    max-width: 160px;
+    height: 3px;
+    margin: 0 auto 12px;
+    border-radius: 2px;
+    background: #d0d0d0;
+    display: block;
   }
+
+  /* ACTIVE LINE */
+  .timeline-item.active .timeline-line {
+    background: #2a7c7c;
+  }
+
+  .timeline-content {
+    text-align: center;
+    width: 100%;
+  }
+
+  /* 🔥 TITLE */
+  .timeline-content h3 {
+    font-size: 17px;   /* 🔥 reduced properly */
+    line-height: 1.3;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #1f3f3f;
+  }
+
+  /* 🔥 DATE */
+  .timeline-content p {
+    font-size: 13px;   /* 🔥 smaller */
+    color: #666;
+  }
+
+  /* OPTIONAL HOVER */
+  .timeline-item:hover .timeline-year,
+  .timeline-item:hover .timeline-content h3,
+  .timeline-item:hover .timeline-content p {
+    color: #0d5252;
+  }
+
 }
 
 @media (max-width: 480px) {
@@ -153,15 +193,75 @@
   }
 
   .the-journey h2 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
 
   .journey-subtitle {
-    font-size: 0.95rem;
-    margin: 15px 0;
+    font-size: 0.9rem;
   }
 
   .timeline-year {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
   }
 }
+
+/* global cleanup: remove residual pseudo-content lines */
+.the-journey *::before,
+.the-journey *::after,
+.timeline::before,
+.timeline::after,
+.timeline-item::before,
+.timeline-item::after {
+  content: none !important;
+  display: none !important;
+  border-left: none !important;
+}
+
+.timeline,
+.timeline-item,
+.timeline-content {
+  border-left: none !important;
+}
+
+/* global cleanup: remove residual pseudo-content lines and left timelines */
+.the-journey *::before,
+.the-journey *::after,
+.timeline::before,
+.timeline::after,
+.timeline-item::before,
+.timeline-item::after {
+  content: none !important;
+  display: none !important;
+  border-left: none !important;
+}
+
+.timeline,
+.timeline-item,
+.timeline-content,
+.timeline-year,
+.timeline-line,
+.the-journey,
+.the-journey::before,
+.the-journey::after {
+  border-left: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
+  background: transparent !important;
+}
+
+/* ensure only top line exists */
+.timeline-line {
+  border-left: none !important;
+  border-right: none !important;
+  width: 100% !important;
+  max-width: 230px !important;
+  height: 4px !important;
+  margin: 0 auto 10px !important;
+  background: #d0d0d0 !important;
+  display: block !important;
+}
+
+.timeline-item.active .timeline-line {
+  background: #2a7c7c !important;
+}
+

@@ -94,10 +94,10 @@
   padding: 15px 30px;
   border-radius: 55px;
   box-shadow:
-    0 0 15px rgba(25, 25, 26, 0.25),
-    0 0 30px rgba(13, 115, 119, 0.15);
+    0 0 5px rgba(25, 25, 26, 0.1),
+    0 0 12px rgba(13, 115, 119, 0.08);
   backdrop-filter: blur(2px);
-  filter: drop-shadow(0 0 8px rgba(13, 115, 119, 0.1));
+  filter: drop-shadow(0 0 3px rgba(13, 115, 119, 0.1));
 }
 
 .about-text-block {

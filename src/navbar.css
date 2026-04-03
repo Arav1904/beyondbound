@@ -12,11 +12,13 @@
 .navbar-brand span {
   font-size: clamp(16px, 3vw, 20px) !important;
   position: relative !important;
-  top: 0 !important;
-  left: 0 !important;
+  top: -2px !important;
+  left: 2px !important;
   font-weight: 800 !important;
   display: inline-block !important;
   line-height: 1 !important;
+  vertical-align: super !important;
+  letter-spacing: 0.05em !important;
 }
 
 /* hisam whatsapp css */
@@ -33,7 +35,7 @@
 }
 
 .navbar {
-  height: clamp(56px, 8vw, 68px);
+  height: clamp(65pxpx, 8vw, 75px);
   padding: 0 clamp(12px, 3vw, 20px);
   width: 95%;
   max-width: 1500px;
@@ -87,6 +89,15 @@
   position: relative;
   top: -8px;
   vertical-align: middle;
+}
+
+.navbar-logo-separate {
+  display: none !important;
+  height: 38px !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex-shrink: 0;
 }
 
 .navbar-links {
@@ -177,8 +188,26 @@
   align-items: center;
 }
 
+.nav-login-btn {
+  padding: 8px 16px;
+  border: 1.5px solid #0d7377;
+  border-radius: 24px;
+  background: #0d7377;
+  color: #ffffff;
+  font-family: "Inter", sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .nav-login-btn:hover {
-  background: rgba(13, 115, 119, 0.08);
+  background: #0a5a5f;
+  border-color: #0a5a5f;
+  opacity: 0.95;
 }
 
 .nav-contact-us-btn:hover {
@@ -272,6 +301,62 @@
 
 .cart-fab-2--hidden {
   display: none !important;
+}
+
+/* ── Hamburger Menu Animation ── */
+.hamburger {
+  display: none !important;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border: none !important;
+  background: none !important;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1001;
+}
+
+.hamburger .bar {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 2.5px;
+  background-color: #000000;
+  left: 0;
+  transition: all 0.4s ease-in-out;
+  border-radius: 2px;
+}
+
+.hamburger .bar:nth-child(1) {
+  top: 6px;
+}
+
+.hamburger .bar:nth-child(2) {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.hamburger .bar:nth-child(3) {
+  bottom: 6px;
+}
+
+.hamburger:hover .bar {
+  background-color: #333333;
+}
+
+.hamburger--open .bar:nth-child(1) {
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.hamburger--open .bar:nth-child(2) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.hamburger--open .bar:nth-child(3) {
+  bottom: 50%;
+  transform: translateY(50%) rotate(-45deg);
 }
 
 /* ── Mobile submenu dropdowns ── */
@@ -588,11 +673,11 @@
   }
 
   .navbar-brand {
-    font-size: clamp(13px, 3.5vw, 19px);
+    font-size: clamp(13px, 3.5vw, 22px);
   }
 
   .menu-trigger {
-    font-size: clamp(12px, 1.8vw, 14px);
+    font-size: clamp(13px, 2vw, 18px);
     padding: clamp(5px, 0.8vw, 7px) clamp(8px, 1.2vw, 10px);
   }
 
@@ -623,7 +708,7 @@
   }
 
   .menu-trigger {
-    font-size: clamp(12px, 1.5vw, 13px);
+    font-size: clamp(13px, 1.8vw, 14px);
     padding: 6px 8px;
   }
 }
@@ -635,11 +720,11 @@
   }
 
   .navbar-brand {
-    font-size: clamp(13px, 3vw, 18px);
+    font-size: clamp(13px, 3vw, 20px);
   }
 
   .menu-trigger {
-    font-size: clamp(11px, 1.5vw, 12px);
+    font-size: clamp(12px, 1.8vw, 13px);
     padding: 5px 7px;
   }
 }
@@ -653,23 +738,35 @@
   }
 
   .navbar {
-    height: clamp(50px, 10vw, 60px);
+    height: clamp(68px, 10vw, 78px);
     padding: 0 clamp(12px, 2vw, 16px);
-    grid-template-columns: 1fr auto;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+  }
+
+  .navbar-logo-separate {
+    display: block !important;
+    height: clamp(26px, 4.5vw, 36px);
+    grid-column: 1;
+    justify-self: start;
   }
 
   .navbar-brand {
-    font-size: clamp(12px, 3vw, 16px);
+    font-size: clamp(12px, 3vw, 20px);
     gap: clamp(3px, 1vw, 6px);
+    grid-column: 2;
+    justify-self: center;
   }
 
   .navbar-logo {
-    height: clamp(28px, 4.5vw, 40px);
+    display: none !important;
   }
 
   .navbar-brand span {
-    font-size: clamp(12px, 2.5vw, 16px);
-    top: -0.2em;
+    font-size: clamp(10px, 2vw, 14px);
+    top: -1px;
+    left: 1px;
+    vertical-align: super;
   }
 
   .navbar-links {
@@ -689,6 +786,25 @@
 
   .mobile-menu > .navbar-actions button {
     width: 100%;
+    font-size: 16px;
+    padding: 12px 16px;
+    font-weight: 500;
+    border-radius: 8px;
+  }
+
+  .mobile-menu > .navbar-actions .nav-login-btn {
+    display: none !important;
+  }
+
+  .mobile-menu > .navbar-actions .nav-login-btn:hover {
+    background: #0a5a5f;
+    border-color: #0a5a5f;
+  }
+
+  .mobile-menu > .navbar-actions .nav-signup-btn {
+    background: #0f2744;
+    border: 1px solid #0f2744;
+    color: #ffffff;
   }
 
   .login-panel {
@@ -699,15 +815,18 @@
   }
 
   .hamburger {
-    display: flex;
-    grid-column: 2;
+    display: flex !important;
+    grid-column: 3;
+    justify-self: end;
+    width: 32px;
+    height: 32px;
   }
 
   .mobile-menu {
     display: flex;
-    max-height: calc(100vh - clamp(50px, 10vw, 60px));
+    max-height: calc(100vh - clamp(68px, 10vw, 78px));
     overflow-y: auto;
-    margin-top: clamp(50px, 10vw, 60px);
+    margin-top: clamp(68px, 10vw, 78px);
   }
 
   .mega-panel {
@@ -728,61 +847,7 @@
   }
 }
 
-@media (max-width: 600px) {
-  .navbar-wrapper {
-    position: fixed;
-    left: 0;
-    right: 0;
-    width: 100%;
-  }
-
-  .navbar {
-    height: clamp(48px, 10vw, 56px);
-    padding: 0 clamp(10px, 2vw, 12px);
-  }
-
-  .navbar-brand {
-    font-size: clamp(11px, 2.5vw, 14px);
-    gap: 3px;
-  }
-
-  .navbar-logo {
-    height: clamp(24px, 3.5vw, 32px);
-  }
-
-  .navbar-brand span {
-    font-size: clamp(11px, 2vw, 14px);
-  }
-
-  .hamburger .bar {
-    width: clamp(16px, 4vw, 20px);
-    height: 1.5px;
-  }
-
-  .hamburger {
-    width: clamp(28px, 6vw, 32px);
-    height: clamp(28px, 6vw, 32px);
-    gap: 3px;
-  }
-
-  .mobile-menu {
-    padding: 8px 10px 12px;
-    max-height: calc(100vh - clamp(48px, 10vw, 56px));
-    margin-top: clamp(48px, 10vw, 56px);
-  }
-
-  .mobile-link {
-    font-size: clamp(12px, 2.5vw, 14px);
-    padding: clamp(8px, 1vw, 10px) 6px;
-  }
-
-  .login-trigger {
-    width: clamp(28px, 6vw, 32px);
-    height: clamp(28px, 6vw, 32px);
-    font-size: clamp(14px, 3.5vw, 16px);
-  }
-}
-
+/* ── SMALL PHONES (480px - 412px) ── */
 @media (max-width: 480px) {
   .navbar-wrapper {
     position: fixed;
@@ -792,43 +857,194 @@
   }
 
   .navbar {
-    height: clamp(44px, 10vw, 56px);
-    padding: 0 clamp(8px, 1.5vw, 12px);
+    height: clamp(62px, 10vw, 70px);
+    padding: 0 clamp(8px, 2vw, 10px);
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+  }
+
+  .navbar-logo-separate {
+    display: block !important;
+    height: clamp(16px, 3vw, 20px);
+    grid-column: 1;
+    justify-self: start;
   }
 
   .navbar-brand {
-    font-size: clamp(10px, 2.2vw, 14px);
+    font-size: clamp(18px, 5vw, 22px);
     gap: 2px;
+    grid-column: 2;
+    justify-self: center;
   }
 
   .navbar-logo {
-    height: clamp(20px, 3.5vw, 30px);
+    display: none !important;
   }
 
   .navbar-brand span {
-    font-size: clamp(10px, 1.8vw, 14px);
+    font-size: clamp(12px, 3vw, 15px);
+    top: -1px;
+    left: 1px;
+    vertical-align: super;
   }
 
   .hamburger .bar {
     width: 18px;
-    height: 1.5px;
+    height: 2.5px;
   }
 
   .hamburger {
+    display: flex !important;
     width: 28px;
     height: 28px;
-    gap: 3px;
+    gap: 0;
+    grid-column: 3;
+    justify-self: end;
   }
 
   .mobile-menu {
-    padding: 8px 10px 12px;
-    max-height: calc(100vh - clamp(44px, 10vw, 56px));
-    margin-top: clamp(44px, 10vw, 56px);
+    padding: 12px 10px;
+    max-height: calc(100vh - clamp(62px, 10vw, 70px));
+    margin-top: clamp(62px, 10vw, 70px);
+  }
+
+  .mobile-menu > .navbar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .mobile-menu > .navbar-actions button {
+    width: 100%;
+    font-size: 17px;
+    padding: 12px 14px;
+    border-radius: 8px;
+  }
+
+  .mobile-menu > .navbar-actions .nav-login-btn {
+    display: none !important;
+  }
+
+  .mobile-menu > .navbar-actions .nav-signup-btn {
+    background: #0f2744;
+    border: 1px solid #0f2744;
+    color: #ffffff;
   }
 
   .mobile-link {
-    font-size: clamp(11px, 2vw, 14px);
-    padding: 8px 6px;
+    font-size: 18px;
+    padding: 10px 6px;
+    font-weight: 500;
+  }
+
+  .login-trigger {
+    width: clamp(26px, 6vw, 32px);
+    height: clamp(26px, 6vw, 32px);
+    font-size: clamp(13px, 3.2vw, 16px);
+  }
+
+  .nav-contact-us-btn {
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 20px;
+  }
+
+  .nav-signup-btn {
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar-wrapper {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
+  .navbar {
+    height: clamp(62px, 10vw, 72px);
+    padding: 0 clamp(10px, 2vw, 12px);
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+  }
+
+  .navbar-logo-separate {
+    display: block !important;
+    height: clamp(14px, 2.5vw, 18px);
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .navbar-brand {
+    font-size: clamp(15px, 3.5vw, 20px);
+    gap: 3px;
+    grid-column: 2;
+    justify-self: center;
+  }
+
+  .navbar-logo {
+    display: none !important;
+  }
+
+  .navbar-brand span {
+    font-size: clamp(9px, 1.8vw, 12px);
+    top: -1px;
+    left: 1px;
+    vertical-align: super;
+  }
+
+  .hamburger .bar {
+    width: 20px;
+    height: 2.5px;
+  }
+
+  .hamburger {
+    display: flex !important;
+    width: 30px;
+    height: 30px;
+    gap: 0;
+    grid-column: 3;
+    justify-self: end;
+  }
+
+  .mobile-menu {
+    padding: 12px 10px;
+    max-height: calc(100vh - clamp(62px, 10vw, 72px));
+    margin-top: clamp(62px, 10vw, 72px);
+  }
+
+  .mobile-menu > .navbar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .mobile-menu > .navbar-actions button {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px 14px;
+    border-radius: 8px;
+  }
+
+  .mobile-menu > .navbar-actions .nav-login-btn {
+    display: none !important;
+  }
+
+  .mobile-menu > .navbar-actions .nav-signup-btn {
+    background: #0f2744;
+    border: 1px solid #0f2744;
+    color: #ffffff;
+  }
+
+  .mobile-link {
+    font-size: 18px;
+    padding: 10px 6px;
+    font-weight: 500;
   }
 
   .login-trigger {
@@ -838,13 +1054,15 @@
   }
 
   .nav-contact-us-btn {
-    font-size: clamp(12px, 2vw, 15px);
-    padding: clamp(6px, 1vw, 8px) clamp(10px, 2vw, 16px);
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 20px;
   }
 
   .nav-signup-btn {
-    font-size: clamp(12px, 2vw, 15px);
-    padding: clamp(6px, 1vw, 8px) clamp(10px, 2vw, 16px);
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 28px;
   }
 }
 
@@ -857,32 +1075,85 @@
   }
 
   .navbar {
-    height: clamp(40px, 10vw, 48px);
+    height: clamp(52px, 10vw, 62px);
     padding: 0 6px;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+  }
+
+  .navbar-logo-separate {
+    display: block !important;
+    height: 12px;
+    grid-column: 1;
+    justify-self: start;
   }
 
   .navbar-brand {
-    font-size: 11px;
+    font-size: 20px;
+    grid-column: 2;
+    justify-self: center;
   }
 
   .navbar-logo {
-    height: 18px;
+    display: none !important;
+  }
+
+  .navbar-brand span {
+    font-size: 8px;
+    position: relative;
+    top: -1px;
+    margin-left: 1px;
+    vertical-align: super;
   }
 
   .hamburger {
+    display: flex !important;
     width: 24px;
     height: 24px;
-    gap: 2px;
+    gap: 0;
+    grid-column: 3;
+    justify-self: end;
   }
 
   .hamburger .bar {
     width: 16px;
-    height: 1.5px;
+    height: 2.5px;
   }
 
   .mobile-menu {
-    max-height: calc(100vh - clamp(40px, 10vw, 48px));
-    margin-top: clamp(40px, 10vw, 48px);
+    padding: 10px 8px;
+    max-height: calc(100vh - clamp(52px, 10vw, 62px));
+    margin-top: clamp(52px, 10vw, 62px);
+  }
+
+  .mobile-menu > .navbar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .mobile-menu > .navbar-actions button {
+    width: 100%;
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 8px;
+  }
+
+  .mobile-menu > .navbar-actions .nav-login-btn {
+    display: none !important;
+  }
+
+  .mobile-menu > .navbar-actions .nav-signup-btn {
+    background: #0f2744;
+    border: 1px solid #0f2744;
+    color: #ffffff;
+  }
+
+  .mobile-link {
+    font-size: 16px;
+    padding: 8px 5px;
+    font-weight: 500;
   }
 
   .cart-fab-2 {

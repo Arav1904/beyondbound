@@ -102,6 +102,16 @@
   max-width: 180px;
 }
 
+/* ── SEAMLESS CAROUSEL ANIMATION FOR MOBILE ── */
+@keyframes slideCarouselSeamless {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-333.33%);
+  }
+}
+
 @media (max-width: 1200px) {
   .trust-section {
     padding: 20px 20px;
@@ -147,16 +157,29 @@
   }
 
   .trust-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(5, 1fr);
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    height: auto;
+    align-items: center;
+    justify-content: flex-start;
   }
 
   .trust-card {
-    min-height: 180px;
+    min-height: 108px;
     padding: 0px;
+    flex: 0 0 33.33%;
+    animation: slideCarouselSeamless 60s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .trust-icon {
-    height: 140px;
+    height: 108px;
+    width: 90%;
   }
 
   .trust-icon--who,
@@ -164,7 +187,7 @@
   .trust-icon--quality,
   .trust-icon--haccp,
   .trust-icon--gmo {
-    max-width: 200px;
+    max-width: 150px;
   }
 }
 
@@ -178,16 +201,26 @@
   }
 
   .trust-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 5px;
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    gap: 0;
+    align-items: center;
+    justify-content: flex-start;
   }
 
   .trust-card {
-    min-height: 90px;
+    min-height: 72px;
+    flex: 0 0 33.33%;
+    animation: slideCarouselSeamless 50s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .trust-icon {
-    height: 80px;
+    height: 72px;
+    width: 85%;
   }
 
   .trust-title {
@@ -200,7 +233,7 @@
   .trust-icon--quality,
   .trust-icon--haccp,
   .trust-icon--gmo {
-    max-width: 130px;
+    max-width: 96px;
     padding: 0;
     margin: 0;
   }
@@ -232,17 +265,27 @@
   }
 
   .trust-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 4px;
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    gap: 0;
+    align-items: center;
+    justify-content: flex-start;
   }
 
   .trust-card {
-    min-height: 70px;
+    min-height: 60px;
     padding: 2px;
+    flex: 0 0 33.33%;
+    animation: slideCarouselSeamless 40s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .trust-icon {
     height: 60px;
+    width: 80%;
   }
 
   .trust-icon--who,
@@ -250,7 +293,7 @@
   .trust-icon--quality,
   .trust-icon--haccp,
   .trust-icon--gmo {
-    max-width: 100px;
+    max-width: 72px;
     padding: 0;
     margin: 0;
   }

@@ -484,10 +484,12 @@
 @media (max-width: 768px) {
   .glyco-inner {
     padding: 0 16px;
+    margin: 5px;
   }
 
   .glyco-left {
     gap: 16px;
+    margin: 5px;
   }
 
   .glyco-proof-copy {
@@ -526,7 +528,8 @@
   .glyco-btn {
     height: auto;
     width: auto;
-    padding: 0;
+    padding: 12px 20px;
+    margin: 5px;
   }
 
   .glyco-btn-image {
@@ -554,6 +557,7 @@
     font-size: 18px;
     line-height: 1.45;
     overflow: visible;
+    margin: 5px;
   }
 
   .glyco-note-text {
@@ -568,10 +572,12 @@
 @media (max-width: 480px) {
   .glyco-inner {
     padding: 0 12px;
+    margin: 5px;
   }
 
   .glyco-proof {
     gap: 6px;
+    margin: 5px;
   }
 
   .glyco-avatars {
@@ -601,6 +607,11 @@
     font-size: 2rem;
   }
 
+  .glyco-btn {
+    padding: 10px 16px;
+    margin: 5px;
+  }
+
   .glyco-image {
     max-width: 300px;
   }
@@ -614,18 +625,22 @@
 @media (max-width: 375px) {
   .glyco-inner {
     padding: 0 10px;
+    margin: 5px;
   }
 
   .glyco-title {
     font-size: 1.8rem;
   }
 
-  .glyco-image {
-    max-width: 260px;
-  }
-
   .glyco-btn {
     min-width: 160px;
+    padding: 10px 14px;
+    margin: 5px;
+    font-size: 14px;
+  }
+
+  .glyco-image {
+    max-width: 260px;
   }
 }
 

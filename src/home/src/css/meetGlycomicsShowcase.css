@@ -86,9 +86,9 @@
 
 .mgs-ingredient {
   margin: 0;
-  padding: 0px 20px;
+  padding: 0px 20px 0px 20px;
   width: 100%;
-  height: 50px;
+  height: 28px;
   font-family:
     "Inter",
     -apple-system,
@@ -97,17 +97,27 @@
     sans-serif;
   font-weight: 350;
   font-style: normal;
-  font-size: 34px;
-  line-height: 68px;
+  font-size: 32px;
+  line-height: 28px;
   letter-spacing: 0;
+  word-spacing: 6px;
   color: #18181a;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Reduce bottom padding for Haridra and Amakali */
+.mgs-ingredient:nth-child(6),
+.mgs-ingredient:nth-child(7) {
+  padding: 0px 18px 0px 18px;
 }
 
 .mgs-ingredient-wrap {
   width: 100%;
   max-width: 420px;
-  height: 50px;
+  height: 28px;
   overflow: hidden;
   position: relative;
 }
@@ -115,41 +125,52 @@
 .mgs-ingredient-track {
   display: flex;
   flex-direction: column;
-  animation: mgs-ingredient-rotate 18s ease-in-out infinite;
-  gap: 0;
+  animation: mgs-ingredient-rotate 14.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  gap: 8px;
 }
 
 @keyframes mgs-ingredient-rotate {
-  0%,
-  10% {
+  0% {
     transform: translateY(0);
   }
-  14%,
-  24% {
-    transform: translateY(-68px);
+  12% {
+    transform: translateY(0);
   }
-  28%,
-  38% {
-    transform: translateY(-136px);
+  15% {
+    transform: translateY(-36px);
   }
-  42%,
-  52% {
-    transform: translateY(-204px);
+  27% {
+    transform: translateY(-36px);
   }
-  56%,
-  66% {
-    transform: translateY(-272px);
+  30% {
+    transform: translateY(-72px);
   }
-  70%,
-  80% {
-    transform: translateY(-340px);
+  42% {
+    transform: translateY(-72px);
   }
-  84%,
-  94% {
-    transform: translateY(-408px);
+  45% {
+    transform: translateY(-108px);
+  }
+  57% {
+    transform: translateY(-108px);
+  }
+  60% {
+    transform: translateY(-144px);
+  }
+  72% {
+    transform: translateY(-144px);
+  }
+  75% {
+    transform: translateY(-180px);
+  }
+  87% {
+    transform: translateY(-180px);
+  }
+  90% {
+    transform: translateY(-216px);
   }
   100% {
-    transform: translateY(-476px);
+    transform: translateY(-216px);
   }
 }
 
@@ -298,52 +319,75 @@
 
   .mgs-ingredient-wrap {
     width: 100%;
-    height: 72px;
+    height: 47px;
   }
 
   .mgs-ingredient {
     width: 100%;
-    height: 72px;
+    height: 47px;
     font-size: 42px;
-    line-height: 72px;
+    line-height: 47px;
+    word-spacing: 8px;
+    padding: 0 20px 8px 20px;
+  }
+
+  /* Reduce bottom padding for Haridra and Amakali on desktop */
+  .mgs-ingredient:nth-child(6),
+  .mgs-ingredient:nth-child(7) {
+    padding: 0 20px 0 20px;
   }
 
   .mgs-ingredient-wrap {
     width: 100%;
-    height: 72px;
+    height: 44px;
   }
 
-  @keyframes mgs-ingredient-rotate {
-    0%,
-    10% {
+  .mgs-ingredient-track {
+    animation: mgs-ingredient-rotate-desktop 14.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  @keyframes mgs-ingredient-rotate-desktop {
+    0% {
       transform: translateY(0);
     }
-    14%,
-    24% {
-      transform: translateY(-72px);
+    13% {
+      transform: translateY(0);
     }
-    28%,
-    38% {
-      transform: translateY(-144px);
+    15% {
+      transform: translateY(-55px);
     }
-    42%,
-    52% {
-      transform: translateY(-216px);
+    28% {
+      transform: translateY(-55px);
     }
-    56%,
-    66% {
-      transform: translateY(-288px);
+    30% {
+      transform: translateY(-110px);
     }
-    70%,
-    80% {
-      transform: translateY(-360px);
+    43% {
+      transform: translateY(-110px);
     }
-    84%,
-    94% {
-      transform: translateY(-432px);
+    45% {
+      transform: translateY(-165px);
+    }
+    58% {
+      transform: translateY(-165px);
+    }
+    60% {
+      transform: translateY(-220px);
+    }
+    73% {
+      transform: translateY(-220px);
+    }
+    75% {
+      transform: translateY(-275px);
+    }
+    88% {
+      transform: translateY(-275px);
+    }
+    90% {
+      transform: translateY(-330px);
     }
     100% {
-      transform: translateY(-504px);
+      transform: translateY(-330px);
     }
   }
 
@@ -385,6 +429,16 @@
   .mgs-paragraph--secondary {
     font-size: 14px;
     line-height: 1.5;
+  }
+
+  .mgs-ingredient-wrap {
+    height: 32px;
+  }
+
+  .mgs-ingredient {
+    height: 32px;
+    line-height: 32px;
+    font-size: 30px;
   }
 }
 
@@ -434,48 +488,76 @@
   }
 
   .mgs-ingredient {
-    font-size: 28px;
-    line-height: 48px;
-    height: 48px;
-    padding: 0 12px;
+    font-size: 26px;
+    line-height: 28px;
+    height: 28px;
+    padding: 0 8px 0px 8px;
+    word-spacing: 6px;
+  }
+
+  /* Remove bottom padding for all ingredients on 480px */
+  .mgs-ingredient:nth-child(3),
+  .mgs-ingredient:nth-child(4),
+  .mgs-ingredient:nth-child(5),
+  .mgs-ingredient:nth-child(6) {
+    padding: 0 8px 0px 8px;
+  }
+
+  .mgs-ingredient:nth-child(7) {
+    padding: 0 8px 0 8px;
   }
 
   .mgs-ingredient-wrap {
-    height: 48px;
+    height: 28px;
     max-width: 100%;
   }
 
-  @keyframes mgs-ingredient-rotate {
-    0%,
-    10% {
+  .mgs-ingredient-track {
+    animation: mgs-ingredient-rotate-mobile 14.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  @keyframes mgs-ingredient-rotate-mobile {
+    0% {
       transform: translateY(0);
     }
-    14%,
-    24% {
-      transform: translateY(-48px);
+    13% {
+      transform: translateY(0);
     }
-    28%,
-    38% {
-      transform: translateY(-96px);
+    15% {
+      transform: translateY(-36px);
     }
-    42%,
-    52% {
+    28% {
+      transform: translateY(-36px);
+    }
+    30% {
+      transform: translateY(-72px);
+    }
+    43% {
+      transform: translateY(-72px);
+    }
+    45% {
+      transform: translateY(-108px);
+    }
+    58% {
+      transform: translateY(-108px);
+    }
+    60% {
       transform: translateY(-144px);
     }
-    56%,
-    66% {
-      transform: translateY(-192px);
+    73% {
+      transform: translateY(-144px);
     }
-    70%,
-    80% {
-      transform: translateY(-240px);
+    75% {
+      transform: translateY(-180px);
     }
-    84%,
-    94% {
-      transform: translateY(-288px);
+    88% {
+      transform: translateY(-180px);
+    }
+    90% {
+      transform: translateY(-216px);
     }
     100% {
-      transform: translateY(-336px);
+      transform: translateY(-216px);
     }
   }
 
@@ -512,8 +594,146 @@
   }
 
   .mgs-ingredient {
-    font-size: 20px;
-    line-height: 40px;
-    height: 40px;
+    font-size: 24px;
+    line-height: 28px;
+    height: 28px;
+    padding: 0 8px 0px 8px;
+    word-spacing: 6px;
+  }
+
+  /* Remove bottom padding for all ingredients on 375px */
+  .mgs-ingredient:nth-child(3),
+  .mgs-ingredient:nth-child(4),
+  .mgs-ingredient:nth-child(5),
+  .mgs-ingredient:nth-child(6) {
+    padding: 0 8px 0px 8px;
+  }
+
+  .mgs-ingredient:nth-child(7) {
+    padding: 0 8px 0 8px;
+  }
+
+  .mgs-ingredient-wrap {
+    height: 28px;
+  }
+
+  .mgs-ingredient-track {
+    animation: mgs-ingredient-rotate-mobile 14.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+}
+
+/* ── MEDIUM SMALL (max-width: 412px) ── */
+@media (max-width: 412px) {
+  .mgs-ingredient {
+    font-size: 24px;
+    line-height: 28px;
+    height: 28px;
+    padding: 0 8px 0px 8px;
+    word-spacing: 6px;
+    margin-bottom: -7px;
+  }
+
+  .mgs-ingredient-wrap {
+    height: 28px;
+  }
+
+  .mgs-ingredient-track {
+    animation: mgs-ingredient-rotate-mobile 14.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+}
+
+/* ── SMALL MEDIUM (max-width: 372px) ── */
+@media (max-width: 372px) {
+  .mgs-ingredient {
+    font-size: 22px;
+    line-height: 28px;
+    height: 28px;
+    padding: 0 8px 0px 8px;
+    word-spacing: 6px;
+    margin-bottom: -6px;
+  }
+
+  .mgs-ingredient-wrap {
+    height: 28px;
+  }
+
+  .mgs-ingredient-track {
+    animation: mgs-ingredient-rotate-mobile 14.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+}
+
+/* ── SMALLEST (max-width: 360px) ── */
+@media (max-width: 360px) {
+  .mgs-ingredient {
+    font-size: 22px;
+    line-height: 30px;
+    height: 30px;
+    padding: 0 8px 0px 8px;
+  }
+
+  /* Remove bottom padding for all ingredients on 360px */
+  .mgs-ingredient:nth-child(3),
+  .mgs-ingredient:nth-child(4),
+  .mgs-ingredient:nth-child(5),
+  .mgs-ingredient:nth-child(6) {
+    padding: 0 8px 0px 8px;
+    margin-bottom: 3px;
+  }
+
+  .mgs-ingredient:nth-child(7) {
+    padding: 0 8px 0 8px;
+  }
+
+  .mgs-ingredient-wrap {
+    height: 30px;
+  }
+
+  .mgs-ingredient-track {
+    animation: mgs-ingredient-rotate-360 14.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  @keyframes mgs-ingredient-rotate-360 {
+    0% {
+      transform: translateY(0);
+    }
+    13% {
+      transform: translateY(0);
+    }
+    15% {
+      transform: translateY(-38px);
+    }
+    28% {
+      transform: translateY(-38px);
+    }
+    30% {
+      transform: translateY(-76px);
+    }
+    43% {
+      transform: translateY(-76px);
+    }
+    45% {
+      transform: translateY(-114px);
+    }
+    58% {
+      transform: translateY(-114px);
+    }
+    60% {
+      transform: translateY(-152px);
+    }
+    73% {
+      transform: translateY(-152px);
+    }
+    75% {
+      transform: translateY(-190px);
+    }
+    88% {
+      transform: translateY(-190px);
+    }
+    90% {
+      transform: translateY(-228px);
+    }
+    100% {
+      transform: translateY(-228px);
+    }
   }
 }

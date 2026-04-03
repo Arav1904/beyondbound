@@ -102,6 +102,11 @@
   max-width: 180px;
 }
 
+/* Hide carousel duplicates on desktop */
+.trust-card[aria-hidden="true"] {
+  display: none;
+}
+
 /* ── SEAMLESS CAROUSEL ANIMATION FOR MOBILE ── */
 @keyframes slideCarouselSeamless {
   0% {
@@ -156,6 +161,11 @@
     text-wrap: balance;
   }
 
+  /* Show duplicates on mobile carousel */
+  .trust-card[aria-hidden="true"] {
+    display: flex;
+  }
+
   .trust-grid {
     grid-template-columns: repeat(5, 1fr);
     width: 100%;
@@ -198,6 +208,11 @@
 
   .trust-inner {
     gap: 10px;
+  }
+
+  /* Show duplicates on mobile carousel */
+  .trust-card[aria-hidden="true"] {
+    display: flex;
   }
 
   .trust-grid {
@@ -262,6 +277,11 @@
     font-size: 28px;
     line-height: 1.08;
     white-space: normal;
+  }
+
+  /* Show duplicates on mobile carousel */
+  .trust-card[aria-hidden="true"] {
+    display: flex;
   }
 
   .trust-grid {

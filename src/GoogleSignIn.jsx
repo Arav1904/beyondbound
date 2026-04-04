@@ -25,10 +25,21 @@ function decodeCredential(credential) {
 	}
 }
 
-function GoogleSignIn({ onUserChange }) {
+function GoogleSignIn({
+	onUserChange,
+	initialUser = null,
+	className = '',
+	buttonOptions = {},
+}) {
 	const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
 	const buttonRef = useRef(null)
-	const [user, setUser] = useState(null)
+	const [localUser, setLocalUser] = useState(null)
+	const user = initialUser ?? localUser
+	const buttonTheme = buttonOptions.theme ?? 'outline'
+	const buttonSize = buttonOptions.size ?? 'large'
+	const buttonShape = buttonOptions.shape ?? 'pill'
+	const buttonText = buttonOptions.text ?? 'signin_with'
+	const buttonWidth = buttonOptions.width
 
 	const handleCredentialResponse = useCallback(
 		(response) => {
@@ -44,7 +55,7 @@ function GoogleSignIn({ onUserChange }) {
 				credential: response.credential,
 			}
 
-			setUser(nextUser)
+			setLocalUser(nextUser)
 			onUserChange?.(nextUser)
 		},
 		[onUserChange],
@@ -62,6 +73,12 @@ function GoogleSignIn({ onUserChange }) {
 				return
 			}
 
+			const containerWidth = Math.floor(buttonRef.current.getBoundingClientRect().width)
+			const resolvedWidth =
+				typeof buttonWidth === 'number'
+					? buttonWidth
+					: Math.max(200, Math.min(380, containerWidth || 320))
+
 			window.google.accounts.id.initialize({
 				client_id: clientId,
 				callback: handleCredentialResponse,
@@ -69,11 +86,11 @@ function GoogleSignIn({ onUserChange }) {
 
 			buttonRef.current.innerHTML = ''
 			window.google.accounts.id.renderButton(buttonRef.current, {
-				theme: 'outline',
-				size: 'large',
-				shape: 'pill',
-				text: 'signin_with',
-				width: 230,
+				theme: buttonTheme,
+				size: buttonSize,
+				shape: buttonShape,
+				text: buttonText,
+				width: resolvedWidth,
 			})
 		}
 
@@ -105,7 +122,15 @@ function GoogleSignIn({ onUserChange }) {
 			isCancelled = true
 			script.onload = null
 		}
-	}, [clientId, handleCredentialResponse])
+	}, [
+		buttonShape,
+		buttonSize,
+		buttonText,
+		buttonTheme,
+		buttonWidth,
+		clientId,
+		handleCredentialResponse,
+	])
 
 	const handleSignOut = () => {
 		window.google?.accounts?.id?.disableAutoSelect?.()
@@ -113,7 +138,7 @@ function GoogleSignIn({ onUserChange }) {
 			window.google?.accounts?.id?.revoke?.(user.email, () => {})
 		}
 
-		setUser(null)
+		setLocalUser(null)
 		onUserChange?.(null)
 	}
 
@@ -148,7 +173,7 @@ function GoogleSignIn({ onUserChange }) {
 		)
 	}
 
-	return <div ref={buttonRef} className="google-signin-button" />
+	return <div ref={buttonRef} className={`google-signin-button ${className}`.trim()} />
 }
 
 export default GoogleSignIn

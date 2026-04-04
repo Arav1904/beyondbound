@@ -1,9 +1,8 @@
-import React from 'react';
 import './Ingredients.css';
 import berberineImg from '../product/assets/berberine.png';
 import gurmarImg from '../product/assets/gurmar.png';
 import vijaysarImg from '../product/assets/vijaysar.png';
-import {useRef, useEffect} from "react";
+import { useRef, useEffect } from "react";
 import amlaImg from "../product/assets/amla.png";
 import haldiImg from "../product/assets/haldi.png";
 import jambuImg from "../product/assets/jambuseeds.png";
@@ -62,7 +61,7 @@ const Ingredients = () => {
    },
  
  ];
-const containerRef = React.useRef(null);
+const containerRef = useRef(null);
 
     useEffect(() => {
     const container = containerRef.current;

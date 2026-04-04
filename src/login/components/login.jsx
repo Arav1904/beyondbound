@@ -1,9 +1,11 @@
-import React, { useState, useRef } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { useRef, useState } from 'react';
 import '../css/login.css';
+import GoogleSignIn from '../../GoogleSignIn';
+import useMenuStore from '../../useMenuStore';
 
 const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, isModal = false, onSwitchToSignup = () => {} }) => {
+  const signedInUser = useMenuStore((state) => state.signedInUser);
+  const setSignedInUser = useMenuStore((state) => state.setSignedInUser);
   const [formData, setFormData] = useState({
     email: '',
   });
@@ -66,9 +68,8 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
     // Add email OTP logic here
   };
 
-  const handleGoogleSignIn = () => {
-    console.log('Sign up with Google');
-    // Add Google sign-in logic here
+  const handleGoogleUserChange = (nextUser) => {
+    setSignedInUser(nextUser ?? null);
   };
 
   const handleSubmit = (e) => {
@@ -103,51 +104,7 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
         {/* Right Side - Form Section */}
         <div className="login-form-section">
           <div className="form-content">
-            {!otpSent ? (
-              <>
-                <h1 className="form-title">Smarter Blood Sugar Starts Here</h1>
-                <p className="form-subtitle">Science-Backed Nutrition to Support Glucose Balance</p>
-
-                {/* Google Sign In Button */}
-                <button className="btn-google" onClick={handleGoogleSignIn}>
-                  <FontAwesomeIcon icon={faGoogle} />
-                  Sign up with Google
-                </button>
-
-                <div className="form-divider">
-                  <span>or use email</span>
-                </div>
-
-                {/* Form */}
-                <form onSubmit={handleSubmit}>
-                  <div className="form-group">
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Enter your email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                      className="form-input"
-                    />
-                  </div>
-
-                  {/* Generate OTP Button */}
-                  <button 
-                    type="button" 
-                    className="btn-submit"
-                    onClick={handleGenerateOTP}
-                  >
-                    Continue With OTP
-                  </button>
-                </form>
-
-                {/* Signup Link */}
-                <p className="signup-prompt">
-                  New to Beyond Bound? <button className="signup-link" onClick={onSwitchToSignup}>Create a free account</button>
-                </p>
-              </>
-            ) : (
+            {otpSent ? (
               <>
                 <div className="otp-header">VERIFY YOUR NUMBER</div>
                 <h1 className="form-title">Enter the code</h1>
@@ -197,6 +154,52 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
                   <button className="otp-back-link" onClick={() => { setOtpSent(false); setOtp(['', '', '', '', '', '']); }}>
                     Back to email
                   </button>
+                </p>
+              </>
+            ) : (
+              <>
+                <h1 className="form-title">Smarter Blood Sugar Starts Here</h1>
+                <p className="form-subtitle">Science-Backed Nutrition to Support Glucose Balance</p>
+
+                {/* Google Sign In Button */}
+                <GoogleSignIn
+                  onUserChange={handleGoogleUserChange}
+                  initialUser={signedInUser}
+                  className="google-signin-button--auth"
+                  buttonOptions={{ text: 'signup_with', shape: 'rectangular' }}
+                />
+
+                <div className="form-divider">
+                  <span>or use email</span>
+                </div>
+
+                {/* Form */}
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      className="form-input"
+                    />
+                  </div>
+
+                  {/* Generate OTP Button */}
+                  <button 
+                    type="button" 
+                    className="btn-submit"
+                    onClick={handleGenerateOTP}
+                  >
+                    Continue With OTP
+                  </button>
+                </form>
+
+                {/* Signup Link */}
+                <p className="signup-prompt">
+                  New to Beyond Bound? <button className="signup-link" onClick={onSwitchToSignup}>Create a free account</button>
                 </p>
               </>
             )}

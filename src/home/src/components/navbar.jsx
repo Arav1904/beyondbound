@@ -9,6 +9,12 @@ const aboutItems = [
   { title: "Certifications", subtitle: "Quality standards" },
 ];
 
+const scienceItems = [
+  { title: "How It Works", subtitle: "Mechanism overview" },
+  { title: "Ingredients", subtitle: "Formula and dosage" },
+  { title: "Research", subtitle: "Evidence and validation" },
+];
+
 const accountMenuItems = [
   "View Details",
   "Delivery Status",

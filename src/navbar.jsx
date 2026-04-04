@@ -1,26 +1,8 @@
 import { useState } from "react";
 import "./navbar.css";
 import beyondLogo from "./assets/beyond.svg";
-import GoogleSignIn from "./GoogleSignIn";
 import useMenuStore from './useMenuStore';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faShoppingCart } from '@fortawesome/free-solid-svg-icons'
 import { ArrowUpRight } from "lucide-react";
-
-const aboutItems = [
-  { title: "Our Story", subtitle: "How Beyond Bound began" },
-  { title: "Mission & Values", subtitle: "What drives us" },
-  { title: "Certifications", subtitle: "Quality standards" },
-];
-
-const accountMenuItems = [
-  "View Details",
-  "Delivery Status",
-  "Order History",
-  "Address",
-  "Help",
-  "Settings",
-];
 
 function Navbar() {
   const activeMenu = useMenuStore((state) => state.activeMenu);
@@ -28,12 +10,13 @@ function Navbar() {
   const activePage = useMenuStore((state) => state.activePage);
   const setActivePage = useMenuStore((state) => state.setActivePage);
   const setIsLoginModalOpen = useMenuStore((state) => state.setIsLoginModalOpen);
+  const setAuthMode = useMenuStore((state) => state.setAuthMode);
+  const signedInUser = useMenuStore((state) => state.signedInUser);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [mobileSubMenu, setMobileSubMenu] = useState(null);
-  const [signedInUser, setSignedInUser] = useState(null);
 
-  const toggleMenu = (menuName) => {
-    setActiveMenu((prev) => (prev === menuName ? null : menuName));
+  const openAuthModal = () => {
+    setAuthMode(signedInUser ? "login" : "signup");
+    setIsLoginModalOpen(true);
   };
 
   const handleLogoClick = () => {
@@ -141,8 +124,8 @@ function Navbar() {
               <ArrowUpRight size={'18px'} />
             </button>
 
-            <button type="button" className="nav-signup-btn" onClick={() => setIsLoginModalOpen(true)}>
-              Sign Up
+            <button type="button" className="nav-signup-btn" onClick={openAuthModal}>
+              {signedInUser ? "Account" : "Sign Up"}
             </button>
           </div>
 
@@ -176,7 +159,6 @@ function Navbar() {
               onClick={() => {
                 setActivePage("home");
                 setMobileOpen(false);
-                setMobileSubMenu(null);
               }}
             >
               Home
@@ -187,7 +169,6 @@ function Navbar() {
               onClick={() => {
                 setActivePage("products");
                 setMobileOpen(false);
-                setMobileSubMenu(null);
               }}
             >
               Products
@@ -199,7 +180,6 @@ function Navbar() {
               onClick={() => {
                 setActivePage("science");
                 setMobileOpen(false);
-                setMobileSubMenu(null);
               }}
             >
               Science
@@ -211,7 +191,6 @@ function Navbar() {
               onClick={() => {
                 setActivePage("about");
                 setMobileOpen(false);
-                setMobileSubMenu(null);
               }}
             >
               About
@@ -223,7 +202,6 @@ function Navbar() {
               onClick={() => {
                 setActivePage("contact");
                 setMobileOpen(false);
-                setMobileSubMenu(null);
               }}
             >
               Contact
@@ -232,8 +210,8 @@ function Navbar() {
 <br />
               <div className="navbar-actions">
             
-              <button type="button" className="nav-signup-btn" onClick={() => setIsLoginModalOpen(true)}>
-                Sign Up
+              <button type="button" className="nav-signup-btn" onClick={openAuthModal}>
+                {signedInUser ? "Account" : "Sign Up"}
               </button>
             </div>
           </div>

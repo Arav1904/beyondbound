@@ -2,7 +2,7 @@ import "./IngredientsSection.css"; // Importing the corresponding CSS file
 import berberineImg from "./assets/berberine.png";
 import gurmarImg from "./assets/gurmar.png";
 import vijaysarImg from "./assets/vijaysar.png";
-import React, {useRef, useEffect} from "react";
+import { useRef, useEffect } from "react";
 import amlaImg from "./assets/amla.png";
 import haldiImg from "./assets/haldi.png";
 import jambuImg from "./assets/jambuseeds.png";
@@ -62,7 +62,7 @@ const ingredients = [
 ];
 
 function IngredientsSection() {
-  const containerRef = React.useRef(null);
+  const containerRef = useRef(null);
 
     useEffect(() => {
     const container = containerRef.current;

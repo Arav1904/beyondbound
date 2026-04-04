@@ -1,5 +1,4 @@
 import "./App.css";
-import Navbar from "./components/navbar";
 import HowItWorks from "./components/Howit";
 import Trust from "./components/trust";
 import AboutBeyond from "./components/AboutBeyond";
@@ -9,7 +8,6 @@ import ProductPage from "../../product/ProductPage";
 import PurchaseAssurance from "./components/PurchaseAssurance";
 import WhyDifferentSection from "./components/WhyDifferentSection";
 import FAQ from "./components/faq";
-import Footer from "./components/footer";
 import Meet from "./components/MeetGlyco";
 import LovedSection from "./components/LovedSection";
 import TransformationSection from "./components/TransformationSection";

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { useState } from 'react';
 import '../css/login.css';
+import GoogleSignIn from '../../GoogleSignIn';
+import useMenuStore from '../../useMenuStore';
 
 const Signup = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, isModal = false, onSwitchToLogin = () => {} }) => {
+  const signedInUser = useMenuStore((state) => state.signedInUser);
+  const setSignedInUser = useMenuStore((state) => state.setSignedInUser);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -21,9 +23,8 @@ const Signup = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, 
     }));
   };
 
-  const handleGoogleSignIn = () => {
-    console.log('Sign up with Google');
-    // Add Google sign-in logic here
+  const handleGoogleUserChange = (nextUser) => {
+    setSignedInUser(nextUser ?? null);
   };
 
   const handleSubmit = (e) => {
@@ -70,10 +71,12 @@ const Signup = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, 
             <p className="signup-tagline">Free to join. No spam, ever.</p>
 
             {/* Google Sign In Button */}
-            <button className="btn-google" onClick={handleGoogleSignIn}>
-              <FontAwesomeIcon icon={faGoogle} />
-              Sign up with Google
-            </button>
+            <GoogleSignIn
+              onUserChange={handleGoogleUserChange}
+              initialUser={signedInUser}
+              className="google-signin-button--auth"
+              buttonOptions={{ text: 'signup_with', shape: 'rectangular' }}
+            />
 
             <div className="form-divider">
               <span>or use email</span>

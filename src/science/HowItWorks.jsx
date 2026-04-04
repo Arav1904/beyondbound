@@ -1,9 +1,9 @@
-import React,{useRef, useEffect} from 'react';
+import { useRef, useEffect } from 'react';
 import './HowItWorks.css';
 
 const HowItWorks = () => {
 
-  const containerRef = React.useRef(null);
+  const containerRef = useRef(null);
   
       useEffect(() => {
       const container = containerRef.current;

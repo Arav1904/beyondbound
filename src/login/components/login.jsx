@@ -1,16 +1,27 @@
-import { useEffect, useRef, useState } from 'react';
-import '../css/login.css';
-import GoogleSignIn from '../../GoogleSignIn';
-import useMenuStore from '../../useMenuStore';
+import { useEffect, useRef, useState } from "react";
+import "../css/login.css";
+import GoogleSignIn from "../../GoogleSignIn";
+import useMenuStore from "../../useMenuStore";
+import { signInWithGoogle } from "../../services/cartApi";
 
-const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, isModal = false, onSwitchToSignup = () => {} }) => {
-  const setSignedInUser = useMenuStore((state) => state.setSignedInUser);
-  const setIsLoginModalOpen = useMenuStore((state) => state.setIsLoginModalOpen);
+const Login = ({
+  imageUrl = "https://via.placeholder.com/300",
+  isCard = false,
+  isModal = false,
+  onSwitchToSignup = () => {},
+}) => {
+  const cartItems = useMenuStore((state) => state.cartItems);
+  const setAuthSession = useMenuStore((state) => state.setAuthSession);
+  const setIsLoginModalOpen = useMenuStore(
+    (state) => state.setIsLoginModalOpen,
+  );
+  const setCartSyncing = useMenuStore((state) => state.setCartSyncing);
+  const setCartMessage = useMenuStore((state) => state.setCartMessage);
   const [formData, setFormData] = useState({
-    email: '',
+    email: "",
   });
   const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [authSuccessUser, setAuthSuccessUser] = useState(null);
   const otpInputRefs = useRef([]);
   const successTimerRef = useRef(null);
@@ -34,7 +45,7 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
 
   const handleOtpChange = (index, value) => {
     if (!/^\d*$/.test(value)) return; // Only allow numbers
-    
+
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
@@ -46,71 +57,95 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
   };
 
   const handleOtpKeyDown = (index, e) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       otpInputRefs.current[index - 1]?.focus();
     }
   };
 
   const handleGenerateOTP = () => {
     if (!formData.email) {
-      alert('Please enter your email');
+      alert("Please enter your email");
       return;
     }
-    console.log('Generating OTP for:', formData.email);
+    console.log("Generating OTP for:", formData.email);
     setOtpSent(true);
     // Add OTP generation logic here
   };
 
   const handleVerifyOTP = () => {
-    const otpCode = otp.join('');
-    console.log('Verifying OTP:', otpCode);
+    const otpCode = otp.join("");
+    console.log("Verifying OTP:", otpCode);
     // Add OTP verification logic here
   };
 
   const handleResendOTP = () => {
-    console.log('Resending OTP to:', formData.email);
-    setOtp(['', '', '', '', '', '']);
+    console.log("Resending OTP to:", formData.email);
+    setOtp(["", "", "", "", "", ""]);
     otpInputRefs.current[0]?.focus();
     // Add resend logic here
   };
 
   const handleSendOtpEmail = () => {
-    console.log('Sending OTP to email:', formData.email);
+    console.log("Sending OTP to email:", formData.email);
     // Add email OTP logic here
   };
 
-  const handleGoogleUserChange = (nextUser) => {
+  const handleGoogleUserChange = async (nextUser) => {
     if (successTimerRef.current) {
       window.clearTimeout(successTimerRef.current);
     }
 
-    setSignedInUser(nextUser ?? null);
+    if (!nextUser?.credential) {
+      setAuthSuccessUser(null);
+      return;
+    }
 
-    if (nextUser) {
-      setAuthSuccessUser(nextUser);
+    setCartSyncing(true);
+
+    try {
+      const session = await signInWithGoogle({
+        credential: nextUser.credential,
+        guestCartItems: cartItems,
+      });
+
+      setAuthSession({
+        token: session.token,
+        user: session.user,
+        cart: session.cart,
+      });
+
+      setAuthSuccessUser(session.user);
+      setCartMessage("Signed in successfully. Cart synced to your account.");
       setOtpSent(false);
-      setOtp(['', '', '', '', '', '']);
+      setOtp(["", "", "", "", "", ""]);
+
       successTimerRef.current = window.setTimeout(() => {
         setAuthSuccessUser(null);
         setIsLoginModalOpen(false);
       }, 1600);
-      return;
+    } catch (error) {
+      setAuthSuccessUser(null);
+      setCartMessage(error.message || "Sign in failed. Please try again.");
+    } finally {
+      setCartSyncing(false);
     }
-
-    setAuthSuccessUser(null);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.email) {
-      alert('Please enter your email');
+      alert("Please enter your email");
       return;
     }
-    console.log('Form submitted:', formData);
+    console.log("Form submitted:", formData);
     // Add form submission logic
   };
 
-  const container = isModal ? 'login-modal-card' : isCard ? 'login-card-wrapper' : 'login-container';
+  const container = isModal
+    ? "login-modal-card"
+    : isCard
+      ? "login-card-wrapper"
+      : "login-container";
 
   return (
     <div className={container}>
@@ -119,11 +154,7 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
         <div className="login-visual">
           <div className="visual-content">
             <div className="visual-circle">
-              <img 
-                src={imageUrl} 
-                alt="Product" 
-                className="visual-image"
-              />
+              <img src={imageUrl} alt="Product" className="visual-image" />
             </div>
             <h3 className="visual-text">SIGN UP NOW!</h3>
           </div>
@@ -137,16 +168,25 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
                 <div className="signup-header">SUCCESS</div>
                 <h1 className="form-title">Successfully logged in</h1>
                 <p className="auth-success-note">
-                  Signed in as <span className="auth-success-email">{authSuccessUser.email || authSuccessUser.name}</span>
+                  Signed in as{" "}
+                  <span className="auth-success-email">
+                    {authSuccessUser.email || authSuccessUser.name}
+                  </span>
                 </p>
-                <div className="auth-success-icon" aria-hidden="true">OK</div>
-                <p className="auth-success-note">Redirecting to your account...</p>
+                <div className="auth-success-icon" aria-hidden="true">
+                  OK
+                </div>
+                <p className="auth-success-note">
+                  Redirecting to your account...
+                </p>
               </>
             ) : otpSent ? (
               <>
                 <div className="otp-header">VERIFY YOUR NUMBER</div>
                 <h1 className="form-title">Enter the code</h1>
-                <p className="otp-info">We sent a 6-digit code to {formData.email}</p>
+                <p className="otp-info">
+                  We sent a 6-digit code to {formData.email}
+                </p>
 
                 {/* OTP Input Boxes */}
                 <div className="otp-container">
@@ -166,12 +206,19 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
 
                 {/* Resend Link */}
                 <p className="otp-resend">
-                  Didn't receive it? <button type="button" className="otp-resend-link" onClick={handleResendOTP}>Resend code now</button>
+                  Didn't receive it?{" "}
+                  <button
+                    type="button"
+                    className="otp-resend-link"
+                    onClick={handleResendOTP}
+                  >
+                    Resend code now
+                  </button>
                 </p>
 
                 {/* Verify Button */}
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn-submit"
                   onClick={handleVerifyOTP}
                 >
@@ -179,8 +226,8 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
                 </button>
 
                 {/* Send OTP to Email */}
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn-send-email"
                   onClick={handleSendOtpEmail}
                 >
@@ -189,7 +236,14 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
 
                 {/* Back to Email */}
                 <p className="otp-back">
-                  <button type="button" className="otp-back-link" onClick={() => { setOtpSent(false); setOtp(['', '', '', '', '', '']); }}>
+                  <button
+                    type="button"
+                    className="otp-back-link"
+                    onClick={() => {
+                      setOtpSent(false);
+                      setOtp(["", "", "", "", "", ""]);
+                    }}
+                  >
                     Back to email
                   </button>
                 </p>
@@ -197,13 +251,15 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
             ) : (
               <>
                 <h1 className="form-title">Smarter Blood Sugar Starts Here</h1>
-                <p className="form-subtitle">Science-Backed Nutrition to Support Glucose Balance</p>
+                <p className="form-subtitle">
+                  Science-Backed Nutrition to Support Glucose Balance
+                </p>
 
                 {/* Google Sign In Button */}
                 <GoogleSignIn
                   onUserChange={handleGoogleUserChange}
                   className="google-signin-button--auth"
-                  buttonOptions={{ text: 'signup_with', shape: 'rectangular' }}
+                  buttonOptions={{ text: "signup_with", shape: "rectangular" }}
                 />
 
                 <div className="form-divider">
@@ -225,8 +281,8 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
                   </div>
 
                   {/* Generate OTP Button */}
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="btn-submit"
                     onClick={handleGenerateOTP}
                   >
@@ -236,7 +292,14 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
 
                 {/* Signup Link */}
                 <p className="signup-prompt">
-                  New to Beyond Bound? <button type="button" className="signup-link" onClick={onSwitchToSignup}>Create a free account</button>
+                  New to Beyond Bound?{" "}
+                  <button
+                    type="button"
+                    className="signup-link"
+                    onClick={onSwitchToSignup}
+                  >
+                    Create a free account
+                  </button>
                 </p>
               </>
             )}

@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import './LandingDetails.css';
 import TrustStandards from './trust';
 import { ArrowRight, Star } from 'lucide-react';
+import useCartActions from '../hooks/useCartActions';
+import bottleImg from '../home/bottles.png';
 
 const LandingDetails = () => {
   const [openIndex, setOpenIndex] = useState(null);
+  const { addProductToCart } = useCartActions();
 
   const testimonials = [
     { name: "Naina Sharma", text: "My insulin levels have never been so balanced, totally recommend glycomics!! Worth every penny!!", img: "https://i.pravatar.cc/100?u=1" },
@@ -19,6 +22,17 @@ const LandingDetails = () => {
     { q: "What HbA1c range is this for?", a: "This is suitable for individuals looking to maintain healthy glucose levels..." },
     { q: "Is it safe for long-term daily use?", a: "Yes, our natural formulation is designed for daily nutritional support..." }
   ];
+
+  const handleShopNow = () => {
+    addProductToCart({
+      productId: 'glycomics-60',
+      productName: 'Glycomics (60 Capsules)',
+      price: 1925,
+      quantity: 1,
+      size: '60',
+      image: bottleImg,
+    });
+  };
 
   return (
     <div className="landing-container-ld">
@@ -57,7 +71,7 @@ const LandingDetails = () => {
       <section className="faq-section-ld">
         <div className="faq-left-ld">
           <h2 className="faq-title-ld">What You<br/> Should Know About Glycomics</h2>
-          <button className="cart-btn-ld">Shop Now <ArrowRight/></button>
+          <button type="button" className="cart-btn-ld" onClick={handleShopNow}>Shop Now <ArrowRight/></button>
         </div>
         <div className="faq-right-ld">
           {faqs.map((faq, i) => (

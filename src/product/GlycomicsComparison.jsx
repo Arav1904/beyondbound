@@ -1,6 +1,8 @@
 import React from 'react';
 import { CircleX, CircleCheck, ArrowRight } from 'lucide-react';
 import './GlycomicsComparison.css';
+import useCartActions from '../hooks/useCartActions';
+import bottleImg from '../home/bottles.png';
 
 const ComparisonCard = ({ title, items, variant }) => {
   const isPositive = variant === 'with';
@@ -29,6 +31,8 @@ const ComparisonCard = ({ title, items, variant }) => {
 };
 
 const GlycomicsComparison = () => {
+  const { addProductToCart } = useCartActions();
+
   const data = {
     without: [
       "Energy crashes after meals",
@@ -46,6 +50,17 @@ const GlycomicsComparison = () => {
     ]
   };
 
+  const handleShopNow = () => {
+    addProductToCart({
+      productId: 'glycomics-60',
+      productName: 'Glycomics (60 Capsules)',
+      price: 1925,
+      quantity: 1,
+      size: '60',
+      image: bottleImg,
+    });
+  };
+
   return (
     <div className="comparison-container-sup-gc">
         <div className="comparison-container-gc">
@@ -53,7 +68,7 @@ const GlycomicsComparison = () => {
       <ComparisonCard title="With Glycomics" items={data.with} variant="with" />
     </div>
 
-    <button className="cart-button-gc">
+    <button type="button" className="cart-button-gc" onClick={handleShopNow}>
         Shop Now <ArrowRight />
       </button>
     </div>

@@ -1,6 +1,7 @@
 import '../css/transformationSection.css'
 
 import transformationImage from '../../docglycos1.jpeg'
+import useCartActions from '../../../hooks/useCartActions'
 
 const metrics = [
 	{
@@ -21,6 +22,19 @@ const metrics = [
 ]
 
 function TransformationSection() {
+	const { addProductToCart } = useCartActions()
+
+	const handleShopNow = () => {
+		addProductToCart({
+			productId: 'glycomics-60',
+			productName: 'Glycomics (60 Capsules)',
+			price: 1925,
+			quantity: 1,
+			size: '60',
+			image: transformationImage,
+		})
+	}
+
 	return (
 		<section className="transform-section" aria-labelledby="transform-title">
 			<div className="transform-shell">
@@ -35,7 +49,7 @@ function TransformationSection() {
 						</p>
 
 						<div className="transform-actions">
-							<button type="button" className="transform-btn transform-btn--primary">Shop Now</button>
+							<button type="button" className="transform-btn transform-btn--primary" onClick={handleShopNow}>Shop Now</button>
 							<button type="button" className="transform-btn transform-btn--secondary">Learn More</button>
 						</div>
 					</div>

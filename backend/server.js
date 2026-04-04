@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import testimonialRoutes from "./routes/testimonials.js";
+import authRoutes from "./routes/auth.js";
+import cartRoutes from "./routes/cart.js";
 
 dotenv.config();
 
@@ -26,6 +28,8 @@ mongoose
 
 // Routes
 app.use("/api/testimonials", testimonialRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/cart", cartRoutes);
 
 // Root endpoint for browser visits
 app.get("/", (req, res) => {
@@ -35,6 +39,9 @@ app.get("/", (req, res) => {
       health: "/api/health",
       testimonialsGet: "/api/testimonials",
       testimonialsPost: "/api/testimonials",
+      authGoogle: "/api/auth/google",
+      authMe: "/api/auth/me",
+      cart: "/api/cart",
     },
   });
 });

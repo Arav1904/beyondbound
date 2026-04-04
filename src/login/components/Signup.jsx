@@ -1,17 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
-import '../css/login.css';
-import GoogleSignIn from '../../GoogleSignIn';
-import useMenuStore from '../../useMenuStore';
+import { useEffect, useRef, useState } from "react";
+import "../css/login.css";
+import GoogleSignIn from "../../GoogleSignIn";
+import useMenuStore from "../../useMenuStore";
+import { signInWithGoogle } from "../../services/cartApi";
 
-const Signup = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, isModal = false, onSwitchToLogin = () => {} }) => {
-  const setSignedInUser = useMenuStore((state) => state.setSignedInUser);
-  const setIsLoginModalOpen = useMenuStore((state) => state.setIsLoginModalOpen);
+const Signup = ({
+  imageUrl = "https://via.placeholder.com/300",
+  isCard = false,
+  isModal = false,
+  onSwitchToLogin = () => {},
+}) => {
+  const cartItems = useMenuStore((state) => state.cartItems);
+  const setAuthSession = useMenuStore((state) => state.setAuthSession);
+  const setIsLoginModalOpen = useMenuStore(
+    (state) => state.setIsLoginModalOpen,
+  );
+  const setCartSyncing = useMenuStore((state) => state.setCartSyncing);
+  const setCartMessage = useMenuStore((state) => state.setCartMessage);
   const [authSuccessUser, setAuthSuccessUser] = useState(null);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    mobile: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    mobile: "",
     agreeToTerms: false,
     receiveUpdates: false,
   });
@@ -30,47 +41,76 @@ const Signup = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, 
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-  const handleGoogleUserChange = (nextUser) => {
+  const handleGoogleUserChange = async (nextUser) => {
     if (successTimerRef.current) {
       window.clearTimeout(successTimerRef.current);
     }
 
-    setSignedInUser(nextUser ?? null);
+    if (!nextUser?.credential) {
+      setAuthSuccessUser(null);
+      return;
+    }
 
-    if (nextUser) {
-      setAuthSuccessUser(nextUser);
+    setCartSyncing(true);
+
+    try {
+      const session = await signInWithGoogle({
+        credential: nextUser.credential,
+        guestCartItems: cartItems,
+      });
+
+      setAuthSession({
+        token: session.token,
+        user: session.user,
+        cart: session.cart,
+      });
+
+      setAuthSuccessUser(session.user);
+      setCartMessage("Signed in successfully. Cart synced to your account.");
+
       successTimerRef.current = window.setTimeout(() => {
         setAuthSuccessUser(null);
         setIsLoginModalOpen(false);
       }, 1600);
-      return;
+    } catch (error) {
+      setAuthSuccessUser(null);
+      setCartMessage(error.message || "Sign in failed. Please try again.");
+    } finally {
+      setCartSyncing(false);
     }
-
-    setAuthSuccessUser(null);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.mobile) {
-      alert('Please fill in all fields');
+
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.email ||
+      !formData.mobile
+    ) {
+      alert("Please fill in all fields");
       return;
     }
 
     if (!formData.agreeToTerms) {
-      alert('Please agree to the Terms of Service and Privacy Policy');
+      alert("Please agree to the Terms of Service and Privacy Policy");
       return;
     }
 
-    console.log('Signup submitted:', formData);
+    console.log("Signup submitted:", formData);
     // Add form submission logic here
   };
 
-  const container = isModal ? 'login-modal-card' : isCard ? 'login-card-wrapper' : 'login-container';
+  const container = isModal
+    ? "login-modal-card"
+    : isCard
+      ? "login-card-wrapper"
+      : "login-container";
 
   return (
     <div className={container}>
@@ -79,11 +119,7 @@ const Signup = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, 
         <div className="login-visual">
           <div className="visual-content">
             <div className="visual-circle">
-              <img 
-                src={imageUrl} 
-                alt="Product" 
-                className="visual-image"
-              />
+              <img src={imageUrl} alt="Product" className="visual-image" />
             </div>
             <h3 className="visual-text">SIGN UP NOW!</h3>
           </div>
@@ -97,10 +133,17 @@ const Signup = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, 
                 <div className="signup-header">SUCCESS</div>
                 <h1 className="form-title">Successfully logged in</h1>
                 <p className="auth-success-note">
-                  Signed in as <span className="auth-success-email">{authSuccessUser.email || authSuccessUser.name}</span>
+                  Signed in as{" "}
+                  <span className="auth-success-email">
+                    {authSuccessUser.email || authSuccessUser.name}
+                  </span>
                 </p>
-                <div className="auth-success-icon" aria-hidden="true">OK</div>
-                <p className="auth-success-note">Redirecting to your account...</p>
+                <div className="auth-success-icon" aria-hidden="true">
+                  OK
+                </div>
+                <p className="auth-success-note">
+                  Redirecting to your account...
+                </p>
               </>
             ) : (
               <>
@@ -112,7 +155,7 @@ const Signup = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, 
                 <GoogleSignIn
                   onUserChange={handleGoogleUserChange}
                   className="google-signin-button--auth"
-                  buttonOptions={{ text: 'signup_with', shape: 'rectangular' }}
+                  buttonOptions={{ text: "signup_with", shape: "rectangular" }}
                 />
 
                 <div className="form-divider">
@@ -180,7 +223,9 @@ const Signup = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, 
                     </div>
                   </div>
 
-                  <p className="form-note">We'll send your OTP and order updates here.</p>
+                  <p className="form-note">
+                    We'll send your OTP and order updates here.
+                  </p>
 
                   {/* Checkboxes */}
                   <div className="checkbox-group">
@@ -193,9 +238,16 @@ const Signup = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, 
                         required
                       />
                       <span>
-                        I agree to the <a href="#" className="link">Terms of Service</a> and{' '}
-                        <a href="#" className="link">Privacy Policy</a>. I understand Glycomics is a
-                        supplement, not medical treatment.
+                        I agree to the{" "}
+                        <a href="#" className="link">
+                          Terms of Service
+                        </a>{" "}
+                        and{" "}
+                        <a href="#" className="link">
+                          Privacy Policy
+                        </a>
+                        . I understand Glycomics is a supplement, not medical
+                        treatment.
                       </span>
                     </label>
                   </div>
@@ -208,7 +260,10 @@ const Signup = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, 
                         checked={formData.receiveUpdates}
                         onChange={handleInputChange}
                       />
-                      <span>Send me order updates and exclusive offers on WhatsApp & email.</span>
+                      <span>
+                        Send me order updates and exclusive offers on WhatsApp &
+                        email.
+                      </span>
                     </label>
                   </div>
 
@@ -220,7 +275,14 @@ const Signup = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, 
 
                 {/* Already Member Link */}
                 <p className="login-prompt">
-                  Already a member? <button type="button" className="login-link" onClick={onSwitchToLogin}>Log in</button>
+                  Already a member?{" "}
+                  <button
+                    type="button"
+                    className="login-link"
+                    onClick={onSwitchToLogin}
+                  >
+                    Log in
+                  </button>
                 </p>
               </>
             )}

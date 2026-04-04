@@ -2,6 +2,38 @@
   width: 100%;
 }
 
+.cart-fab-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #f43f5e;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid #ffffff;
+}
+
+.cart-toast {
+  position: fixed;
+  right: clamp(14px, 3vw, 24px);
+  bottom: clamp(66px, 8vw, 82px);
+  z-index: 1250;
+  background: #112949;
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 10px 22px rgba(15, 31, 61, 0.22);
+}
+
 /* Add padding-top to accommodate fixed navbar on mobile */
 @media (max-width: 768px) {
   .app {

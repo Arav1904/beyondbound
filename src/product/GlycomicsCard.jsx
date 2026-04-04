@@ -1,7 +1,11 @@
 import React from 'react';
 import './GlycomicsCard.css';
+import bottleImg from '../home/bottles.png';
+import useCartActions from '../hooks/useCartActions';
 
 const GlycomicsCard = () => {
+  const { addProductToCart } = useCartActions();
+
   const data = [
     { bad: "Energy crashes after meals", good: "Steady energy all day" },
     { bad: "Constant sugar cravings", good: "Cravings noticeably reduced" },
@@ -9,6 +13,17 @@ const GlycomicsCard = () => {
     { bad: "Belly fat that won't shift", good: "Metabolism working again" },
     { bad: "Restless, broken sleep", good: "More consistent sleep" },
   ];
+
+  const handleAddToCart = () => {
+    addProductToCart({
+      productId: 'glycomics-60',
+      productName: 'Glycomics (60 Capsules)',
+      price: 1925,
+      quantity: 1,
+      size: '60',
+      image: bottleImg,
+    });
+  };
 
   return (
     <div className="container">
@@ -42,7 +57,7 @@ const GlycomicsCard = () => {
 
       </div>
 
-      <button className="cart-button">
+      <button type="button" className="cart-button" onClick={handleAddToCart}>
         <span className="cart-icon">🛒</span> ADD TO CART
       </button>
     </div>

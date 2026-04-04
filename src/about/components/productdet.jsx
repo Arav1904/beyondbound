@@ -2,8 +2,10 @@ import React, { useState, useRef } from 'react';
 import '../css/productdet.css';
 import withGlycoImg from '../assets/withglyco.jpeg';
 import withoutGlycoImg from '../assets/withoutglyco.jpeg';
+import useCartActions from '../../hooks/useCartActions';
 
 export default function ProductDet() {
+  const { addProductToCart } = useCartActions();
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
@@ -51,6 +53,17 @@ export default function ProductDet() {
     if (newPosition >= 0 && newPosition <= 100) {
       setSliderPosition(newPosition);
     }
+  };
+
+  const handleAddToCart = () => {
+    addProductToCart({
+      productId: 'glycomics-60',
+      productName: 'Glycomics (60 Capsules)',
+      price: 1925,
+      quantity: 1,
+      size: '60',
+      image: withGlycoImg,
+    });
   };
 
   return (
@@ -169,7 +182,7 @@ export default function ProductDet() {
           </div>
         </div>
 
-        <button className="add-to-cart-btn">ADD TO CART</button>
+        <button type="button" className="add-to-cart-btn" onClick={handleAddToCart}>ADD TO CART</button>
       </div>
     </div>
   );

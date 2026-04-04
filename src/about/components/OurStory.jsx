@@ -2,12 +2,21 @@
 import '../css/OurStory.css';
 import bottleAbout from '../assets/bottleabout.png';
 import { ChevronDown } from 'lucide-react';
+import useCartActions from '../../hooks/useCartActions';
 
 const OurStory = () => {
   const [expandedItem, setExpandedItem] = useState(null);
+  const { addProductToCart } = useCartActions();
 
   const handleShopNow = () => {
-    window.location.href = '/product';
+    addProductToCart({
+      productId: 'glycomics-60',
+      productName: 'Glycomics (60 Capsules)',
+      price: 1925,
+      quantity: 1,
+      size: '60',
+      image: bottleAbout,
+    });
   };
 
   return (

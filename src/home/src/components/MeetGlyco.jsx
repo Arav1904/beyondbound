@@ -4,8 +4,22 @@ import bottleImg from '../../bottle.jpeg'
 import reviewImageOne from '../../image 32.png'
 import reviewImageTwo from '../../image 33.png'
 import reviewImageThree from '../../image 34.png'
+import useCartActions from '../../../hooks/useCartActions'
 
 function MeetGlycomics() {
+	const { addProductToCart } = useCartActions()
+
+	const handleShopNow = () => {
+		addProductToCart({
+			productId: 'glycomics-60',
+			productName: 'Glycomics (60 Capsules)',
+			price: 1925,
+			quantity: 1,
+			size: '60',
+			image: bottleImg,
+		})
+	}
+
 	return (
 		<section className="glyco-section" aria-labelledby="glyco-hero-title">
 			<div className="glyco-inner">
@@ -55,7 +69,7 @@ function MeetGlycomics() {
 							</span>
 						</div>
 
-						<button type="button" className="glyco-btn">
+						<button type="button" className="glyco-btn" onClick={handleShopNow}>
 							<span className="glyco-btn-label">Shop now →</span>
 						</button>
 

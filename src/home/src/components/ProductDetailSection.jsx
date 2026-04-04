@@ -4,10 +4,12 @@ import backImg from '../assets/back.jpg';
 import sideImg from '../assets/side.jpg';
 import labelImg from '../assets/101.png';
 import { ShieldIcon, ArrowRight } from 'lucide-react';
+import useCartActions from '../../../hooks/useCartActions';
 
 import '../css/productDetailSection.css';
 
 const ProductDetailSection = () => {
+  const { addProductToCart } = useCartActions();
   const images = [frontImg, backImg, sideImg, labelImg];
   const [mainImage, setMainImage] = useState(frontImg);
   const [quantity, setQuantity] = useState(1);
@@ -38,6 +40,19 @@ const ProductDetailSection = () => {
 
   const toggleAccordion = (index) => {
     setActiveAccordion(activeAccordion === index ? null : index);
+  };
+
+  const handleShopNow = () => {
+    const selected = sizes.find((size) => size.value === selectedSize) || sizes[1];
+
+    addProductToCart({
+      productId: `glycomics-${selected.value}`,
+      productName: `Glycomics (${selected.label})`,
+      price: selected.price,
+      quantity,
+      size: selected.value,
+      image: frontImg,
+    });
   };
 
   return (
@@ -102,7 +117,7 @@ const ProductDetailSection = () => {
               <span>{quantity}</span>
               <button type="button" onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity">+</button>
             </div>
-            <button type="button" className="add-to-cart-btn">
+            <button type="button" className="add-to-cart-btn" onClick={handleShopNow}>
               SHOP NOW <ArrowRight />
             </button>
           </div>

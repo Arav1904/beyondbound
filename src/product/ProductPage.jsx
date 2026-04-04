@@ -1,12 +1,13 @@
-import React, { useState } from 'react'; // <--- Is this exactly like this?
+import { useState } from "react";
 import frontImg from '../home/bottles.png';
 import backImg from '../home/back.jpg';
 import sideImg from '../home/side.jpg';
 import labelImg from '../home/101.png';
-import { ShieldIcon, ArrowRight } from 'lucide-react';
+import useCartActions from "../hooks/useCartActions";
 
 import './ProductPage.css';
 const ProductPage = () => {
+  const { addProductToCart } = useCartActions();
   const images = [frontImg, backImg, sideImg, labelImg];
   const [mainImage, setMainImage] = useState(frontImg);
   const [quantity, setQuantity] = useState(1);
@@ -37,6 +38,19 @@ const ProductPage = () => {
 
   const toggleAccordion = (index) => {
     setActiveAccordion(activeAccordion === index ? null : index);
+  };
+
+  const handleAddToCart = () => {
+    const selected = sizes.find((size) => size.value === selectedSize) || sizes[1];
+
+    addProductToCart({
+      productId: `glycomics-${selected.value}`,
+      productName: `Glycomics (${selected.label})`,
+      price: selected.price,
+      quantity,
+      size: selected.value,
+      image: frontImg,
+    });
   };
 
   return (
@@ -100,7 +114,7 @@ const ProductPage = () => {
               <span>{quantity}</span>
               <button type="button" onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity">+</button>
             </div>
-            <button type="button" className="add-to-cart-btn">
+            <button type="button" className="add-to-cart-btn" onClick={handleAddToCart}>
               Add To Cart
             </button>
           </div>

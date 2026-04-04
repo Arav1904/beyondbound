@@ -11,6 +11,8 @@ const Login = ({
   onSwitchToSignup = () => {},
 }) => {
   const cartItems = useMenuStore((state) => state.cartItems);
+  const signedInUser = useMenuStore((state) => state.signedInUser);
+  const authToken = useMenuStore((state) => state.authToken);
   const setAuthSession = useMenuStore((state) => state.setAuthSession);
   const setIsLoginModalOpen = useMenuStore(
     (state) => state.setIsLoginModalOpen,
@@ -27,6 +29,7 @@ const Login = ({
   const [authError, setAuthError] = useState("");
   const otpInputRefs = useRef([]);
   const successTimerRef = useRef(null);
+  const isAuthenticated = Boolean(signedInUser && authToken);
 
   useEffect(
     () => () => {
@@ -36,6 +39,28 @@ const Login = ({
     },
     [],
   );
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    if (successTimerRef.current) {
+      window.clearTimeout(successTimerRef.current);
+    }
+
+    setAuthError("");
+    setAuthSuccessUser((previousUser) => previousUser || signedInUser);
+    setAuthStage("success");
+
+    if (!isModal) {
+      return;
+    }
+
+    successTimerRef.current = window.setTimeout(() => {
+      setIsLoginModalOpen(false);
+    }, 1600);
+  }, [isAuthenticated, isModal, setIsLoginModalOpen, signedInUser]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -99,8 +124,10 @@ const Login = ({
     }
 
     if (!nextUser?.credential) {
-      setAuthStage("idle");
-      setAuthSuccessUser(null);
+      if (!isAuthenticated) {
+        setAuthStage("idle");
+        setAuthSuccessUser(null);
+      }
       return;
     }
 
@@ -126,11 +153,11 @@ const Login = ({
       setOtpSent(false);
       setOtp(["", "", "", "", "", ""]);
 
-      successTimerRef.current = window.setTimeout(() => {
-        setAuthSuccessUser(null);
-        setAuthStage("idle");
-        setIsLoginModalOpen(false);
-      }, 1600);
+      if (isModal) {
+        successTimerRef.current = window.setTimeout(() => {
+          setIsLoginModalOpen(false);
+        }, 1600);
+      }
     } catch (error) {
       setAuthSuccessUser(null);
       setAuthStage("idle");
@@ -186,9 +213,11 @@ const Login = ({
                 <div className="auth-success-icon" aria-hidden="true">
                   OK
                 </div>
-                <p className="auth-success-note">
-                  Redirecting to your account...
-                </p>
+                {isModal ? (
+                  <p className="auth-success-note">Redirecting to your account...</p>
+                ) : (
+                  <p className="auth-success-note">You are now signed in.</p>
+                )}
               </>
             ) : authStage === "authenticating" ? (
               <>

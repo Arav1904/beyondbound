@@ -11,6 +11,8 @@ const Signup = ({
   onSwitchToLogin = () => {},
 }) => {
   const cartItems = useMenuStore((state) => state.cartItems);
+  const signedInUser = useMenuStore((state) => state.signedInUser);
+  const authToken = useMenuStore((state) => state.authToken);
   const setAuthSession = useMenuStore((state) => state.setAuthSession);
   const setIsLoginModalOpen = useMenuStore(
     (state) => state.setIsLoginModalOpen,
@@ -29,6 +31,7 @@ const Signup = ({
     receiveUpdates: false,
   });
   const successTimerRef = useRef(null);
+  const isAuthenticated = Boolean(signedInUser && authToken);
 
   useEffect(
     () => () => {
@@ -38,6 +41,28 @@ const Signup = ({
     },
     [],
   );
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    if (successTimerRef.current) {
+      window.clearTimeout(successTimerRef.current);
+    }
+
+    setAuthError("");
+    setAuthSuccessUser((previousUser) => previousUser || signedInUser);
+    setAuthStage("success");
+
+    if (!isModal) {
+      return;
+    }
+
+    successTimerRef.current = window.setTimeout(() => {
+      setIsLoginModalOpen(false);
+    }, 1600);
+  }, [isAuthenticated, isModal, setIsLoginModalOpen, signedInUser]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -54,8 +79,10 @@ const Signup = ({
     }
 
     if (!nextUser?.credential) {
-      setAuthStage("idle");
-      setAuthSuccessUser(null);
+      if (!isAuthenticated) {
+        setAuthStage("idle");
+        setAuthSuccessUser(null);
+      }
       return;
     }
 
@@ -79,11 +106,11 @@ const Signup = ({
       setAuthStage("success");
       setCartMessage("Signed in successfully. Cart synced to your account.");
 
-      successTimerRef.current = window.setTimeout(() => {
-        setAuthSuccessUser(null);
-        setAuthStage("idle");
-        setIsLoginModalOpen(false);
-      }, 1600);
+      if (isModal) {
+        successTimerRef.current = window.setTimeout(() => {
+          setIsLoginModalOpen(false);
+        }, 1600);
+      }
     } catch (error) {
       setAuthSuccessUser(null);
       setAuthStage("idle");
@@ -151,9 +178,11 @@ const Signup = ({
                 <div className="auth-success-icon" aria-hidden="true">
                   OK
                 </div>
-                <p className="auth-success-note">
-                  Redirecting to your account...
-                </p>
+                {isModal ? (
+                  <p className="auth-success-note">Redirecting to your account...</p>
+                ) : (
+                  <p className="auth-success-note">You are now signed in.</p>
+                )}
               </>
             ) : authStage === "authenticating" ? (
               <>

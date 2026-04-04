@@ -1,0 +1,841 @@
+import Order from "../models/Order.js";
+import Product from "../models/Product.js";
+import SupportTicket from "../models/SupportTicket.js";
+import Testimonial from "../models/Testimonial.js";
+import User from "../models/User.js";
+
+const USER_ROLES = ["user", "admin"];
+const ORDER_STATUSES = [
+  "placed",
+  "confirmed",
+  "packed",
+  "shipped",
+  "delivered",
+  "cancelled",
+  "refunded",
+];
+const PAYMENT_STATUSES = ["pending", "paid", "failed", "refunded"];
+const TESTIMONIAL_STATUSES = ["pending", "approved", "rejected"];
+const TICKET_STATUSES = ["open", "in_progress", "resolved", "closed"];
+const TICKET_PRIORITIES = ["low", "medium", "high"];
+
+const parsePagination = (query) => {
+  const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
+  const limit = Math.min(100, Math.max(1, Number.parseInt(query.limit, 10) || 20));
+  return {
+    page,
+    limit,
+    skip: (page - 1) * limit,
+  };
+};
+
+const parseBooleanQuery = (value) => {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "true") {
+      return true;
+    }
+
+    if (normalized === "false") {
+      return false;
+    }
+  }
+
+  return null;
+};
+
+const escapeRegex = (value) => String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const toRegex = (value) => new RegExp(escapeRegex(value), "i");
+
+const parseDateRange = (range) => {
+  const normalized = String(range || "30d").toLowerCase();
+  const now = new Date();
+  const start = new Date(now);
+
+  if (normalized === "7d") {
+    start.setDate(start.getDate() - 7);
+  } else if (normalized === "90d") {
+    start.setDate(start.getDate() - 90);
+  } else if (normalized === "365d") {
+    start.setDate(start.getDate() - 365);
+  } else {
+    start.setDate(start.getDate() - 30);
+  }
+
+  return start;
+};
+
+const formatPagination = (page, limit, totalCount) => ({
+  page,
+  limit,
+  totalCount,
+  totalPages: Math.max(1, Math.ceil(totalCount / limit)),
+});
+
+export const getAdminOverview = async (_req, res) => {
+  try {
+    const [
+      totalUsers,
+      activeUsers,
+      adminUsers,
+      totalOrders,
+      pendingOrders,
+      pendingTestimonials,
+      approvedTestimonials,
+      openTickets,
+      activeProducts,
+      lowStockProducts,
+      recentUsers,
+      recentOrders,
+      recentTickets,
+    ] = await Promise.all([
+      User.countDocuments({}),
+      User.countDocuments({ isActive: true }),
+      User.countDocuments({ role: "admin" }),
+      Order.countDocuments({}),
+      Order.countDocuments({ status: { $in: ["placed", "confirmed", "packed", "shipped"] } }),
+      Testimonial.countDocuments({ status: "pending" }),
+      Testimonial.countDocuments({ status: "approved" }),
+      SupportTicket.countDocuments({ status: { $in: ["open", "in_progress"] } }),
+      Product.countDocuments({ isActive: true }),
+      Product.countDocuments({ inventory: { $lte: 10 }, isActive: true }),
+      User.find({}).sort({ createdAt: -1 }).limit(5).select("name email role isActive createdAt"),
+      Order.find({})
+        .sort({ placedAt: -1 })
+        .limit(5)
+        .select("orderNumber customer total status placedAt"),
+      SupportTicket.find({})
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .select("ticketNumber subject status priority createdAt"),
+    ]);
+
+    const revenueResult = await Order.aggregate([
+      { $match: { status: { $nin: ["cancelled", "refunded"] } } },
+      { $group: { _id: null, totalRevenue: { $sum: "$total" } } },
+    ]);
+
+    const totalRevenue = Number((revenueResult[0]?.totalRevenue || 0).toFixed(2));
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        metrics: {
+          totalUsers,
+          activeUsers,
+          adminUsers,
+          totalOrders,
+          pendingOrders,
+          totalRevenue,
+          pendingTestimonials,
+          approvedTestimonials,
+          openTickets,
+          activeProducts,
+          lowStockProducts,
+        },
+        recentUsers,
+        recentOrders,
+        recentTickets,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to load admin overview",
+      message: error.message,
+    });
+  }
+};
+
+export const getAdminUsers = async (req, res) => {
+  try {
+    const { page, limit, skip } = parsePagination(req.query);
+    const search = String(req.query.search || "").trim();
+    const role = String(req.query.role || "").trim();
+    const isActive = parseBooleanQuery(req.query.isActive);
+
+    const filters = {};
+
+    if (USER_ROLES.includes(role)) {
+      filters.role = role;
+    }
+
+    if (isActive !== null) {
+      filters.isActive = isActive;
+    }
+
+    if (search) {
+      const regex = toRegex(search);
+      filters.$or = [{ name: regex }, { email: regex }, { phone: regex }];
+    }
+
+    const [users, totalCount] = await Promise.all([
+      User.find(filters)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .select("name email role isActive phone lastLoginAt createdAt updatedAt"),
+      User.countDocuments(filters),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      count: users.length,
+      pagination: formatPagination(page, limit, totalCount),
+      data: users,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to fetch users",
+      message: error.message,
+    });
+  }
+};
+
+export const updateAdminUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role, isActive, name, phone } = req.body;
+
+    const updates = {};
+
+    if (typeof role === "string" && USER_ROLES.includes(role)) {
+      updates.role = role;
+    }
+
+    if (typeof isActive === "boolean") {
+      updates.isActive = isActive;
+    }
+
+    if (typeof name === "string") {
+      updates.name = name.trim();
+    }
+
+    if (typeof phone === "string") {
+      updates.phone = phone.trim();
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: "No valid updates provided",
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    }).select("name email role isActive phone lastLoginAt createdAt updatedAt");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to update user",
+      message: error.message,
+    });
+  }
+};
+
+export const getAdminOrders = async (req, res) => {
+  try {
+    const { page, limit, skip } = parsePagination(req.query);
+    const search = String(req.query.search || "").trim();
+    const status = String(req.query.status || "").trim();
+    const paymentStatus = String(req.query.paymentStatus || "").trim();
+    const from = String(req.query.from || "").trim();
+    const to = String(req.query.to || "").trim();
+
+    const filters = {};
+
+    if (ORDER_STATUSES.includes(status)) {
+      filters.status = status;
+    }
+
+    if (PAYMENT_STATUSES.includes(paymentStatus)) {
+      filters.paymentStatus = paymentStatus;
+    }
+
+    if (from || to) {
+      filters.placedAt = {};
+      if (from) {
+        filters.placedAt.$gte = new Date(from);
+      }
+      if (to) {
+        filters.placedAt.$lte = new Date(to);
+      }
+    }
+
+    if (search) {
+      const regex = toRegex(search);
+      filters.$or = [
+        { orderNumber: regex },
+        { "customer.name": regex },
+        { "customer.email": regex },
+      ];
+    }
+
+    const [orders, totalCount] = await Promise.all([
+      Order.find(filters)
+        .sort({ placedAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("userId", "name email"),
+      Order.countDocuments(filters),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      count: orders.length,
+      pagination: formatPagination(page, limit, totalCount),
+      data: orders,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to fetch orders",
+      message: error.message,
+    });
+  }
+};
+
+export const updateAdminOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, paymentStatus, trackingNumber, note } = req.body;
+
+    const order = await Order.findById(id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: "Order not found",
+      });
+    }
+
+    let hasUpdates = false;
+
+    if (typeof status === "string" && ORDER_STATUSES.includes(status) && status !== order.status) {
+      order.status = status;
+      order.statusHistory.push({
+        status,
+        note: String(note || "").trim(),
+        updatedBy: req.userId,
+        at: new Date(),
+      });
+      hasUpdates = true;
+    }
+
+    if (
+      typeof paymentStatus === "string" &&
+      PAYMENT_STATUSES.includes(paymentStatus) &&
+      paymentStatus !== order.paymentStatus
+    ) {
+      order.paymentStatus = paymentStatus;
+      hasUpdates = true;
+    }
+
+    if (typeof trackingNumber === "string") {
+      order.trackingNumber = trackingNumber.trim();
+      hasUpdates = true;
+    }
+
+    if (typeof note === "string" && note.trim()) {
+      order.notes = note.trim();
+      hasUpdates = true;
+    }
+
+    if (!hasUpdates) {
+      return res.status(400).json({
+        success: false,
+        error: "No valid updates provided",
+      });
+    }
+
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Order updated successfully",
+      data: order,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to update order",
+      message: error.message,
+    });
+  }
+};
+
+export const getAdminProducts = async (req, res) => {
+  try {
+    const { page, limit, skip } = parsePagination(req.query);
+    const search = String(req.query.search || "").trim();
+    const category = String(req.query.category || "").trim();
+    const isActive = parseBooleanQuery(req.query.isActive);
+
+    const filters = {};
+
+    if (category) {
+      filters.category = category;
+    }
+
+    if (isActive !== null) {
+      filters.isActive = isActive;
+    }
+
+    if (search) {
+      const regex = toRegex(search);
+      filters.$or = [{ name: regex }, { slug: regex }, { sku: regex }];
+    }
+
+    const [products, totalCount] = await Promise.all([
+      Product.find(filters).sort({ updatedAt: -1 }).skip(skip).limit(limit),
+      Product.countDocuments(filters),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      count: products.length,
+      pagination: formatPagination(page, limit, totalCount),
+      data: products,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to fetch products",
+      message: error.message,
+    });
+  }
+};
+
+export const createAdminProduct = async (req, res) => {
+  try {
+    const name = String(req.body?.name || "").trim();
+    const price = Number(req.body?.price);
+
+    if (!name || Number.isNaN(price) || price < 0) {
+      return res.status(400).json({
+        success: false,
+        error: "Valid name and price are required",
+      });
+    }
+
+    const images = Array.isArray(req.body?.images)
+      ? req.body.images.filter(Boolean)
+      : req.body?.image
+        ? [String(req.body.image).trim()]
+        : [];
+
+    const product = await Product.create({
+      name,
+      description: String(req.body?.description || "").trim(),
+      category: String(req.body?.category || "supplement").trim() || "supplement",
+      price,
+      compareAtPrice: Math.max(0, Number(req.body?.compareAtPrice) || 0),
+      inventory: Math.max(0, Number.parseInt(req.body?.inventory, 10) || 0),
+      sku: String(req.body?.sku || "").trim() || undefined,
+      tags: Array.isArray(req.body?.tags) ? req.body.tags : [],
+      images,
+      isActive: req.body?.isActive !== false,
+      updatedBy: req.userId,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Product created successfully",
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to create product",
+      message: error.message,
+    });
+  }
+};
+
+export const updateAdminProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: "Product not found",
+      });
+    }
+
+    if (typeof req.body?.name === "string") {
+      product.name = req.body.name.trim();
+    }
+
+    if (typeof req.body?.description === "string") {
+      product.description = req.body.description.trim();
+    }
+
+    if (typeof req.body?.category === "string") {
+      product.category = req.body.category.trim();
+    }
+
+    if (req.body?.price !== undefined) {
+      const price = Number(req.body.price);
+      if (!Number.isNaN(price) && price >= 0) {
+        product.price = price;
+      }
+    }
+
+    if (req.body?.compareAtPrice !== undefined) {
+      const compareAtPrice = Number(req.body.compareAtPrice);
+      if (!Number.isNaN(compareAtPrice) && compareAtPrice >= 0) {
+        product.compareAtPrice = compareAtPrice;
+      }
+    }
+
+    if (req.body?.inventory !== undefined) {
+      const inventory = Number.parseInt(req.body.inventory, 10);
+      if (!Number.isNaN(inventory) && inventory >= 0) {
+        product.inventory = inventory;
+      }
+    }
+
+    if (typeof req.body?.sku === "string") {
+      product.sku = req.body.sku.trim() || undefined;
+    }
+
+    if (Array.isArray(req.body?.tags)) {
+      product.tags = req.body.tags;
+    }
+
+    if (Array.isArray(req.body?.images)) {
+      product.images = req.body.images.filter(Boolean);
+    } else if (typeof req.body?.image === "string") {
+      product.images = [req.body.image.trim()];
+    }
+
+    if (typeof req.body?.isActive === "boolean") {
+      product.isActive = req.body.isActive;
+    }
+
+    product.updatedBy = req.userId;
+
+    await product.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to update product",
+      message: error.message,
+    });
+  }
+};
+
+export const archiveAdminProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findByIdAndUpdate(
+      id,
+      {
+        isActive: false,
+        updatedBy: req.userId,
+      },
+      { new: true },
+    );
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: "Product not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Product archived successfully",
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to archive product",
+      message: error.message,
+    });
+  }
+};
+
+export const getAdminSupportTickets = async (req, res) => {
+  try {
+    const { page, limit, skip } = parsePagination(req.query);
+    const search = String(req.query.search || "").trim();
+    const status = String(req.query.status || "").trim();
+    const priority = String(req.query.priority || "").trim();
+
+    const filters = {};
+
+    if (TICKET_STATUSES.includes(status)) {
+      filters.status = status;
+    }
+
+    if (TICKET_PRIORITIES.includes(priority)) {
+      filters.priority = priority;
+    }
+
+    if (search) {
+      const regex = toRegex(search);
+      filters.$or = [
+        { ticketNumber: regex },
+        { name: regex },
+        { email: regex },
+        { subject: regex },
+      ];
+    }
+
+    const [tickets, totalCount] = await Promise.all([
+      SupportTicket.find(filters)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("assignedTo", "name email"),
+      SupportTicket.countDocuments(filters),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      count: tickets.length,
+      pagination: formatPagination(page, limit, totalCount),
+      data: tickets,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to fetch support tickets",
+      message: error.message,
+    });
+  }
+};
+
+export const updateAdminSupportTicket = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, priority, assignedTo, adminNote } = req.body;
+
+    const ticket = await SupportTicket.findById(id);
+
+    if (!ticket) {
+      return res.status(404).json({
+        success: false,
+        error: "Support ticket not found",
+      });
+    }
+
+    let hasUpdates = false;
+
+    if (typeof status === "string" && TICKET_STATUSES.includes(status)) {
+      ticket.status = status;
+      hasUpdates = true;
+    }
+
+    if (typeof priority === "string" && TICKET_PRIORITIES.includes(priority)) {
+      ticket.priority = priority;
+      hasUpdates = true;
+    }
+
+    if (typeof assignedTo === "string") {
+      ticket.assignedTo = assignedTo || null;
+      hasUpdates = true;
+    }
+
+    if (typeof adminNote === "string" && adminNote.trim()) {
+      ticket.adminNotes.push({
+        note: adminNote.trim(),
+        author: req.userId,
+        createdAt: new Date(),
+      });
+      ticket.lastResponseAt = new Date();
+      hasUpdates = true;
+    }
+
+    if (!hasUpdates) {
+      return res.status(400).json({
+        success: false,
+        error: "No valid updates provided",
+      });
+    }
+
+    await ticket.save();
+    await ticket.populate("assignedTo", "name email");
+
+    return res.status(200).json({
+      success: true,
+      message: "Support ticket updated successfully",
+      data: ticket,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to update support ticket",
+      message: error.message,
+    });
+  }
+};
+
+export const getAdminTestimonials = async (req, res) => {
+  try {
+    const { page, limit, skip } = parsePagination(req.query);
+    const search = String(req.query.search || "").trim();
+    const status = String(req.query.status || "").trim();
+
+    const filters = {};
+    if (TESTIMONIAL_STATUSES.includes(status)) {
+      filters.status = status;
+    }
+
+    if (search) {
+      const regex = toRegex(search);
+      filters.$or = [{ name: regex }, { quote: regex }, { role: regex }];
+    }
+
+    const [testimonials, totalCount] = await Promise.all([
+      Testimonial.find(filters)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("moderatedBy", "name email"),
+      Testimonial.countDocuments(filters),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      count: testimonials.length,
+      pagination: formatPagination(page, limit, totalCount),
+      data: testimonials,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to fetch testimonials",
+      message: error.message,
+    });
+  }
+};
+
+export const getAdminAnalytics = async (req, res) => {
+  try {
+    const startDate = parseDateRange(req.query.range);
+
+    const [newUsers, orderCount, ticketCount, testimonialCount, pendingTestimonials] =
+      await Promise.all([
+        User.countDocuments({ createdAt: { $gte: startDate } }),
+        Order.countDocuments({ placedAt: { $gte: startDate } }),
+        SupportTicket.countDocuments({ createdAt: { $gte: startDate } }),
+        Testimonial.countDocuments({ createdAt: { $gte: startDate } }),
+        Testimonial.countDocuments({ status: "pending" }),
+      ]);
+
+    const [revenueResult, topProducts, ordersByStatus] = await Promise.all([
+      Order.aggregate([
+        {
+          $match: {
+            placedAt: { $gte: startDate },
+            status: { $nin: ["cancelled", "refunded"] },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            revenue: { $sum: "$total" },
+          },
+        },
+      ]),
+      Order.aggregate([
+        {
+          $match: {
+            placedAt: { $gte: startDate },
+            status: { $nin: ["cancelled", "refunded"] },
+          },
+        },
+        { $unwind: "$items" },
+        {
+          $group: {
+            _id: {
+              productId: "$items.productId",
+              productName: "$items.productName",
+            },
+            totalQuantity: { $sum: "$items.quantity" },
+            totalRevenue: { $sum: { $multiply: ["$items.price", "$items.quantity"] } },
+          },
+        },
+        { $sort: { totalQuantity: -1 } },
+        { $limit: 5 },
+      ]),
+      Order.aggregate([
+        {
+          $match: {
+            placedAt: { $gte: startDate },
+          },
+        },
+        {
+          $group: {
+            _id: "$status",
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+    ]);
+
+    const revenue = Number((revenueResult[0]?.revenue || 0).toFixed(2));
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        rangeStart: startDate,
+        metrics: {
+          newUsers,
+          orderCount,
+          revenue,
+          ticketCount,
+          testimonialCount,
+          pendingTestimonials,
+        },
+        topProducts: topProducts.map((item) => ({
+          productId: item._id.productId,
+          productName: item._id.productName,
+          totalQuantity: item.totalQuantity,
+          totalRevenue: Number(item.totalRevenue.toFixed(2)),
+        })),
+        ordersByStatus,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to fetch analytics",
+      message: error.message,
+    });
+  }
+};

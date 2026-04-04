@@ -25,9 +25,17 @@ export const authenticate = async (req, res, next) => {
       });
     }
 
+    if (user.isActive === false) {
+      return res.status(403).json({
+        success: false,
+        error: "Your account is currently suspended",
+      });
+    }
+
     req.userId = user._id;
     req.user = user;
     req.authToken = token;
+    req.authRole = payload.role || user.role;
 
     return next();
   } catch (error) {

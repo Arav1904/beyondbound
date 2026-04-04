@@ -86,4 +86,27 @@ export async function mergeGuestCart(token, items) {
   });
 }
 
+export async function placeOrder(token, payload = {}) {
+  return apiRequest("/orders/place", {
+    method: "POST",
+    token,
+    body: payload,
+  });
+}
+
+export async function fetchMyOrders(token, params = {}) {
+  const query = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") {
+      return;
+    }
+
+    query.set(key, String(value));
+  });
+
+  const queryString = query.toString();
+  return apiRequest(`/orders/my${queryString ? `?${queryString}` : ""}`, { token });
+}
+
 export { API_BASE_URL };

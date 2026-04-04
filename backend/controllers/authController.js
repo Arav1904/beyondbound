@@ -7,8 +7,16 @@ import { mergeCartItems } from "./cartController.js";
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const JWT_SECRET = process.env.JWT_SECRET || "development-secret-change-me";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
+const ADMIN_ALLOWLIST = new Set(
+  (process.env.ADMIN_ALLOWLIST || "")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean),
+);
 
 const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
+
+const isAllowlistedAdmin = (email) => ADMIN_ALLOWLIST.has(String(email || "").toLowerCase());
 
 const toPublicUser = (user) => ({
   id: user._id,
@@ -18,6 +26,11 @@ const toPublicUser = (user) => ({
   picture: user.picture,
   phone: user.phone,
   address: user.address,
+  role: user.role,
+  isActive: user.isActive,
+  lastLoginAt: user.lastLoginAt,
+  lastSeenAt: user.lastSeenAt,
+  createdAt: user.createdAt,
   updatedAt: user.updatedAt,
 });
 
@@ -35,6 +48,7 @@ const signAppToken = (user) =>
     {
       userId: user._id.toString(),
       email: user.email,
+      role: user.role,
     },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRES_IN },
@@ -88,6 +102,7 @@ export const googleSignIn = async (req, res) => {
     }
 
     const normalizedEmail = payload.email.toLowerCase().trim();
+    const allowlistedAdmin = isAllowlistedAdmin(normalizedEmail);
 
     let user = await User.findOne({
       $or: [{ googleId: payload.sub }, { email: normalizedEmail }],
@@ -100,14 +115,29 @@ export const googleSignIn = async (req, res) => {
         name: payload.name || "",
         picture: payload.picture || "",
         provider: "google",
+        role: allowlistedAdmin ? "admin" : "user",
         lastLoginAt: new Date(),
+        lastSeenAt: new Date(),
       });
     } else {
+      if (user.isActive === false) {
+        return res.status(403).json({
+          success: false,
+          error: "Your account is currently suspended",
+        });
+      }
+
       user.googleId = payload.sub;
       user.email = normalizedEmail;
       user.name = payload.name || user.name;
       user.picture = payload.picture || user.picture;
+
+      if (allowlistedAdmin && user.role !== "admin") {
+        user.role = "admin";
+      }
+
       user.lastLoginAt = new Date();
+      user.lastSeenAt = new Date();
     }
 
     await user.save();
@@ -143,6 +173,9 @@ export const googleSignIn = async (req, res) => {
 
 export const getCurrentSession = async (req, res) => {
   try {
+    req.user.lastSeenAt = new Date();
+    await req.user.save();
+
     const cart = await getOrCreateCart(req.userId);
 
     return res.status(200).json({

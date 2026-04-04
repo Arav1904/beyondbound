@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../css/contact-form.css';
+import { submitSupportTicket } from '../../services/adminApi';
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,8 @@ const ContactForm = () => {
     subject: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -18,17 +21,33 @@ const ContactForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Add your form submission logic here
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: ''
-    });
+
+    if (isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setStatusMessage('');
+
+    try {
+      const response = await submitSupportTicket(formData);
+      setStatusMessage(
+        `Message sent. Ticket ${response?.data?.ticketNumber || ''} has been created.`,
+      );
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: ''
+      });
+    } catch (error) {
+      setStatusMessage(error.message || 'Could not send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -109,12 +128,13 @@ const ContactForm = () => {
         </div>
 
         {/* Submit Button */}
-        <button type="submit" className="submit-btn">
-          Send message
+        <button type="submit" className="submit-btn" disabled={isSubmitting}>
+          {isSubmitting ? 'Sending...' : 'Send message'}
         </button>
 
         {/* Footer Text */}
         <p className="form-footer">We'll reply to your email within 24 hours.</p>
+        {statusMessage ? <p className="form-footer">{statusMessage}</p> : null}
       </form>
     </div>
   );

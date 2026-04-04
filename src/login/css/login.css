@@ -436,6 +436,32 @@
   line-height: 1.5;
 }
 
+.account-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.account-order-item {
+  border: 1px solid #dbe6f2;
+  border-radius: 10px;
+  background: #f9fbff;
+  padding: 10px;
+}
+
+.account-order-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #102849;
+}
+
+.account-order-meta {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: #60748c;
+}
+
 @media (max-width: 640px) {
   .account-modal-panel {
     width: min(760px, calc(100vw - 22px));

@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const testimonialSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null,
+  },
   name: {
     type: String,
     required: [true, "Please provide a name"],
@@ -31,6 +36,26 @@ const testimonialSchema = new mongoose.Schema({
   verified: {
     type: Boolean,
     default: false,
+  },
+  status: {
+    type: String,
+    enum: ["pending", "approved", "rejected"],
+    default: "pending",
+    index: true,
+  },
+  moderatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null,
+  },
+  moderationNote: {
+    type: String,
+    default: "",
+    maxlength: [500, "Moderation note cannot exceed 500 characters"],
+  },
+  moderatedAt: {
+    type: Date,
+    default: null,
   },
   createdAt: {
     type: Date,

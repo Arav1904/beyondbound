@@ -96,6 +96,7 @@ function Navbar() {
 
   const avatarText = signedInUser?.name || signedInUser?.email || "A";
   const avatarInitial = avatarText.charAt(0).toUpperCase();
+  const isAdmin = signedInUser?.role === "admin";
 
   return (
     <>
@@ -145,6 +146,18 @@ function Navbar() {
                 Products
               </button>
             </li>
+
+            {isAdmin ? (
+              <li className="menu-item">
+                <button
+                  type="button"
+                  className="menu-trigger"
+                  onClick={() => navigateTo("admin")}
+                >
+                  Admin
+                </button>
+              </li>
+            ) : null}
 
             {/* Add Product button only visible after login */}
             {signedInUser && (
@@ -254,6 +267,15 @@ function Navbar() {
                     >
                       Order History
                     </button>
+                    {isAdmin ? (
+                      <button
+                        type="button"
+                        className="profile-dropdown-item"
+                        onClick={() => navigateTo("admin")}
+                      >
+                        Admin Dashboard
+                      </button>
+                    ) : null}
                     <button
                       type="button"
                       className="profile-dropdown-item profile-dropdown-item--danger"
@@ -319,6 +341,18 @@ function Navbar() {
             >
               Products
             </button>
+
+            {isAdmin ? (
+              <button
+                type="button"
+                className="mobile-link"
+                onClick={() => {
+                  navigateTo("admin");
+                }}
+              >
+                Admin
+              </button>
+            ) : null}
 
             <button
               type="button"
@@ -405,6 +439,15 @@ function Navbar() {
                     >
                       Order History
                     </button>
+                    {isAdmin ? (
+                      <button
+                        type="button"
+                        className="mobile-link"
+                        onClick={() => navigateTo("admin")}
+                      >
+                        Admin Dashboard
+                      </button>
+                    ) : null}
                     <button
                       type="button"
                       className="mobile-link"

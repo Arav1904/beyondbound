@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "../css/login.css";
 import useMenuStore from "../../useMenuStore";
-import { updateProfile } from "../../services/cartApi";
+import { fetchMyOrders, updateProfile } from "../../services/cartApi";
 
 const EMPTY_ADDRESS = {
   line1: "",
@@ -35,6 +35,8 @@ function AccountModal() {
   const [draft, setDraft] = useState(accountProfile);
   const [saveStatus, setSaveStatus] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
 
   useEffect(() => {
     setDraft(accountProfile);
@@ -48,6 +50,39 @@ function AccountModal() {
     const timer = window.setTimeout(() => setSaveStatus(""), 1800);
     return () => window.clearTimeout(timer);
   }, [saveStatus]);
+
+  useEffect(() => {
+    if (accountModalSection !== "orders" || !authToken) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadOrders = async () => {
+      setOrdersLoading(true);
+
+      try {
+        const response = await fetchMyOrders(authToken, { page: 1, limit: 8 });
+        if (!cancelled) {
+          setOrders(response.data || []);
+        }
+      } catch {
+        if (!cancelled) {
+          setOrders([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setOrdersLoading(false);
+        }
+      }
+    };
+
+    loadOrders();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [accountModalSection, authToken]);
 
   if (!signedInUser) {
     return null;
@@ -181,14 +216,27 @@ function AccountModal() {
 
       {accountModalSection === "orders" ? (
         <div className="account-placeholder">
-          <p className="account-placeholder-title">
-            Cart is linked to your signed-in account.
-          </p>
+          <p className="account-placeholder-title">Your order history</p>
           <p className="account-placeholder-copy">
-            Current cart: {cartTotalItems} item{cartTotalItems === 1 ? "" : "s"} ·
-            subtotal ₹{cartSubtotal.toFixed(2)}. Checkout timeline can be added
-            next.
+            Current cart: {cartTotalItems} item{cartTotalItems === 1 ? "" : "s"} · subtotal ₹
+            {cartSubtotal.toFixed(2)}.
           </p>
+          {ordersLoading ? (
+            <p className="account-placeholder-copy">Loading orders...</p>
+          ) : orders.length > 0 ? (
+            <div className="account-order-list">
+              {orders.map((order) => (
+                <div key={order.id} className="account-order-item">
+                  <p className="account-order-title">{order.orderNumber}</p>
+                  <p className="account-order-meta">
+                    {order.status} · ₹{Number(order.total || 0).toFixed(2)} · {new Date(order.placedAt).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="account-placeholder-copy">No orders placed yet.</p>
+          )}
           <button
             type="button"
             className="account-btn account-btn--primary"

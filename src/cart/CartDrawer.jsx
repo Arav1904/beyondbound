@@ -2,6 +2,7 @@ import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import useMenuStore from "../useMenuStore";
 import {
   clearServerCart,
+  placeOrder,
   removeCartItem,
   updateCartItem,
 } from "../services/cartApi";
@@ -78,6 +79,32 @@ function CartDrawer() {
     }
 
     clearCartLocal();
+  };
+
+  const handleCheckout = async () => {
+    if (!isAuthenticated) {
+      setCartMessage("Please sign in to place your order.");
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      return;
+    }
+
+    setCartSyncing(true);
+
+    try {
+      const response = await placeOrder(authToken);
+      clearCartLocal();
+      setCartMessage(
+        `Order ${response.orderNumber || response?.data?.orderNumber || "created"} placed successfully.`,
+      );
+      setIsCartOpen(false);
+    } catch (error) {
+      setCartMessage(error.message || "Could not place order right now.");
+    } finally {
+      setCartSyncing(false);
+    }
   };
 
   return (
@@ -188,9 +215,10 @@ function CartDrawer() {
           <button
             type="button"
             className="cart-checkout-btn"
+            onClick={handleCheckout}
             disabled={cartItems.length === 0}
           >
-            Checkout Coming Soon
+            Place Order
           </button>
         </footer>
       </aside>

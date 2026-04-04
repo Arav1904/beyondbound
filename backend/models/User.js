@@ -51,7 +51,22 @@ const userSchema = new mongoose.Schema(
       default: "google",
       trim: true,
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+      index: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+      index: true,
+    },
     lastLoginAt: {
+      type: Date,
+      default: Date.now,
+    },
+    lastSeenAt: {
       type: Date,
       default: Date.now,
     },

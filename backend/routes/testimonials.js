@@ -7,6 +7,7 @@ import {
   updateTestimonial,
   deleteTestimonial,
 } from "../controllers/testimonialController.js";
+import { requireAdmin } from "../middleware/adminAuth.js";
 
 const router = express.Router();
 
@@ -34,9 +35,9 @@ const validateTestimonial = [
 router.get("/", getTestimonials);
 router.post("/", validateTestimonial, submitTestimonial);
 
-// Admin routes (in production, add auth middleware)
-router.get("/admin/all", getAllTestimonialsAdmin);
-router.put("/admin/:id", updateTestimonial);
-router.delete("/admin/:id", deleteTestimonial);
+// Admin routes
+router.get("/admin/all", requireAdmin, getAllTestimonialsAdmin);
+router.put("/admin/:id", requireAdmin, updateTestimonial);
+router.delete("/admin/:id", requireAdmin, deleteTestimonial);
 
 export default router;

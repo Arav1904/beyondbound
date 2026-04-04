@@ -21,8 +21,16 @@ const allowedOrigins = (process.env.CORS_ORIGIN || "")
   .map((value) => value.trim())
   .filter(Boolean);
 
+if (IS_PRODUCTION && allowedOrigins.length === 0) {
+  console.warn("[config] CORS_ORIGIN is not set; allowing all origins.");
+}
+
 const isAllowedOrigin = (origin) => {
   if (!origin) {
+    return true;
+  }
+
+  if (allowedOrigins.length === 0) {
     return true;
   }
 

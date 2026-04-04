@@ -1,4 +1,26 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+const DEFAULT_LOCAL_API_BASE_URL = "http://localhost:5000/api";
+
+const normalizeBaseUrl = (value) => String(value || "").trim().replace(/\/+$/, "");
+
+const resolveApiBaseUrl = () => {
+  const configuredBaseUrl = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL);
+  if (configuredBaseUrl) {
+    return configuredBaseUrl;
+  }
+
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname.toLowerCase();
+    const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1";
+
+    if (!isLocalhost) {
+      return `${normalizeBaseUrl(window.location.origin)}/api`;
+    }
+  }
+
+  return DEFAULT_LOCAL_API_BASE_URL;
+};
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 const buildQuery = (params = {}) => {
   const query = new URLSearchParams();

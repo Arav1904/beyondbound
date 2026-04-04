@@ -8,18 +8,6 @@ const WhoIsItFor = () => {
 
       <FeatureCards />
 
-      {/* <div className="who-cards-container">
-        {cards.map(card => (
-          <div className="who-card" key={card.id}>
-            <div className="who-card-icon">
-              {card.icon}
-            </div>
-            <h3 className="who-card-title">{card.title}</h3>
-            <p className="who-card-desc">{card.desc}</p>
-          </div>
-        ))}
-      </div> */}
-
       <div className="who-disclaimer">
         <div className="disclaimer-icon">
           <svg

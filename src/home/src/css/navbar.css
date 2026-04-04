@@ -360,6 +360,12 @@
 	margin-bottom: 6px;
 }
 
+.google-signin-button--auth {
+	padding: 0;
+	border-bottom: none;
+	margin-bottom: 4px;
+}
+
 .google-signin-missing {
 	margin: 0 6px 10px;
 	padding: 10px;
@@ -448,6 +454,11 @@
 	font-size: 12px;
 	line-height: 1.4;
 	color: #6b7280;
+}
+
+.login-hint--error {
+	color: #b42318;
+	margin-bottom: 2px;
 }
 
 .login-item {

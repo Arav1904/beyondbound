@@ -95,11 +95,8 @@ function App() {
   return (
     <div className="app" style={{ position: "relative" }}>
       <Navbar />
-      <div /* className='scaled-wrapper' */>
-        <div /* className='scaled-wrapper' */>
-          {activePage === "products" && <Product />}
-        </div>
-
+      <div>
+        {activePage === "products" && <Product />}
         {activePage === "about" && <AboutUs />}
         {activePage === "home" && <Home />}
         {activePage === "science" && <Science />}

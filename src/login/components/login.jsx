@@ -289,7 +289,7 @@ const Login = ({
                 <GoogleSignIn
                   onUserChange={handleGoogleUserChange}
                   className="google-signin-button--auth"
-                  buttonOptions={{ text: "signup_with", shape: "rectangular" }}
+                  buttonOptions={{ text: "signin_with", shape: "rectangular" }}
                   showSignedInState={false}
                 />
 

@@ -2,6 +2,8 @@ import { useState } from "react";
 import "../css/navbar.css";
 import beyondLogo from "../assets/beyond.svg";
 import GoogleSignIn from "./GoogleSignIn";
+import useMenuStore from "../../../useMenuStore";
+import { signInWithGoogle } from "../../../services/cartApi";
 
 const aboutItems = [
   { title: "Our Story", subtitle: "How Beyond Bound began" },
@@ -25,13 +27,58 @@ const accountMenuItems = [
 ];
 
 function Navbar() {
+  const cartItems = useMenuStore((state) => state.cartItems);
+  const signedInUser = useMenuStore((state) => state.signedInUser);
+  const setAuthSession = useMenuStore((state) => state.setAuthSession);
+  const setCartSyncing = useMenuStore((state) => state.setCartSyncing);
+  const setCartMessage = useMenuStore((state) => state.setCartMessage);
+  const logout = useMenuStore((state) => state.logout);
   const [activeMenu, setActiveMenu] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSubMenu, setMobileSubMenu] = useState(null);
-  const [signedInUser, setSignedInUser] = useState(null);
+  const [authError, setAuthError] = useState("");
 
   const toggleMenu = (menuName) => {
     setActiveMenu((prev) => (prev === menuName ? null : menuName));
+  };
+
+  const handleGoogleUserChange = async (nextUser) => {
+    if (!nextUser?.credential) {
+      return;
+    }
+
+    setAuthError("");
+    setCartSyncing(true);
+
+    try {
+      const session = await signInWithGoogle({
+        credential: nextUser.credential,
+        guestCartItems: cartItems,
+      });
+
+      setAuthSession({
+        token: session.token,
+        user: session.user,
+        cart: session.cart,
+      });
+      setCartMessage("Signed in successfully. Cart synced to your account.");
+    } catch (error) {
+      const message = error.message || "Sign in failed. Please try again.";
+      setAuthError(message);
+      setCartMessage(message);
+    } finally {
+      setCartSyncing(false);
+    }
+  };
+
+  const handleSignOut = () => {
+    window.google?.accounts?.id?.disableAutoSelect?.();
+
+    if (signedInUser?.email) {
+      window.google?.accounts?.id?.revoke?.(signedInUser.email, () => {});
+    }
+
+    logout();
   };
 
   return (
@@ -113,7 +160,12 @@ function Navbar() {
               </button>
               {activeMenu === "login" ? (
                 <div className="dropdown-panel login-panel">
-                  <GoogleSignIn onUserChange={setSignedInUser} />
+                  <GoogleSignIn
+                    onUserChange={handleGoogleUserChange}
+                    className="google-signin-button--auth"
+                    buttonOptions={{ text: "signin_with", shape: "rectangular" }}
+                    showSignedInState={false}
+                  />
                   {signedInUser ? (
                     <>
                       {accountMenuItems.map((item) => (
@@ -125,15 +177,20 @@ function Navbar() {
                       <button
                         type="button"
                         className="login-item logout-btn"
-                        onClick={() => setSignedInUser(null)}
+                        onClick={handleSignOut}
                       >
                         Logout
                       </button>
                     </>
                   ) : (
-                    <p className="login-hint">
-                      Sign in to access your account options.
-                    </p>
+                    <>
+                      {authError ? (
+                        <p className="login-hint login-hint--error">{authError}</p>
+                      ) : null}
+                      <p className="login-hint">
+                        Sign in to access your account options.
+                      </p>
+                    </>
                   )}
                 </div>
               ) : null}

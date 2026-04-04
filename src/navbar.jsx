@@ -472,14 +472,6 @@ function Navbar() {
           </div>
         )}
       </header>
-
-      {/* <button
-        type="button"
-        className="cart-fab-2"
-        aria-label="Shopping Cart"
-      >
-        <FontAwesomeIcon icon={faShoppingCart} />
-      </button> */}
     </>
   );
 }

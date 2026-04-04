@@ -15,7 +15,6 @@ import TransformationSection from "./components/TransformationSection";
 function App() {
   return (
     <div className="page-container">
-      {/*  <Navbar /> */}
       <Meet />
       <Trust />
       <AboutBeyond />
@@ -28,7 +27,6 @@ function App() {
       <HowItWorks />
       <LovedSection />
       <TransformationSection />
-      {/* <Footer /> */}
     </div>
   );
 }

@@ -128,25 +128,6 @@ const Ingredients = () => {
           ))}
         </div>
       </div>
-
-      {/* <div className="ingredients-grid">
-        {ingredients.map(ing => (
-          <div className="ingredient-card-wrapper" key={ing.id}>
-            <div className="ingredient-card">
-              {ing.badge && <div className="ingredient-badge">{ing.badge}</div>}
-              
-              <div className="ingredient-img-container">
-                <div className="ingredient-img-bg"></div>
-                <img src={ing.img} alt={ing.name} className="ingredient-img" />
-              </div>
-              
-              <h4 className="ingredient-name">{ing.name}</h4>
-              <span className="ingredient-amount">{ing.amount}</span>
-              <p className="ingredient-feature">{ing.desc}</p>
-            </div>
-          </div>
-        ))}
-      </div> */}
     </section>
   );
 };

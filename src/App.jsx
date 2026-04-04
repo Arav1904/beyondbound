@@ -32,7 +32,6 @@ function App() {
   );
   const authToken = useMenuStore((state) => state.authToken);
   const setAuthSession = useMenuStore((state) => state.setAuthSession);
-  const signedInUser = useMenuStore((state) => state.signedInUser);
   const logout = useMenuStore((state) => state.logout);
   const isCartOpen = useMenuStore((state) => state.isCartOpen);
   const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
@@ -40,7 +39,6 @@ function App() {
   const cartMessage = useMenuStore((state) => state.cartMessage);
   const clearCartMessage = useMenuStore((state) => state.clearCartMessage);
   const setCartSyncing = useMenuStore((state) => state.setCartSyncing);
-  const isAuthenticated = Boolean(signedInUser);
 
   useEffect(() => {
     let cancelled = false;
@@ -83,14 +81,6 @@ function App() {
   }, [authToken, logout, setAuthSession, setCartSyncing]);
 
   useEffect(() => {
-    if (!isAuthenticated || !isLoginModalOpen) {
-      return;
-    }
-
-    setIsLoginModalOpen(false);
-  }, [isAuthenticated, isLoginModalOpen, setIsLoginModalOpen]);
-
-  useEffect(() => {
     if (!cartMessage) {
       return undefined;
     }
@@ -123,7 +113,9 @@ function App() {
       >
         <FontAwesomeIcon icon={faShoppingCart} />
         {cartTotalItems > 0 ? (
-          <span className="cart-fab-badge">{cartTotalItems > 99 ? "99+" : cartTotalItems}</span>
+          <span className="cart-fab-badge">
+            {cartTotalItems > 99 ? "99+" : cartTotalItems}
+          </span>
         ) : null}
       </button>
 

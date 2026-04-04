@@ -1,10 +1,9 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../css/login.css';
 import GoogleSignIn from '../../GoogleSignIn';
 import useMenuStore from '../../useMenuStore';
 
 const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, isModal = false, onSwitchToSignup = () => {} }) => {
-  const signedInUser = useMenuStore((state) => state.signedInUser);
   const setSignedInUser = useMenuStore((state) => state.setSignedInUser);
   const setIsLoginModalOpen = useMenuStore((state) => state.setIsLoginModalOpen);
   const [formData, setFormData] = useState({
@@ -12,7 +11,18 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
   });
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [authSuccessUser, setAuthSuccessUser] = useState(null);
   const otpInputRefs = useRef([]);
+  const successTimerRef = useRef(null);
+
+  useEffect(
+    () => () => {
+      if (successTimerRef.current) {
+        window.clearTimeout(successTimerRef.current);
+      }
+    },
+    [],
+  );
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -70,17 +80,24 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
   };
 
   const handleGoogleUserChange = (nextUser) => {
+    if (successTimerRef.current) {
+      window.clearTimeout(successTimerRef.current);
+    }
+
     setSignedInUser(nextUser ?? null);
 
     if (nextUser) {
+      setAuthSuccessUser(nextUser);
       setOtpSent(false);
       setOtp(['', '', '', '', '', '']);
-      setIsLoginModalOpen(false);
+      successTimerRef.current = window.setTimeout(() => {
+        setAuthSuccessUser(null);
+        setIsLoginModalOpen(false);
+      }, 1600);
+      return;
     }
-  };
 
-  const closeAuthModal = () => {
-    setIsLoginModalOpen(false);
+    setAuthSuccessUser(null);
   };
 
   const handleSubmit = (e) => {
@@ -115,28 +132,15 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
         {/* Right Side - Form Section */}
         <div className="login-form-section">
           <div className="form-content">
-            {signedInUser ? (
+            {authSuccessUser ? (
               <>
                 <div className="signup-header">SUCCESS</div>
                 <h1 className="form-title">Successfully logged in</h1>
                 <p className="auth-success-note">
-                  Signed in as <span className="auth-success-email">{signedInUser.email || signedInUser.name}</span>
+                  Signed in as <span className="auth-success-email">{authSuccessUser.email || authSuccessUser.name}</span>
                 </p>
-
-                <GoogleSignIn
-                  onUserChange={handleGoogleUserChange}
-                  initialUser={signedInUser}
-                  className="google-signin-button--auth"
-                  buttonOptions={{ text: 'signin_with', shape: 'rectangular' }}
-                />
-
-                <button
-                  type="button"
-                  className="btn-submit"
-                  onClick={closeAuthModal}
-                >
-                  Continue
-                </button>
+                <div className="auth-success-icon" aria-hidden="true">OK</div>
+                <p className="auth-success-note">Redirecting to your account...</p>
               </>
             ) : otpSent ? (
               <>
@@ -198,7 +202,6 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
                 {/* Google Sign In Button */}
                 <GoogleSignIn
                   onUserChange={handleGoogleUserChange}
-                  initialUser={signedInUser}
                   className="google-signin-button--auth"
                   buttonOptions={{ text: 'signup_with', shape: 'rectangular' }}
                 />

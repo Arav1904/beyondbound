@@ -148,7 +148,9 @@ const Signup = ({
                   OK
                 </div>
                 {isModal ? (
-                  <p className="auth-success-note">Redirecting to your account...</p>
+                  <p className="auth-success-note">
+                    Redirecting to your account...
+                  </p>
                 ) : (
                   <p className="auth-success-note">You are now signed in.</p>
                 )}

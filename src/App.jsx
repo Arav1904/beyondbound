@@ -40,7 +40,7 @@ function App() {
   const cartMessage = useMenuStore((state) => state.cartMessage);
   const clearCartMessage = useMenuStore((state) => state.clearCartMessage);
   const setCartSyncing = useMenuStore((state) => state.setCartSyncing);
-  const isAuthenticated = Boolean(authToken && signedInUser);
+  const isAuthenticated = Boolean(signedInUser);
 
   useEffect(() => {
     let cancelled = false;

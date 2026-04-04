@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import "../css/login.css";
 import GoogleSignIn from "../../GoogleSignIn";
 import useMenuStore from "../../useMenuStore";
-import { signInWithGoogle } from "../../services/cartApi";
 
 const Login = ({
   imageUrl = "https://via.placeholder.com/300",
@@ -10,15 +9,11 @@ const Login = ({
   isModal = false,
   onSwitchToSignup = () => {},
 }) => {
-  const cartItems = useMenuStore((state) => state.cartItems);
   const signedInUser = useMenuStore((state) => state.signedInUser);
-  const authToken = useMenuStore((state) => state.authToken);
-  const setAuthSession = useMenuStore((state) => state.setAuthSession);
+  const setSignedInUser = useMenuStore((state) => state.setSignedInUser);
   const setIsLoginModalOpen = useMenuStore(
     (state) => state.setIsLoginModalOpen,
   );
-  const setCartSyncing = useMenuStore((state) => state.setCartSyncing);
-  const setCartMessage = useMenuStore((state) => state.setCartMessage);
   const [formData, setFormData] = useState({
     email: "",
   });
@@ -29,7 +24,7 @@ const Login = ({
   const [authError, setAuthError] = useState("");
   const otpInputRefs = useRef([]);
   const successTimerRef = useRef(null);
-  const isAuthenticated = Boolean(signedInUser && authToken);
+  const isAuthenticated = Boolean(signedInUser);
 
   useEffect(
     () => () => {
@@ -48,10 +43,6 @@ const Login = ({
     if (successTimerRef.current) {
       window.clearTimeout(successTimerRef.current);
     }
-
-    setAuthError("");
-    setAuthSuccessUser((previousUser) => previousUser || signedInUser);
-    setAuthStage("success");
 
     if (!isModal) {
       return;
@@ -118,12 +109,13 @@ const Login = ({
     // Add email OTP logic here
   };
 
-  const handleGoogleUserChange = async (nextUser) => {
+  const handleGoogleUserChange = (nextUser) => {
     if (successTimerRef.current) {
       window.clearTimeout(successTimerRef.current);
     }
 
     if (!nextUser?.credential) {
+      setSignedInUser(null);
       if (!isAuthenticated) {
         setAuthStage("idle");
         setAuthSuccessUser(null);
@@ -131,40 +123,17 @@ const Login = ({
       return;
     }
 
-    setAuthStage("authenticating");
+    setSignedInUser(nextUser);
     setAuthError("");
-    setCartSyncing(true);
+    setAuthSuccessUser(nextUser);
+    setAuthStage("success");
+    setOtpSent(false);
+    setOtp(["", "", "", "", "", ""]);
 
-    try {
-      const session = await signInWithGoogle({
-        credential: nextUser.credential,
-        guestCartItems: cartItems,
-      });
-
-      setAuthSession({
-        token: session.token,
-        user: session.user,
-        cart: session.cart,
-      });
-
-      setAuthSuccessUser(session.user);
-      setAuthStage("success");
-      setCartMessage("Signed in successfully. Cart synced to your account.");
-      setOtpSent(false);
-      setOtp(["", "", "", "", "", ""]);
-
-      if (isModal) {
-        successTimerRef.current = window.setTimeout(() => {
-          setIsLoginModalOpen(false);
-        }, 1600);
-      }
-    } catch (error) {
-      setAuthSuccessUser(null);
-      setAuthStage("idle");
-      setAuthError(error.message || "Sign in failed. Please try again.");
-      setCartMessage(error.message || "Sign in failed. Please try again.");
-    } finally {
-      setCartSyncing(false);
+    if (isModal) {
+      successTimerRef.current = window.setTimeout(() => {
+        setIsLoginModalOpen(false);
+      }, 1600);
     }
   };
 

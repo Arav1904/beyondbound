@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const GOOGLE_GSI_SCRIPT = "https://accounts.google.com/gsi/client";
+const DEFAULT_GOOGLE_CLIENT_ID =
+  "647437966024-0ubbv4rmbennr1some8g5o2agr3poanh.apps.googleusercontent.com";
 
 function decodeCredential(credential) {
   try {
@@ -32,7 +34,8 @@ function GoogleSignIn({
   buttonOptions = {},
   showSignedInState = true,
 }) {
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const clientId =
+    import.meta.env.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID;
   const buttonRef = useRef(null);
   const [localUser, setLocalUser] = useState(null);
   const user = initialUser ?? (showSignedInState ? localUser : null);

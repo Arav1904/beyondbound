@@ -211,6 +211,19 @@
   font-weight: 400;
 }
 
+.auth-success-note {
+  font-size: 13px;
+  color: #5f6b7a;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.auth-success-email {
+  color: #1f2f46;
+  font-weight: 600;
+  word-break: break-word;
+}
+
 /* ==================== GOOGLE BUTTON ==================== */
 
 .btn-google {

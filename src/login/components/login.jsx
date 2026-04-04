@@ -6,6 +6,7 @@ import useMenuStore from '../../useMenuStore';
 const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, isModal = false, onSwitchToSignup = () => {} }) => {
   const signedInUser = useMenuStore((state) => state.signedInUser);
   const setSignedInUser = useMenuStore((state) => state.setSignedInUser);
+  const setIsLoginModalOpen = useMenuStore((state) => state.setIsLoginModalOpen);
   const [formData, setFormData] = useState({
     email: '',
   });
@@ -70,6 +71,16 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
 
   const handleGoogleUserChange = (nextUser) => {
     setSignedInUser(nextUser ?? null);
+
+    if (nextUser) {
+      setOtpSent(false);
+      setOtp(['', '', '', '', '', '']);
+      setIsLoginModalOpen(false);
+    }
+  };
+
+  const closeAuthModal = () => {
+    setIsLoginModalOpen(false);
   };
 
   const handleSubmit = (e) => {
@@ -104,7 +115,30 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
         {/* Right Side - Form Section */}
         <div className="login-form-section">
           <div className="form-content">
-            {otpSent ? (
+            {signedInUser ? (
+              <>
+                <div className="signup-header">SUCCESS</div>
+                <h1 className="form-title">Successfully logged in</h1>
+                <p className="auth-success-note">
+                  Signed in as <span className="auth-success-email">{signedInUser.email || signedInUser.name}</span>
+                </p>
+
+                <GoogleSignIn
+                  onUserChange={handleGoogleUserChange}
+                  initialUser={signedInUser}
+                  className="google-signin-button--auth"
+                  buttonOptions={{ text: 'signin_with', shape: 'rectangular' }}
+                />
+
+                <button
+                  type="button"
+                  className="btn-submit"
+                  onClick={closeAuthModal}
+                >
+                  Continue
+                </button>
+              </>
+            ) : otpSent ? (
               <>
                 <div className="otp-header">VERIFY YOUR NUMBER</div>
                 <h1 className="form-title">Enter the code</h1>
@@ -128,7 +162,7 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
 
                 {/* Resend Link */}
                 <p className="otp-resend">
-                  Didn't receive it? <button className="otp-resend-link" onClick={handleResendOTP}>Resend code now</button>
+                  Didn't receive it? <button type="button" className="otp-resend-link" onClick={handleResendOTP}>Resend code now</button>
                 </p>
 
                 {/* Verify Button */}
@@ -151,7 +185,7 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
 
                 {/* Back to Email */}
                 <p className="otp-back">
-                  <button className="otp-back-link" onClick={() => { setOtpSent(false); setOtp(['', '', '', '', '', '']); }}>
+                  <button type="button" className="otp-back-link" onClick={() => { setOtpSent(false); setOtp(['', '', '', '', '', '']); }}>
                     Back to email
                   </button>
                 </p>
@@ -199,7 +233,7 @@ const Login = ({ imageUrl = 'https://via.placeholder.com/300', isCard = false, i
 
                 {/* Signup Link */}
                 <p className="signup-prompt">
-                  New to Beyond Bound? <button className="signup-link" onClick={onSwitchToSignup}>Create a free account</button>
+                  New to Beyond Bound? <button type="button" className="signup-link" onClick={onSwitchToSignup}>Create a free account</button>
                 </p>
               </>
             )}

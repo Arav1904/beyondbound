@@ -2,9 +2,12 @@ import React from 'react';
 import './GlycomicsCard.css';
 import bottleImg from '../home/bottles.png';
 import useCartActions from '../hooks/useCartActions';
+import usePrimaryProduct from '../hooks/usePrimaryProduct';
+import { buildPrimaryCartItem } from '../services/productCatalog';
 
 const GlycomicsCard = () => {
   const { addProductToCart } = useCartActions();
+  const { product } = usePrimaryProduct();
 
   const data = [
     { bad: "Energy crashes after meals", good: "Steady energy all day" },
@@ -15,14 +18,13 @@ const GlycomicsCard = () => {
   ];
 
   const handleAddToCart = () => {
-    addProductToCart({
-      productId: 'glycomics-60',
-      productName: 'Glycomics (60 Capsules)',
-      price: 1925,
-      quantity: 1,
-      size: '60',
-      image: bottleImg,
-    });
+    addProductToCart(
+      buildPrimaryCartItem(product, {
+        sizeValue: '60',
+        quantity: 1,
+        fallbackImage: bottleImg,
+      }),
+    );
   };
 
   return (
@@ -58,7 +60,7 @@ const GlycomicsCard = () => {
       </div>
 
       <button type="button" className="cart-button" onClick={handleAddToCart}>
-        <span className="cart-icon">🛒</span> ADD TO CART
+        <span className="cart-icon">🛒</span> PRE-ORDER NOW
       </button>
     </div>
   );

@@ -2,6 +2,8 @@ import '../css/transformationSection.css'
 
 import transformationImage from '../../docglycos1.jpeg'
 import useCartActions from '../../../hooks/useCartActions'
+import usePrimaryProduct from '../../../hooks/usePrimaryProduct'
+import { buildPrimaryCartItem } from '../../../services/productCatalog'
 
 const metrics = [
 	{
@@ -23,16 +25,16 @@ const metrics = [
 
 function TransformationSection() {
 	const { addProductToCart } = useCartActions()
+	const { product } = usePrimaryProduct()
 
 	const handleShopNow = () => {
-		addProductToCart({
-			productId: 'glycomics-60',
-			productName: 'Glycomics (60 Capsules)',
-			price: 1925,
-			quantity: 1,
-			size: '60',
-			image: transformationImage,
-		})
+		addProductToCart(
+			buildPrimaryCartItem(product, {
+				sizeValue: '60',
+				quantity: 1,
+				fallbackImage: transformationImage,
+			}),
+		)
 	}
 
 	return (
@@ -45,11 +47,11 @@ function TransformationSection() {
 						</h2>
 
 						<p className="transform-copy">
-							Join thousands taking control of their glucose health with pharmaceutical-grade berberine. 90-day supply with 30-day satisfaction guarantee.
+							Join thousands taking control of their glucose health with pharmaceutical-grade berberine. Pre-order today and reserve the next dispatch window.
 						</p>
 
 						<div className="transform-actions">
-							<button type="button" className="transform-btn transform-btn--primary" onClick={handleShopNow}>Shop Now</button>
+							<button type="button" className="transform-btn transform-btn--primary" onClick={handleShopNow}>Pre-order Now</button>
 							<button type="button" className="transform-btn transform-btn--secondary">Learn More</button>
 						</div>
 					</div>

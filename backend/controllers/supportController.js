@@ -1,4 +1,5 @@
 import SupportTicket from "../models/SupportTicket.js";
+import { createAuditLog } from "../utils/auditLog.js";
 
 const generateTicketNumber = () => {
   const date = new Date();
@@ -47,6 +48,19 @@ export const submitSupportTicket = async (req, res) => {
       source: "website",
       status: "open",
       priority: "medium",
+    });
+
+    await createAuditLog({
+      req,
+      actorId: req.userId || null,
+      actorEmail: email,
+      action: "support.ticket_submitted",
+      entityType: "support_ticket",
+      entityId: ticket._id,
+      metadata: {
+        ticketNumber: ticket.ticketNumber,
+        subject,
+      },
     });
 
     return res.status(201).json({

@@ -7,5 +7,6 @@ const router = express.Router();
 router.use(authenticate);
 router.get("/my", getMyOrders);
 router.post("/place", placeOrder);
+router.post("/preorder", placeOrder);
 
 export default router;

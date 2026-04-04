@@ -1,16 +1,94 @@
-# React + Vite
+# Beyond Bound
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Beyond Bound is a React + Vite storefront with a Node/Express + MongoDB backend supporting:
 
-Currently, two official plugins are available:
+- Google sign-in auth
+- Account profile and address management
+- Cart persistence per account
+- Pre-order lifecycle and order history
+- Admin dashboard (users, pre-orders, products, support, testimonials, analytics, audit logs)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Project Structure
 
-## React Compiler
+- `src/` - Frontend app
+- `backend/` - API server and MongoDB models/controllers/routes
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Run Locally
 
-## Expanding the ESLint configuration
+1. Install frontend dependencies
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+```
+
+2. Install backend dependencies
+
+```bash
+cd backend
+npm install
+```
+
+3. Configure environment files
+
+- Frontend: `.env.local`
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+- Backend: `backend/.env`
+
+```env
+MONGODB_URI=mongodb://localhost:27017/beyond-bound
+PORT=5000
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173
+GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com
+JWT_SECRET=CHANGE_THIS_TO_A_LONG_RANDOM_SECRET
+JWT_EXPIRES_IN=7d
+ADMIN_ALLOWLIST=beyondbound889@gmail.com
+ADMIN_BOOTSTRAP_EMAIL=beyondbound889@gmail.com
+RATE_LIMIT_MAX=250
+AUTH_RATE_LIMIT_MAX=40
+```
+
+4. Start backend
+
+```bash
+cd backend
+npm run dev
+```
+
+5. Start frontend
+
+```bash
+npm run dev
+```
+
+## Validation Commands
+
+Frontend:
+
+- `npm run lint`
+- `npm run build`
+- `npm run test` (runs lint + build)
+
+Backend:
+
+- `cd backend`
+- `npm run test` (syntax checks)
+
+## Admin Bootstrap
+
+To ensure the admin account is available:
+
+```bash
+cd backend
+npm run bootstrap:admin
+```
+
+This creates or updates the account in `ADMIN_BOOTSTRAP_EMAIL` as role `admin`.
+
+## Pre-order Mode
+
+The system is configured for pre-orders (not direct checkout payment flow). Frontend CTAs and backend status lifecycle use pre-order semantics.

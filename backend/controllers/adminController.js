@@ -1,18 +1,32 @@
+import AuditLog from "../models/AuditLog.js";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import SupportTicket from "../models/SupportTicket.js";
 import Testimonial from "../models/Testimonial.js";
 import User from "../models/User.js";
+import { createAuditLog } from "../utils/auditLog.js";
 
 const USER_ROLES = ["user", "admin"];
 const ORDER_STATUSES = [
   "placed",
   "confirmed",
   "packed",
+  "preorder_requested",
+  "preorder_confirmed",
+  "processing",
   "shipped",
   "delivered",
   "cancelled",
   "refunded",
+];
+const PENDING_ORDER_STATUSES = [
+  "placed",
+  "confirmed",
+  "packed",
+  "preorder_requested",
+  "preorder_confirmed",
+  "processing",
+  "shipped",
 ];
 const PAYMENT_STATUSES = ["pending", "paid", "failed", "refunded"];
 const TESTIMONIAL_STATUSES = ["pending", "approved", "rejected"];
@@ -46,6 +60,52 @@ const parseBooleanQuery = (value) => {
   }
 
   return null;
+};
+
+const toNonNegativeNumber = (value, fallback = 0) => {
+  const parsed = Number(value);
+  if (Number.isNaN(parsed) || parsed < 0) {
+    return fallback;
+  }
+
+  return parsed;
+};
+
+const buildDefaultPackSizes = (price) => {
+  const primaryPrice = toNonNegativeNumber(price, 1925);
+
+  return [
+    {
+      value: "60",
+      label: "60 Capsules",
+      price: primaryPrice,
+    },
+    {
+      value: "20",
+      label: "20 Capsules",
+      price: 600,
+    },
+  ];
+};
+
+const parsePackSizes = (value, fallbackPrice) => {
+  if (!Array.isArray(value)) {
+    return buildDefaultPackSizes(fallbackPrice);
+  }
+
+  const parsed = value
+    .map((item) => ({
+      value: String(item?.value || "").trim(),
+      label: String(item?.label || "").trim(),
+      price: toNonNegativeNumber(item?.price, -1),
+    }))
+    .filter((item) => item.value && item.label && item.price >= 0);
+
+  if (parsed.length === 0) {
+    return buildDefaultPackSizes(fallbackPrice);
+  }
+
+  return parsed;
 };
 
 const escapeRegex = (value) => String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -98,7 +158,7 @@ export const getAdminOverview = async (_req, res) => {
       User.countDocuments({ isActive: true }),
       User.countDocuments({ role: "admin" }),
       Order.countDocuments({}),
-      Order.countDocuments({ status: { $in: ["placed", "confirmed", "packed", "shipped"] } }),
+      Order.countDocuments({ status: { $in: PENDING_ORDER_STATUSES } }),
       Testimonial.countDocuments({ status: "pending" }),
       Testimonial.countDocuments({ status: "approved" }),
       SupportTicket.countDocuments({ status: { $in: ["open", "in_progress"] } }),
@@ -240,6 +300,18 @@ export const updateAdminUser = async (req, res) => {
       });
     }
 
+    await createAuditLog({
+      req,
+      actorId: req.userId,
+      actorEmail: req.user?.email,
+      action: "admin.user_updated",
+      entityType: "user",
+      entityId: user._id,
+      metadata: {
+        updates,
+      },
+    });
+
     return res.status(200).json({
       success: true,
       message: "User updated successfully",
@@ -371,6 +443,20 @@ export const updateAdminOrderStatus = async (req, res) => {
 
     await order.save();
 
+    await createAuditLog({
+      req,
+      actorId: req.userId,
+      actorEmail: req.user?.email,
+      action: "admin.order_updated",
+      entityType: "order",
+      entityId: order._id,
+      metadata: {
+        status: order.status,
+        paymentStatus: order.paymentStatus,
+        trackingNumber: order.trackingNumber,
+      },
+    });
+
     return res.status(200).json({
       success: true,
       message: "Order updated successfully",
@@ -445,6 +531,12 @@ export const createAdminProduct = async (req, res) => {
         ? [String(req.body.image).trim()]
         : [];
 
+    const packSizes = parsePackSizes(req.body?.packSizes, price);
+    const estimatedDispatchDays = Math.max(
+      0,
+      Number.parseInt(req.body?.estimatedDispatchDays, 10) || 10,
+    );
+
     const product = await Product.create({
       name,
       description: String(req.body?.description || "").trim(),
@@ -455,8 +547,25 @@ export const createAdminProduct = async (req, res) => {
       sku: String(req.body?.sku || "").trim() || undefined,
       tags: Array.isArray(req.body?.tags) ? req.body.tags : [],
       images,
+      packSizes,
+      isPreorderEnabled: req.body?.isPreorderEnabled !== false,
+      estimatedDispatchDays,
       isActive: req.body?.isActive !== false,
       updatedBy: req.userId,
+    });
+
+    await createAuditLog({
+      req,
+      actorId: req.userId,
+      actorEmail: req.user?.email,
+      action: "admin.product_created",
+      entityType: "product",
+      entityId: product._id,
+      metadata: {
+        name: product.name,
+        price: product.price,
+        isPreorderEnabled: product.isPreorderEnabled,
+      },
     });
 
     return res.status(201).json({
@@ -526,10 +635,25 @@ export const updateAdminProduct = async (req, res) => {
       product.tags = req.body.tags;
     }
 
+    if (Array.isArray(req.body?.packSizes)) {
+      product.packSizes = parsePackSizes(req.body.packSizes, product.price);
+    }
+
     if (Array.isArray(req.body?.images)) {
       product.images = req.body.images.filter(Boolean);
     } else if (typeof req.body?.image === "string") {
       product.images = [req.body.image.trim()];
+    }
+
+    if (typeof req.body?.isPreorderEnabled === "boolean") {
+      product.isPreorderEnabled = req.body.isPreorderEnabled;
+    }
+
+    if (req.body?.estimatedDispatchDays !== undefined) {
+      const estimatedDispatchDays = Number.parseInt(req.body.estimatedDispatchDays, 10);
+      if (!Number.isNaN(estimatedDispatchDays) && estimatedDispatchDays >= 0) {
+        product.estimatedDispatchDays = estimatedDispatchDays;
+      }
     }
 
     if (typeof req.body?.isActive === "boolean") {
@@ -539,6 +663,21 @@ export const updateAdminProduct = async (req, res) => {
     product.updatedBy = req.userId;
 
     await product.save();
+
+    await createAuditLog({
+      req,
+      actorId: req.userId,
+      actorEmail: req.user?.email,
+      action: "admin.product_updated",
+      entityType: "product",
+      entityId: product._id,
+      metadata: {
+        price: product.price,
+        inventory: product.inventory,
+        isActive: product.isActive,
+        isPreorderEnabled: product.isPreorderEnabled,
+      },
+    });
 
     return res.status(200).json({
       success: true,
@@ -573,6 +712,18 @@ export const archiveAdminProduct = async (req, res) => {
         error: "Product not found",
       });
     }
+
+    await createAuditLog({
+      req,
+      actorId: req.userId,
+      actorEmail: req.user?.email,
+      action: "admin.product_archived",
+      entityType: "product",
+      entityId: product._id,
+      metadata: {
+        name: product.name,
+      },
+    });
 
     return res.status(200).json({
       success: true,
@@ -690,6 +841,20 @@ export const updateAdminSupportTicket = async (req, res) => {
     await ticket.save();
     await ticket.populate("assignedTo", "name email");
 
+    await createAuditLog({
+      req,
+      actorId: req.userId,
+      actorEmail: req.user?.email,
+      action: "admin.support_ticket_updated",
+      entityType: "support_ticket",
+      entityId: ticket._id,
+      metadata: {
+        status: ticket.status,
+        priority: ticket.priority,
+        hasAdminNote: Boolean(adminNote),
+      },
+    });
+
     return res.status(200).json({
       success: true,
       message: "Support ticket updated successfully",
@@ -739,6 +904,74 @@ export const getAdminTestimonials = async (req, res) => {
     return res.status(500).json({
       success: false,
       error: "Failed to fetch testimonials",
+      message: error.message,
+    });
+  }
+};
+
+export const getAdminAuditLogs = async (req, res) => {
+  try {
+    const { page, limit, skip } = parsePagination(req.query);
+    const search = String(req.query.search || "").trim();
+    const action = String(req.query.action || "").trim();
+    const entityType = String(req.query.entityType || "").trim();
+    const status = String(req.query.status || "").trim();
+    const from = String(req.query.from || "").trim();
+    const to = String(req.query.to || "").trim();
+
+    const filters = {};
+
+    if (action) {
+      filters.action = action;
+    }
+
+    if (entityType) {
+      filters.entityType = entityType;
+    }
+
+    if (["success", "failure"].includes(status)) {
+      filters.status = status;
+    }
+
+    if (from || to) {
+      filters.createdAt = {};
+      if (from) {
+        filters.createdAt.$gte = new Date(from);
+      }
+      if (to) {
+        filters.createdAt.$lte = new Date(to);
+      }
+    }
+
+    if (search) {
+      const regex = toRegex(search);
+      filters.$or = [
+        { actorEmail: regex },
+        { action: regex },
+        { entityType: regex },
+        { entityId: regex },
+      ];
+    }
+
+    const [logs, totalCount] = await Promise.all([
+      AuditLog.find(filters)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("actorId", "name email role"),
+      AuditLog.countDocuments(filters),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      count: logs.length,
+      pagination: formatPagination(page, limit, totalCount),
+      data: logs,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to fetch audit logs",
       message: error.message,
     });
   }

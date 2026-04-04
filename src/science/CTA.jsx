@@ -4,8 +4,8 @@ import "./CTA.css";
 const CTA = () => {
   const benefits = [
     "100% refund guarantee",
-    "Delivered in 3-5 days",
-    "Secure checkout",
+    "Priority pre-order dispatch",
+    "Secure reservation",
     "AYUSH certified",
   ];
 
@@ -27,7 +27,7 @@ const CTA = () => {
           </p>
 
           <div className="cta-buttons">
-            <button className="cta-btn primary">Shop Glycomics</button>
+            <button className="cta-btn primary">Pre-order Glycomics</button>
             <button className="cta-btn secondary">
               Book a free consultation
             </button>

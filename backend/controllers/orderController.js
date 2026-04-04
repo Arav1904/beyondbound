@@ -1,5 +1,6 @@
 import Cart from "../models/Cart.js";
 import Order from "../models/Order.js";
+import { createAuditLog } from "../utils/auditLog.js";
 
 const parsePagination = (query) => {
   const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
@@ -57,6 +58,7 @@ const toPublicOrder = (order) => ({
   paymentMethod: order.paymentMethod,
   trackingNumber: order.trackingNumber,
   placedAt: order.placedAt,
+  requestedAt: order.placedAt,
   createdAt: order.createdAt,
   updatedAt: order.updatedAt,
 });
@@ -96,9 +98,9 @@ export const placeOrder = async (req, res) => {
       shippingFee,
       taxAmount,
       discountAmount,
-      paymentMethod: String(req.body?.paymentMethod || "cod").trim() || "cod",
+      paymentMethod: String(req.body?.paymentMethod || "external").trim() || "external",
       paymentStatus: "pending",
-      status: "placed",
+      status: "preorder_requested",
       notes: String(req.body?.notes || "").trim(),
       placedAt: new Date(),
     });
@@ -106,9 +108,23 @@ export const placeOrder = async (req, res) => {
     cart.items = [];
     await cart.save();
 
+    await createAuditLog({
+      req,
+      actorId: req.userId,
+      actorEmail: req.user?.email,
+      action: "order.preorder_requested",
+      entityType: "order",
+      entityId: order._id,
+      metadata: {
+        orderNumber: order.orderNumber,
+        itemCount: order.items.length,
+        total: order.total,
+      },
+    });
+
     return res.status(201).json({
       success: true,
-      message: "Order placed successfully",
+      message: "Pre-order request submitted successfully",
       data: toPublicOrder(order),
     });
   } catch (error) {

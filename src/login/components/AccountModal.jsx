@@ -216,7 +216,7 @@ function AccountModal() {
 
       {accountModalSection === "orders" ? (
         <div className="account-placeholder">
-          <p className="account-placeholder-title">Your order history</p>
+          <p className="account-placeholder-title">Your pre-order history</p>
           <p className="account-placeholder-copy">
             Current cart: {cartTotalItems} item{cartTotalItems === 1 ? "" : "s"} · subtotal ₹
             {cartSubtotal.toFixed(2)}.
@@ -235,7 +235,7 @@ function AccountModal() {
               ))}
             </div>
           ) : (
-            <p className="account-placeholder-copy">No orders placed yet.</p>
+            <p className="account-placeholder-copy">No pre-orders submitted yet.</p>
           )}
           <button
             type="button"

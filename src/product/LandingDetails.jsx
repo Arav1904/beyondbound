@@ -4,10 +4,13 @@ import TrustStandards from './trust';
 import { ArrowRight, Star } from 'lucide-react';
 import useCartActions from '../hooks/useCartActions';
 import bottleImg from '../home/bottles.png';
+import usePrimaryProduct from '../hooks/usePrimaryProduct';
+import { buildPrimaryCartItem } from '../services/productCatalog';
 
 const LandingDetails = () => {
   const [openIndex, setOpenIndex] = useState(null);
   const { addProductToCart } = useCartActions();
+  const { product } = usePrimaryProduct();
 
   const testimonials = [
     { name: "Naina Sharma", text: "My insulin levels have never been so balanced, totally recommend glycomics!! Worth every penny!!", img: "https://i.pravatar.cc/100?u=1" },
@@ -24,14 +27,13 @@ const LandingDetails = () => {
   ];
 
   const handleShopNow = () => {
-    addProductToCart({
-      productId: 'glycomics-60',
-      productName: 'Glycomics (60 Capsules)',
-      price: 1925,
-      quantity: 1,
-      size: '60',
-      image: bottleImg,
-    });
+    addProductToCart(
+      buildPrimaryCartItem(product, {
+        sizeValue: '60',
+        quantity: 1,
+        fallbackImage: bottleImg,
+      }),
+    );
   };
 
   return (
@@ -71,7 +73,7 @@ const LandingDetails = () => {
       <section className="faq-section-ld">
         <div className="faq-left-ld">
           <h2 className="faq-title-ld">What You<br/> Should Know About Glycomics</h2>
-          <button type="button" className="cart-btn-ld" onClick={handleShopNow}>Shop Now <ArrowRight/></button>
+          <button type="button" className="cart-btn-ld" onClick={handleShopNow}>Pre-order Now <ArrowRight/></button>
         </div>
         <div className="faq-right-ld">
           {faqs.map((faq, i) => (

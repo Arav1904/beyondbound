@@ -1,5 +1,6 @@
 import Testimonial from "../models/Testimonial.js";
 import { validationResult } from "express-validator";
+import { createAuditLog } from "../utils/auditLog.js";
 
 const parsePagination = (query) => {
   const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
@@ -68,6 +69,18 @@ export const submitTestimonial = async (req, res) => {
     });
 
     await testimonial.save();
+
+    await createAuditLog({
+      req,
+      actorEmail: String(req.body?.email || ""),
+      action: "testimonial.submitted",
+      entityType: "testimonial",
+      entityId: testimonial._id,
+      metadata: {
+        name,
+        rating: testimonial.rating,
+      },
+    });
 
     res.status(201).json({
       success: true,
@@ -182,6 +195,19 @@ export const updateTestimonial = async (req, res) => {
       });
     }
 
+    await createAuditLog({
+      req,
+      actorId: req.userId,
+      actorEmail: req.user?.email,
+      action: "testimonial.moderated",
+      entityType: "testimonial",
+      entityId: testimonial._id,
+      metadata: {
+        status: testimonial.status,
+        verified: testimonial.verified,
+      },
+    });
+
     res.status(200).json({
       success: true,
       message: "Testimonial updated successfully",
@@ -209,6 +235,18 @@ export const deleteTestimonial = async (req, res) => {
         error: "Testimonial not found",
       });
     }
+
+    await createAuditLog({
+      req,
+      actorId: req.userId,
+      actorEmail: req.user?.email,
+      action: "testimonial.deleted",
+      entityType: "testimonial",
+      entityId: testimonial._id,
+      metadata: {
+        name: testimonial.name,
+      },
+    });
 
     res.status(200).json({
       success: true,

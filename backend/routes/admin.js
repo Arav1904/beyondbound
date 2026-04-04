@@ -2,6 +2,7 @@ import express from "express";
 import {
   archiveAdminProduct,
   createAdminProduct,
+  getAdminAuditLogs,
   getAdminAnalytics,
   getAdminOrders,
   getAdminOverview,
@@ -22,6 +23,7 @@ router.use(requireAdmin);
 
 router.get("/overview", getAdminOverview);
 router.get("/analytics", getAdminAnalytics);
+router.get("/audit-logs", getAdminAuditLogs);
 
 router.get("/users", getAdminUsers);
 router.patch("/users/:id", updateAdminUser);

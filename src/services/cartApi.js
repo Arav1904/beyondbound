@@ -87,7 +87,7 @@ export async function mergeGuestCart(token, items) {
 }
 
 export async function placeOrder(token, payload = {}) {
-  return apiRequest("/orders/place", {
+  return apiRequest("/orders/preorder", {
     method: "POST",
     token,
     body: payload,

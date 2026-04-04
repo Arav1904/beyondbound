@@ -3,6 +3,8 @@ import { CircleX, CircleCheck, ArrowRight } from 'lucide-react';
 import './GlycomicsComparison.css';
 import useCartActions from '../hooks/useCartActions';
 import bottleImg from '../home/bottles.png';
+import usePrimaryProduct from '../hooks/usePrimaryProduct';
+import { buildPrimaryCartItem } from '../services/productCatalog';
 
 const ComparisonCard = ({ title, items, variant }) => {
   const isPositive = variant === 'with';
@@ -32,6 +34,7 @@ const ComparisonCard = ({ title, items, variant }) => {
 
 const GlycomicsComparison = () => {
   const { addProductToCart } = useCartActions();
+  const { product } = usePrimaryProduct();
 
   const data = {
     without: [
@@ -51,14 +54,13 @@ const GlycomicsComparison = () => {
   };
 
   const handleShopNow = () => {
-    addProductToCart({
-      productId: 'glycomics-60',
-      productName: 'Glycomics (60 Capsules)',
-      price: 1925,
-      quantity: 1,
-      size: '60',
-      image: bottleImg,
-    });
+    addProductToCart(
+      buildPrimaryCartItem(product, {
+        sizeValue: '60',
+        quantity: 1,
+        fallbackImage: bottleImg,
+      }),
+    );
   };
 
   return (
@@ -69,7 +71,7 @@ const GlycomicsComparison = () => {
     </div>
 
     <button type="button" className="cart-button-gc" onClick={handleShopNow}>
-        Shop Now <ArrowRight />
+        Pre-order Now <ArrowRight />
       </button>
     </div>
     

@@ -3,6 +3,7 @@ import useMenuStore from "../useMenuStore";
 import {
   archiveAdminProduct,
   createAdminProduct,
+  fetchAdminAuditLogs,
   deleteAdminTestimonial,
   fetchAdminAnalytics,
   fetchAdminOrders,
@@ -21,6 +22,7 @@ import "./AdminDashboard.css";
 
 const SECTION_LABELS = {
   overview: "Overview",
+  audit: "Audit Logs",
   users: "Users",
   orders: "Orders",
   testimonials: "Testimonials",
@@ -33,11 +35,16 @@ const ORDER_STATUSES = [
   "placed",
   "confirmed",
   "packed",
+  "preorder_requested",
+  "preorder_confirmed",
+  "processing",
   "shipped",
   "delivered",
   "cancelled",
   "refunded",
 ];
+
+const AUDIT_STATUSES = ["success", "failure"];
 
 const TICKET_STATUSES = ["open", "in_progress", "resolved", "closed"];
 const TICKET_PRIORITIES = ["low", "medium", "high"];
@@ -83,6 +90,8 @@ function AdminDashboard() {
     inventory: "",
     image: "",
     description: "",
+    isPreorderEnabled: true,
+    estimatedDispatchDays: 10,
   });
 
   const [rowDrafts, setRowDrafts] = useState({});
@@ -90,6 +99,7 @@ function AdminDashboard() {
   const sectionOptions = useMemo(
     () => [
       "overview",
+      "audit",
       "users",
       "orders",
       "testimonials",
@@ -152,6 +162,18 @@ function AdminDashboard() {
           setAnalytics(payload.data);
           setRecords([]);
           setPagination(null);
+          return;
+        }
+
+        if (activeSection === "audit") {
+          const payload = await fetchAdminAuditLogs(authToken, {
+            page,
+            limit: 20,
+            search,
+            status: statusFilter,
+          });
+          setRecords(payload.data || []);
+          setPagination(payload.pagination || null);
           return;
         }
 
@@ -330,6 +352,8 @@ function AdminDashboard() {
         inventory: Number(productDraft.inventory),
         image: productDraft.image,
         description: productDraft.description,
+        isPreorderEnabled: productDraft.isPreorderEnabled,
+        estimatedDispatchDays: Number(productDraft.estimatedDispatchDays),
       });
       setProductDraft({
         name: "",
@@ -338,6 +362,8 @@ function AdminDashboard() {
         inventory: "",
         image: "",
         description: "",
+        isPreorderEnabled: true,
+        estimatedDispatchDays: 10,
       });
       showSuccess("Product created");
       refresh();
@@ -355,6 +381,12 @@ function AdminDashboard() {
       await updateAdminProduct(authToken, product._id, {
         price: draft.price ?? product.price,
         inventory: draft.inventory ?? product.inventory,
+        estimatedDispatchDays:
+          draft.estimatedDispatchDays ?? product.estimatedDispatchDays,
+        isPreorderEnabled:
+          typeof draft.isPreorderEnabled === "boolean"
+            ? draft.isPreorderEnabled
+            : product.isPreorderEnabled,
         isActive:
           typeof draft.isActive === "boolean" ? draft.isActive : product.isActive,
       });
@@ -615,9 +647,63 @@ function AdminDashboard() {
             ))}
           </select>
         ) : null}
+
+        {activeSection === "audit" ? (
+          <select
+            value={statusFilter}
+            onChange={(event) => {
+              setStatusFilter(event.target.value);
+              setPage(1);
+            }}
+          >
+            <option value="">All log statuses</option>
+            {AUDIT_STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
+        ) : null}
       </div>
     );
   };
+
+  const renderAuditLogs = () => (
+    <div className="admin-table-wrap">
+      <table className="admin-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Actor</th>
+            <th>Action</th>
+            <th>Entity</th>
+            <th>Status</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          {records.map((log) => (
+            <tr key={log._id}>
+              <td>{formatDate(log.createdAt)}</td>
+              <td>{log.actorEmail || log.actorId?.email || "system"}</td>
+              <td>{log.action}</td>
+              <td>
+                {log.entityType || "-"}
+                {log.entityId ? (
+                  <>
+                    <br />
+                    <span className="admin-muted">{log.entityId}</span>
+                  </>
+                ) : null}
+              </td>
+              <td>{log.status}</td>
+              <td>{log.ip || "-"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 
   const renderUsers = () => (
     <div className="admin-table-wrap">
@@ -834,6 +920,31 @@ function AdminDashboard() {
               setProductDraft((prev) => ({ ...prev, description: event.target.value }))
             }
           />
+          <input
+            type="number"
+            min="0"
+            value={productDraft.estimatedDispatchDays}
+            placeholder="Dispatch days"
+            onChange={(event) =>
+              setProductDraft((prev) => ({
+                ...prev,
+                estimatedDispatchDays: event.target.value,
+              }))
+            }
+          />
+          <label className="admin-inline-checkbox">
+            <input
+              type="checkbox"
+              checked={Boolean(productDraft.isPreorderEnabled)}
+              onChange={(event) =>
+                setProductDraft((prev) => ({
+                  ...prev,
+                  isPreorderEnabled: event.target.checked,
+                }))
+              }
+            />
+            Pre-order enabled
+          </label>
         </div>
         <button type="submit" disabled={saving}>
           Create Product
@@ -848,6 +959,8 @@ function AdminDashboard() {
               <th>Category</th>
               <th>Price</th>
               <th>Inventory</th>
+              <th>Dispatch Days</th>
+              <th>Pre-order</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -877,6 +990,39 @@ function AdminDashboard() {
                         applyRowDraft(product._id, "inventory", event.target.value)
                       }
                     />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      min="0"
+                      value={draft.estimatedDispatchDays ?? product.estimatedDispatchDays ?? 0}
+                      onChange={(event) =>
+                        applyRowDraft(
+                          product._id,
+                          "estimatedDispatchDays",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <select
+                      value={
+                        typeof draft.isPreorderEnabled === "boolean"
+                          ? String(draft.isPreorderEnabled)
+                          : String(product.isPreorderEnabled !== false)
+                      }
+                      onChange={(event) =>
+                        applyRowDraft(
+                          product._id,
+                          "isPreorderEnabled",
+                          event.target.value === "true",
+                        )
+                      }
+                    >
+                      <option value="true">enabled</option>
+                      <option value="false">disabled</option>
+                    </select>
                   </td>
                   <td>
                     <select
@@ -1009,6 +1155,10 @@ function AdminDashboard() {
       return renderUsers();
     }
 
+    if (activeSection === "audit") {
+      return renderAuditLogs();
+    }
+
     if (activeSection === "orders") {
       return renderOrders();
     }
@@ -1057,7 +1207,7 @@ function AdminDashboard() {
           <p className="admin-eyebrow">Control Center</p>
           <h1>Beyond Bound Admin</h1>
           <p className="admin-subline">
-            Manage users, orders, testimonials, products, support, and analytics in one place.
+            Manage users, pre-orders, testimonials, products, support, audit logs, and analytics in one place.
           </p>
         </div>
       </section>

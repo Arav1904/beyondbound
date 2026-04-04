@@ -1,128 +1,120 @@
-# Backend Setup - Quick Start
+# Beyond Bound Backend
 
-## Install and Run Backend
+Express + MongoDB API for auth, cart, pre-orders, products, support, testimonials, admin dashboard, and audit logs.
 
-### 1. Install Dependencies
+## Quick Start
+
+1. Install dependencies
 
 ```bash
 cd backend
 npm install
 ```
 
-### 2. Configure Environment
+2. Configure environment
 
 ```bash
-# Create .env file from example
 cp .env.example .env
-
-# Edit .env and add your MongoDB connection string
-# For local MongoDB:
-# MONGODB_URI=mongodb://localhost:27017/beyond-bound
-
-# For MongoDB Atlas:
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/beyond-bound
 ```
 
-### 3. Start Backend Server
+Set at least:
+
+- `MONGODB_URI`
+- `GOOGLE_CLIENT_ID`
+- `JWT_SECRET`
+- `CORS_ORIGIN`
+- `ADMIN_ALLOWLIST`
+
+3. Run backend
 
 ```bash
 npm run dev
 ```
 
-Server runs on: `http://localhost:5000`
+Server: `http://localhost:5000`
 
-## API Endpoints
+## Key Scripts
 
-### Get All Verified Testimonials
+- `npm run dev` - Run with nodemon
+- `npm run start` - Run once with node
+- `npm run test` - Backend syntax checks
+- `npm run bootstrap:admin` - Promote/create admin user from `ADMIN_BOOTSTRAP_EMAIL`
 
-```
-GET http://localhost:5000/api/testimonials
-```
+## Admin Bootstrap
 
-### Submit New Testimonial
+To bootstrap admin for `beyondbound889@gmail.com`:
 
-```
-POST http://localhost:5000/api/testimonials
-Content-Type: application/json
+1. Ensure `.env` includes:
 
-{
-  "name": "Your Name",
-  "quote": "Your testimonial here",
-  "rating": 5,
-  "role": "Verified Customer"
-}
+```env
+ADMIN_BOOTSTRAP_EMAIL=beyondbound889@gmail.com
+ADMIN_ALLOWLIST=beyondbound889@gmail.com
 ```
 
-## Frontend Configuration
-
-In `.env.local`:
-
-```
-VITE_API_BASE_URL=http://localhost:5000/api
-```
-
-## Testing the API
-
-### Using curl:
+2. Run:
 
 ```bash
-# Get all testimonials
-curl http://localhost:5000/api/testimonials
-
-# Submit a testimonial
-curl -X POST http://localhost:5000/api/testimonials \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Test User",
-    "quote": "This is a test testimonial!",
-    "rating": 5
-  }'
+npm run bootstrap:admin
 ```
 
-### Using Postman or Thunder Client:
+The script creates or updates that user with role `admin`.
 
-1. Import the endpoints from above
-2. Set request method and URL
-3. Add JSON body for POST requests
-4. Click Send
+## API Overview
 
-## Database Requirements
+Public:
 
-You need MongoDB running. Choose one:
+- `GET /api/health`
+- `GET /api/products`
+- `GET /api/products/featured/primary`
+- `GET /api/products/:identifier`
+- `GET /api/testimonials`
+- `POST /api/testimonials`
+- `POST /api/support`
 
-### Option 1: Local MongoDB
+Authenticated user:
 
-- Install MongoDB locally
-- Start service: `mongod`
-- Connection string: `mongodb://localhost:27017/beyond-bound`
+- `POST /api/auth/google`
+- `GET /api/auth/me`
+- `PUT /api/auth/profile`
+- `GET /api/cart`
+- `POST /api/cart/items`
+- `PATCH /api/cart/items/:itemId`
+- `DELETE /api/cart/items/:itemId`
+- `DELETE /api/cart`
+- `POST /api/cart/merge`
+- `POST /api/orders/preorder`
+- `POST /api/orders/place` (legacy alias)
+- `GET /api/orders/my`
 
-### Option 2: MongoDB Atlas (Cloud)
+Admin (`requireAdmin` + allowlist):
 
-- Create free account at https://www.mongodb.com/cloud/atlas
-- Create cluster
-- Get connection string
-- Add to `.env` as `MONGODB_URI`
+- `GET /api/admin/overview`
+- `GET /api/admin/analytics`
+- `GET /api/admin/audit-logs`
+- `GET /api/admin/users`
+- `PATCH /api/admin/users/:id`
+- `GET /api/admin/orders`
+- `PATCH /api/admin/orders/:id/status`
+- `GET /api/admin/products`
+- `POST /api/admin/products`
+- `PUT /api/admin/products/:id`
+- `DELETE /api/admin/products/:id`
+- `GET /api/admin/support`
+- `PATCH /api/admin/support/:id`
+- `GET /api/admin/testimonials`
+- `GET /api/testimonials/admin/all`
+- `PUT /api/testimonials/admin/:id`
+- `DELETE /api/testimonials/admin/:id`
 
-## File Structure
+## Security Defaults
 
-```
-backend/
-├── server.js                 # Main server file
-├── package.json
-├── .env.example
-├── models/
-│   └── Testimonial.js        # MongoDB schema
-├── routes/
-│   └── testimonials.js       # API routes
-└── controllers/
-    └── testimonialController.js  # Request handlers
-```
+- Helmet enabled
+- Global API rate limit (`RATE_LIMIT_MAX`)
+- Auth-specific rate limit (`AUTH_RATE_LIMIT_MAX`)
+- CORS allowlist enforcement (`CORS_ORIGIN` comma-separated)
 
-## Next Steps
+## Notes
 
-1. Install backend dependencies: `npm install`
-2. Setup MongoDB
-3. Configure `.env`
-4. Run backend: `npm run dev`
-5. Test API with curl/Postman
-6. Run frontend and see testimonials fetch from API!
+- Order lifecycle now runs in pre-order mode (`preorder_requested`, `preorder_confirmed`, etc.)
+- Legacy order statuses (`placed`, `confirmed`, `packed`) are still accepted for compatibility
+- Audit logging is enabled for auth, support, testimonials, pre-order creation, and admin mutations

@@ -81,9 +81,9 @@ function CartDrawer() {
     clearCartLocal();
   };
 
-  const handleCheckout = async () => {
+  const handlePreOrder = async () => {
     if (!isAuthenticated) {
-      setCartMessage("Please sign in to place your order.");
+      setCartMessage("Please sign in to request a pre-order.");
       return;
     }
 
@@ -97,11 +97,11 @@ function CartDrawer() {
       const response = await placeOrder(authToken);
       clearCartLocal();
       setCartMessage(
-        `Order ${response.orderNumber || response?.data?.orderNumber || "created"} placed successfully.`,
+        `Pre-order ${response.orderNumber || response?.data?.orderNumber || "requested"} submitted successfully.`,
       );
       setIsCartOpen(false);
     } catch (error) {
-      setCartMessage(error.message || "Could not place order right now.");
+      setCartMessage(error.message || "Could not submit pre-order right now.");
     } finally {
       setCartSyncing(false);
     }
@@ -215,10 +215,10 @@ function CartDrawer() {
           <button
             type="button"
             className="cart-checkout-btn"
-            onClick={handleCheckout}
+            onClick={handlePreOrder}
             disabled={cartItems.length === 0}
           >
-            Place Order
+            Request Pre-Order
           </button>
         </footer>
       </aside>

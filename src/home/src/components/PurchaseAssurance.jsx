@@ -14,10 +14,10 @@ const assurances = [
 	},
 	{
 		id: 'checkout',
-		title: 'Secure Checkout',
-		subtitle: '256-bit SSL Encrypted',
+		title: 'Secure Pre-order',
+		subtitle: '256-bit SSL Protected',
 		iconSrc: iconShield,
-		iconAlt: 'Secure checkout icon',
+		iconAlt: 'Secure pre-order icon',
 	},
 	{
 		id: 'shipping',

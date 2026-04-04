@@ -3,6 +3,7 @@ import { OAuth2Client } from "google-auth-library";
 import User from "../models/User.js";
 import Cart from "../models/Cart.js";
 import { mergeCartItems } from "./cartController.js";
+import { createAuditLog } from "../utils/auditLog.js";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const JWT_SECRET = process.env.JWT_SECRET || "development-secret-change-me";
@@ -154,6 +155,19 @@ export const googleSignIn = async (req, res) => {
 
     const token = signAppToken(user);
 
+    await createAuditLog({
+      req,
+      actorId: user._id,
+      actorEmail: user.email,
+      action: "auth.google_signin",
+      entityType: "user",
+      entityId: user._id,
+      metadata: {
+        role: user.role,
+        mergedGuestItems: guestCartItems.length,
+      },
+    });
+
     return res.status(200).json({
       success: true,
       data: {
@@ -215,6 +229,19 @@ export const updateProfile = async (req, res) => {
     };
 
     await req.user.save();
+
+    await createAuditLog({
+      req,
+      actorId: req.userId,
+      actorEmail: req.user.email,
+      action: "auth.profile_updated",
+      entityType: "user",
+      entityId: req.user._id,
+      metadata: {
+        name: req.user.name,
+        hasPhone: Boolean(req.user.phone),
+      },
+    });
 
     return res.status(200).json({
       success: true,

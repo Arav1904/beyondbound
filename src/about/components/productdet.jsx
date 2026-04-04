@@ -3,9 +3,12 @@ import '../css/productdet.css';
 import withGlycoImg from '../assets/withglyco.jpeg';
 import withoutGlycoImg from '../assets/withoutglyco.jpeg';
 import useCartActions from '../../hooks/useCartActions';
+import usePrimaryProduct from '../../hooks/usePrimaryProduct';
+import { buildPrimaryCartItem } from '../../services/productCatalog';
 
 export default function ProductDet() {
   const { addProductToCart } = useCartActions();
+  const { product } = usePrimaryProduct();
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
@@ -56,14 +59,13 @@ export default function ProductDet() {
   };
 
   const handleAddToCart = () => {
-    addProductToCart({
-      productId: 'glycomics-60',
-      productName: 'Glycomics (60 Capsules)',
-      price: 1925,
-      quantity: 1,
-      size: '60',
-      image: withGlycoImg,
-    });
+    addProductToCart(
+      buildPrimaryCartItem(product, {
+        sizeValue: '60',
+        quantity: 1,
+        fallbackImage: withGlycoImg,
+      }),
+    );
   };
 
   return (
@@ -182,7 +184,7 @@ export default function ProductDet() {
           </div>
         </div>
 
-        <button type="button" className="add-to-cart-btn" onClick={handleAddToCart}>ADD TO CART</button>
+        <button type="button" className="add-to-cart-btn" onClick={handleAddToCart}>PRE-ORDER NOW</button>
       </div>
     </div>
   );

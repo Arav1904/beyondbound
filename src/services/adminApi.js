@@ -48,7 +48,7 @@ export async function submitSupportTicket(payload) {
 }
 
 export async function placeOrder(token, payload = {}) {
-  return apiRequest("/orders/place", {
+  return apiRequest("/orders/preorder", {
     method: "POST",
     token,
     body: payload,
@@ -65,6 +65,10 @@ export async function fetchAdminOverview(token) {
 
 export async function fetchAdminAnalytics(token, params = {}) {
   return apiRequest(`/admin/analytics${buildQuery(params)}`, { token });
+}
+
+export async function fetchAdminAuditLogs(token, params = {}) {
+  return apiRequest(`/admin/audit-logs${buildQuery(params)}`, { token });
 }
 
 export async function fetchAdminUsers(token, params = {}) {

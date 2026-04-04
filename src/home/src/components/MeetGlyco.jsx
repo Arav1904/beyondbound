@@ -5,19 +5,30 @@ import reviewImageOne from '../../image 32.png'
 import reviewImageTwo from '../../image 33.png'
 import reviewImageThree from '../../image 34.png'
 import useCartActions from '../../../hooks/useCartActions'
+import usePrimaryProduct from '../../../hooks/usePrimaryProduct'
+import { buildPrimaryCartItem } from '../../../services/productCatalog'
 
 function MeetGlycomics() {
 	const { addProductToCart } = useCartActions()
+	const { product } = usePrimaryProduct()
+
+	const compareAtPrice =
+		Number(product.compareAtPrice) > Number(product.price)
+			? Number(product.compareAtPrice)
+			: Number(product.price)
+	const discountPercent =
+		compareAtPrice > Number(product.price)
+			? Math.round(((compareAtPrice - Number(product.price)) / compareAtPrice) * 100)
+			: 0
 
 	const handleShopNow = () => {
-		addProductToCart({
-			productId: 'glycomics-60',
-			productName: 'Glycomics (60 Capsules)',
-			price: 1925,
-			quantity: 1,
-			size: '60',
-			image: bottleImg,
-		})
+		addProductToCart(
+			buildPrimaryCartItem(product, {
+				sizeValue: '60',
+				quantity: 1,
+				fallbackImage: bottleImg,
+			}),
+		)
 	}
 
 	return (
@@ -62,15 +73,17 @@ function MeetGlycomics() {
 					</h1>
 
 					<div className="glyco-pricing" aria-label="Pricing">
-							<span className="glyco-price-old-text">₹1984</span>
-							<span className="glyco-price-new-text">₹1925</span>
-							<span className="glyco-discount-badge">
-								Save 3%
-							</span>
+							<span className="glyco-price-old-text">₹{compareAtPrice}</span>
+							<span className="glyco-price-new-text">₹{Number(product.price)}</span>
+							{discountPercent > 0 ? (
+								<span className="glyco-discount-badge">
+									Save {discountPercent}%
+								</span>
+							) : null}
 						</div>
 
 						<button type="button" className="glyco-btn" onClick={handleShopNow}>
-							<span className="glyco-btn-label">Shop now →</span>
+							<span className="glyco-btn-label">Pre-order now →</span>
 						</button>
 
 						<p className="glyco-note">

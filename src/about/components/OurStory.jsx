@@ -3,20 +3,22 @@ import '../css/OurStory.css';
 import bottleAbout from '../assets/bottleabout.png';
 import { ChevronDown } from 'lucide-react';
 import useCartActions from '../../hooks/useCartActions';
+import usePrimaryProduct from '../../hooks/usePrimaryProduct';
+import { buildPrimaryCartItem } from '../../services/productCatalog';
 
 const OurStory = () => {
   const [expandedItem, setExpandedItem] = useState(null);
   const { addProductToCart } = useCartActions();
+  const { product } = usePrimaryProduct();
 
   const handleShopNow = () => {
-    addProductToCart({
-      productId: 'glycomics-60',
-      productName: 'Glycomics (60 Capsules)',
-      price: 1925,
-      quantity: 1,
-      size: '60',
-      image: bottleAbout,
-    });
+    addProductToCart(
+      buildPrimaryCartItem(product, {
+        sizeValue: '60',
+        quantity: 1,
+        fallbackImage: bottleAbout,
+      }),
+    );
   };
 
   return (
@@ -109,7 +111,7 @@ const OurStory = () => {
                 </div>
               )}
             </div>
-            <button onClick={handleShopNow} className="shop-now-btn">Shop now →</button>
+            <button onClick={handleShopNow} className="shop-now-btn">Pre-order now →</button>
           </div>
 
           <div className="solution-image">

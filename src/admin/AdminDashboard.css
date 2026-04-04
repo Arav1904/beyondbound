@@ -70,7 +70,8 @@
 .admin-toolbar select,
 .admin-table input,
 .admin-table select,
-.admin-product-grid input {
+.admin-product-grid input,
+.admin-product-grid select {
   border: 1px solid #cfdbe9;
   border-radius: 10px;
   padding: 9px 11px;
@@ -242,6 +243,22 @@
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 8px;
   margin-bottom: 10px;
+}
+
+.admin-inline-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #1b3a5b;
+  padding: 9px 11px;
+  border: 1px solid #cfdbe9;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.admin-inline-checkbox input {
+  margin: 0;
 }
 
 .admin-pagination {

@@ -4,22 +4,26 @@ import backImg from '../home/back.jpg';
 import sideImg from '../home/side.jpg';
 import labelImg from '../home/101.png';
 import useCartActions from "../hooks/useCartActions";
+import usePrimaryProduct from "../hooks/usePrimaryProduct";
+import { buildPrimaryCartItem, getPrimaryImage } from "../services/productCatalog";
 
 import './ProductPage.css';
 const ProductPage = () => {
   const { addProductToCart } = useCartActions();
+  const { product, packSizes } = usePrimaryProduct();
   const images = [frontImg, backImg, sideImg, labelImg];
   const [mainImage, setMainImage] = useState(frontImg);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('60');
   const [activeAccordion, setActiveAccordion] = useState(null);
 
-  const sizes = [
-    { value: '20', label: '20 Capsules', price: 600 },
-    { value: '60', label: '60 Capsules', price: 1925 }
-  ];
-
-  const currentPrice = sizes.find(size => size.value === selectedSize)?.price || 1925;
+  const sizes = packSizes;
+  const resolvedSelectedSize = sizes.some((size) => size.value === selectedSize)
+    ? selectedSize
+    : (sizes[sizes.length - 1]?.value || "60");
+  const currentPrice =
+    sizes.find((size) => size.value === resolvedSelectedSize)?.price || product.price;
+  const primaryImage = getPrimaryImage(product, frontImg);
 
   const accordionData = [
     {
@@ -41,16 +45,13 @@ const ProductPage = () => {
   };
 
   const handleAddToCart = () => {
-    const selected = sizes.find((size) => size.value === selectedSize) || sizes[1];
-
-    addProductToCart({
-      productId: `glycomics-${selected.value}`,
-      productName: `Glycomics (${selected.label})`,
-      price: selected.price,
-      quantity,
-      size: selected.value,
-      image: frontImg,
-    });
+    addProductToCart(
+      buildPrimaryCartItem(product, {
+        sizeValue: resolvedSelectedSize,
+        quantity,
+        fallbackImage: primaryImage,
+      }),
+    );
   };
 
   return (
@@ -74,17 +75,17 @@ const ProductPage = () => {
             ))}
           </div>
           <div className="main-display">
-            <img src={mainImage} alt="Glycomics Supplement" />
+            <img src={mainImage} alt={`${product.name} supplement`} />
           </div>
         </div>
 
         {/* Right: Product Details */}
         <div className="details-section">
           <div className="badge-row">
-            <span className="badge stock-badge">In Stock</span>
+            <span className="badge stock-badge">Pre-order Open</span>
           </div>
 
-          <h1 className="product-title">Glycomics</h1>
+          <h1 className="product-title">{product.name}</h1>
           <p className="price">₹ {currentPrice}</p>
 
           <p className="description">
@@ -99,7 +100,7 @@ const ProductPage = () => {
                 <button
                   key={size.value}
                   type="button"
-                  className={`size-btn ${selectedSize === size.value ? 'active' : ''}`}
+                  className={`size-btn ${resolvedSelectedSize === size.value ? 'active' : ''}`}
                   onClick={() => setSelectedSize(size.value)}
                 >
                   {size.label}
@@ -115,11 +116,11 @@ const ProductPage = () => {
               <button type="button" onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity">+</button>
             </div>
             <button type="button" className="add-to-cart-btn" onClick={handleAddToCart}>
-              Add To Cart
+              Pre-order Now
             </button>
           </div>
 
-          <a href="#" className="shipping-link">Shipping, Exchange and Returns</a>
+          <a href="#" className="shipping-link">Pre-order dispatch and return policy</a>
 
           <div className="accordion-section" role="list">
             {accordionData.map((item, index) => (

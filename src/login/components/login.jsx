@@ -23,6 +23,8 @@ const Login = ({
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [authSuccessUser, setAuthSuccessUser] = useState(null);
+  const [authStage, setAuthStage] = useState("idle");
+  const [authError, setAuthError] = useState("");
   const otpInputRefs = useRef([]);
   const successTimerRef = useRef(null);
 
@@ -67,6 +69,7 @@ const Login = ({
       alert("Please enter your email");
       return;
     }
+    setAuthError("");
     console.log("Generating OTP for:", formData.email);
     setOtpSent(true);
     // Add OTP generation logic here
@@ -96,10 +99,13 @@ const Login = ({
     }
 
     if (!nextUser?.credential) {
+      setAuthStage("idle");
       setAuthSuccessUser(null);
       return;
     }
 
+    setAuthStage("authenticating");
+    setAuthError("");
     setCartSyncing(true);
 
     try {
@@ -115,16 +121,20 @@ const Login = ({
       });
 
       setAuthSuccessUser(session.user);
+      setAuthStage("success");
       setCartMessage("Signed in successfully. Cart synced to your account.");
       setOtpSent(false);
       setOtp(["", "", "", "", "", ""]);
 
       successTimerRef.current = window.setTimeout(() => {
         setAuthSuccessUser(null);
+        setAuthStage("idle");
         setIsLoginModalOpen(false);
       }, 1600);
     } catch (error) {
       setAuthSuccessUser(null);
+      setAuthStage("idle");
+      setAuthError(error.message || "Sign in failed. Please try again.");
       setCartMessage(error.message || "Sign in failed. Please try again.");
     } finally {
       setCartSyncing(false);
@@ -163,7 +173,7 @@ const Login = ({
         {/* Right Side - Form Section */}
         <div className="login-form-section">
           <div className="form-content">
-            {authSuccessUser ? (
+            {authStage === "success" && authSuccessUser ? (
               <>
                 <div className="signup-header">SUCCESS</div>
                 <h1 className="form-title">Successfully logged in</h1>
@@ -178,6 +188,20 @@ const Login = ({
                 </div>
                 <p className="auth-success-note">
                   Redirecting to your account...
+                </p>
+              </>
+            ) : authStage === "authenticating" ? (
+              <>
+                <div className="signup-header">VERIFYING</div>
+                <h1 className="form-title">Signing you in...</h1>
+                <p className="auth-success-note">
+                  We are securely verifying your Google account.
+                </p>
+                <div className="auth-success-icon" aria-hidden="true">
+                  ...
+                </div>
+                <p className="auth-success-note">
+                  This usually takes a second.
                 </p>
               </>
             ) : otpSent ? (
@@ -255,11 +279,18 @@ const Login = ({
                   Science-Backed Nutrition to Support Glucose Balance
                 </p>
 
+                {authError ? (
+                  <p className="auth-error-note" role="alert">
+                    {authError}
+                  </p>
+                ) : null}
+
                 {/* Google Sign In Button */}
                 <GoogleSignIn
                   onUserChange={handleGoogleUserChange}
                   className="google-signin-button--auth"
                   buttonOptions={{ text: "signup_with", shape: "rectangular" }}
+                  showSignedInState={false}
                 />
 
                 <div className="form-divider">

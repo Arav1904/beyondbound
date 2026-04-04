@@ -18,6 +18,8 @@ const Signup = ({
   const setCartSyncing = useMenuStore((state) => state.setCartSyncing);
   const setCartMessage = useMenuStore((state) => state.setCartMessage);
   const [authSuccessUser, setAuthSuccessUser] = useState(null);
+  const [authStage, setAuthStage] = useState("idle");
+  const [authError, setAuthError] = useState("");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -39,6 +41,7 @@ const Signup = ({
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    setAuthError("");
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -51,10 +54,13 @@ const Signup = ({
     }
 
     if (!nextUser?.credential) {
+      setAuthStage("idle");
       setAuthSuccessUser(null);
       return;
     }
 
+    setAuthStage("authenticating");
+    setAuthError("");
     setCartSyncing(true);
 
     try {
@@ -70,14 +76,18 @@ const Signup = ({
       });
 
       setAuthSuccessUser(session.user);
+      setAuthStage("success");
       setCartMessage("Signed in successfully. Cart synced to your account.");
 
       successTimerRef.current = window.setTimeout(() => {
         setAuthSuccessUser(null);
+        setAuthStage("idle");
         setIsLoginModalOpen(false);
       }, 1600);
     } catch (error) {
       setAuthSuccessUser(null);
+      setAuthStage("idle");
+      setAuthError(error.message || "Sign in failed. Please try again.");
       setCartMessage(error.message || "Sign in failed. Please try again.");
     } finally {
       setCartSyncing(false);
@@ -128,7 +138,7 @@ const Signup = ({
         {/* Right Side - Form Section */}
         <div className="login-form-section">
           <div className="form-content">
-            {authSuccessUser ? (
+            {authStage === "success" && authSuccessUser ? (
               <>
                 <div className="signup-header">SUCCESS</div>
                 <h1 className="form-title">Successfully logged in</h1>
@@ -145,17 +155,38 @@ const Signup = ({
                   Redirecting to your account...
                 </p>
               </>
+            ) : authStage === "authenticating" ? (
+              <>
+                <div className="signup-header">VERIFYING</div>
+                <h1 className="form-title">Signing you in...</h1>
+                <p className="auth-success-note">
+                  We are securely verifying your Google account.
+                </p>
+                <div className="auth-success-icon" aria-hidden="true">
+                  ...
+                </div>
+                <p className="auth-success-note">
+                  This usually takes a second.
+                </p>
+              </>
             ) : (
               <>
                 <div className="signup-header">NEW ACCOUNT</div>
                 <h1 className="form-title">Create account</h1>
                 <p className="signup-tagline">Free to join. No spam, ever.</p>
 
+                {authError ? (
+                  <p className="auth-error-note" role="alert">
+                    {authError}
+                  </p>
+                ) : null}
+
                 {/* Google Sign In Button */}
                 <GoogleSignIn
                   onUserChange={handleGoogleUserChange}
                   className="google-signin-button--auth"
                   buttonOptions={{ text: "signup_with", shape: "rectangular" }}
+                  showSignedInState={false}
                 />
 
                 <div className="form-divider">

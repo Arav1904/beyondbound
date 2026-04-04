@@ -233,6 +233,13 @@
   line-height: 1.5;
 }
 
+.auth-error-note {
+  font-size: 13px;
+  color: #b42318;
+  margin: 0 0 14px;
+  line-height: 1.45;
+}
+
 .auth-success-email {
   color: #1f2f46;
   font-weight: 600;

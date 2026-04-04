@@ -30,11 +30,12 @@ function GoogleSignIn({
   initialUser = null,
   className = "",
   buttonOptions = {},
+  showSignedInState = true,
 }) {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const buttonRef = useRef(null);
   const [localUser, setLocalUser] = useState(null);
-  const user = initialUser ?? localUser;
+  const user = initialUser ?? (showSignedInState ? localUser : null);
   const buttonTheme = buttonOptions.theme ?? "outline";
   const buttonSize = buttonOptions.size ?? "large";
   const buttonShape = buttonOptions.shape ?? "pill";
@@ -55,10 +56,12 @@ function GoogleSignIn({
         credential: response.credential,
       };
 
-      setLocalUser(nextUser);
+      if (showSignedInState) {
+        setLocalUser(nextUser);
+      }
       onUserChange?.(nextUser);
     },
-    [onUserChange],
+    [onUserChange, showSignedInState],
   );
 
   useEffect(() => {
@@ -155,7 +158,7 @@ function GoogleSignIn({
     );
   }
 
-  if (user) {
+  if (user && showSignedInState) {
     return (
       <div className="google-user-state">
         <div className="google-user-summary">

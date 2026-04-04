@@ -24,11 +24,19 @@ async function apiRequest(path, { method = "GET", token, body } = {}) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    throw new Error(
+      `Cannot reach backend API at ${API_BASE_URL}. Please ensure the backend server is running.`,
+    );
+  }
 
   const payload = await response.json().catch(() => ({}));
 

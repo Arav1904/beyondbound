@@ -16,7 +16,16 @@ const buildQuery = (params = {}) => {
 };
 
 async function apiRequest(path) {
-  const response = await fetch(`${API_BASE_URL}${path}`);
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`);
+  } catch {
+    throw new Error(
+      `Cannot reach backend API at ${API_BASE_URL}. Please ensure the backend server is running.`,
+    );
+  }
+
   const payload = await response.json().catch(() => ({}));
 
   if (!response.ok) {

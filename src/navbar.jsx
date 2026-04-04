@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./navbar.css";
 import beyondLogo from "./assets/beyond.svg";
-import useMenuStore from './useMenuStore';
+import useMenuStore from "./useMenuStore";
 import { ArrowUpRight } from "lucide-react";
 
 function Navbar() {
@@ -9,7 +9,9 @@ function Navbar() {
   const setActiveMenu = useMenuStore((state) => state.setActiveMenu);
   const activePage = useMenuStore((state) => state.activePage);
   const setActivePage = useMenuStore((state) => state.setActivePage);
-  const setIsLoginModalOpen = useMenuStore((state) => state.setIsLoginModalOpen);
+  const setIsLoginModalOpen = useMenuStore(
+    (state) => state.setIsLoginModalOpen,
+  );
   const setAuthMode = useMenuStore((state) => state.setAuthMode);
   const signedInUser = useMenuStore((state) => state.signedInUser);
   const openAccountModal = useMenuStore((state) => state.openAccountModal);
@@ -107,14 +109,18 @@ function Navbar() {
         }}
       >
         <nav className="navbar">
-          <img 
-            src={beyondLogo} 
-            alt="Beyond Bound" 
+          <img
+            src={beyondLogo}
+            alt="Beyond Bound"
             className="navbar-logo-separate"
             onClick={handleLogoClick}
             style={{ cursor: "pointer" }}
           />
-          <div className="navbar-brand" onClick={handleLogoClick} style={{ cursor: "pointer" }}>
+          <div
+            className="navbar-brand"
+            onClick={handleLogoClick}
+            style={{ cursor: "pointer" }}
+          >
             <img src={beyondLogo} alt="Beyond Bound" className="navbar-logo" />
             BEYOND BOUND<span>®</span>
           </div>
@@ -174,8 +180,8 @@ function Navbar() {
             </li>
 
             <li className="menu-item">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="menu-trigger"
                 onClick={() => navigateTo("contact")}
               >
@@ -186,8 +192,8 @@ function Navbar() {
 
           <div className="navbar-actions">
             <button type="button" className="nav-contact-us-btn">
-              Contact Us 
-              <ArrowUpRight size={'18px'} />
+              Contact Us
+              <ArrowUpRight size={"18px"} />
             </button>
 
             {signedInUser ? (
@@ -207,7 +213,10 @@ function Navbar() {
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <span className="profile-avatar-fallback" aria-hidden="true">
+                    <span
+                      className="profile-avatar-fallback"
+                      aria-hidden="true"
+                    >
                       {avatarInitial}
                     </span>
                   )}
@@ -216,34 +225,55 @@ function Navbar() {
                 {profileMenuOpen && (
                   <div className="profile-dropdown" role="menu">
                     <div className="profile-dropdown-summary">
-                      <p className="profile-dropdown-name">{signedInUser.name || "Beyond Bound User"}</p>
-                      <p className="profile-dropdown-email">{signedInUser.email || "Google account"}</p>
+                      <p className="profile-dropdown-name">
+                        {signedInUser.name || "Beyond Bound User"}
+                      </p>
+                      <p className="profile-dropdown-email">
+                        {signedInUser.email || "Google account"}
+                      </p>
                     </div>
 
-                    <button type="button" className="profile-dropdown-item" onClick={() => openAccountSection("profile")}>
+                    <button
+                      type="button"
+                      className="profile-dropdown-item"
+                      onClick={() => openAccountSection("profile")}
+                    >
                       Edit Profile
                     </button>
-                    <button type="button" className="profile-dropdown-item" onClick={() => openAccountSection("address")}>
+                    <button
+                      type="button"
+                      className="profile-dropdown-item"
+                      onClick={() => openAccountSection("address")}
+                    >
                       Manage Address
                     </button>
-                    <button type="button" className="profile-dropdown-item" onClick={() => openAccountSection("orders")}>
+                    <button
+                      type="button"
+                      className="profile-dropdown-item"
+                      onClick={() => openAccountSection("orders")}
+                    >
                       Order History
                     </button>
-                    <button type="button" className="profile-dropdown-item profile-dropdown-item--danger" onClick={handleSignOut}>
+                    <button
+                      type="button"
+                      className="profile-dropdown-item profile-dropdown-item--danger"
+                      onClick={handleSignOut}
+                    >
                       Sign Out
                     </button>
                   </div>
                 )}
               </div>
             ) : (
-              <button type="button" className="nav-signup-btn" onClick={openAuthModal}>
+              <button
+                type="button"
+                className="nav-signup-btn"
+                onClick={openAuthModal}
+              >
                 Sign Up
               </button>
             )}
           </div>
-
-
-           
 
           <button
             type="button"
@@ -271,8 +301,6 @@ function Navbar() {
 
         {mobileOpen && (
           <div className="mobile-menu">
-          
-
             <button
               type="button"
               className="mobile-link"
@@ -312,8 +340,8 @@ function Navbar() {
               About
             </button>
 
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="mobile-link"
               onClick={() => {
                 navigateTo("contact");
@@ -341,25 +369,47 @@ function Navbar() {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <span className="mobile-profile-avatar-fallback">{avatarInitial}</span>
+                      <span className="mobile-profile-avatar-fallback">
+                        {avatarInitial}
+                      </span>
                     )}
                   </span>
                   <span className="mobile-profile-label">Account</span>
-                  <span className={`mobile-caret${mobileProfileOpen ? " mobile-caret--open" : ""}`}>⌄</span>
+                  <span
+                    className={`mobile-caret${mobileProfileOpen ? " mobile-caret--open" : ""}`}
+                  >
+                    ⌄
+                  </span>
                 </button>
 
                 {mobileProfileOpen && (
                   <div className="mobile-profile-actions">
-                    <button type="button" className="mobile-link" onClick={() => openAccountSection("profile")}>
+                    <button
+                      type="button"
+                      className="mobile-link"
+                      onClick={() => openAccountSection("profile")}
+                    >
                       Edit Profile
                     </button>
-                    <button type="button" className="mobile-link" onClick={() => openAccountSection("address")}>
+                    <button
+                      type="button"
+                      className="mobile-link"
+                      onClick={() => openAccountSection("address")}
+                    >
                       Manage Address
                     </button>
-                    <button type="button" className="mobile-link" onClick={() => openAccountSection("orders")}>
+                    <button
+                      type="button"
+                      className="mobile-link"
+                      onClick={() => openAccountSection("orders")}
+                    >
                       Order History
                     </button>
-                    <button type="button" className="mobile-link" onClick={handleSignOut}>
+                    <button
+                      type="button"
+                      className="mobile-link"
+                      onClick={handleSignOut}
+                    >
                       Sign Out
                     </button>
                   </div>
@@ -367,7 +417,11 @@ function Navbar() {
               </div>
             ) : (
               <div className="navbar-actions">
-                <button type="button" className="nav-signup-btn" onClick={openAuthModal}>
+                <button
+                  type="button"
+                  className="nav-signup-btn"
+                  onClick={openAuthModal}
+                >
                   Sign Up
                 </button>
               </div>
@@ -388,4 +442,3 @@ function Navbar() {
 }
 
 export default Navbar;
-

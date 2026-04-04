@@ -1,69 +1,68 @@
-import './Ingredients.css';
-import berberineImg from '../product/assets/berberine.png';
-import gurmarImg from '../product/assets/gurmar.png';
-import vijaysarImg from '../product/assets/vijaysar.png';
+import "./Ingredients.css";
+import berberineImg from "../product/assets/berberine.png";
+import gurmarImg from "../product/assets/gurmar.png";
+import vijaysarImg from "../product/assets/vijaysar.png";
 import { useRef, useEffect } from "react";
 import amlaImg from "../product/assets/amla.png";
 import haldiImg from "../product/assets/haldi.png";
 import jambuImg from "../product/assets/jambuseeds.png";
 import karelaImg from "../product/assets/karela.png";
 
-
 const Ingredients = () => {
- const ingredients = [
-   {
-     image: berberineImg,
-     isHero: true,
-     name: "Berberine",
-     dosage: "500 mg",
-     description: "Guides your cells to use glucose better",
-   },
-   {
-     image: gurmarImg,
-     isHero: false,
-     name: "Gurmar",
-     dosage: "80 mg",
-     description: "Stops sugar rushing into your blood",
-   },
-   {
-     image: vijaysarImg,
-     isHero: false,
-     name: "Vijaysar",
-     dosage: "60 mg",
-     description: "Keeps your insulin-making cells healthy",
-   }
-   ,
-   {
-     image: jambuImg,
-     isHero: false,
-     name: "Jambu Seeds",
-     dosage: "40 mg",
-     description: "Slows down how fast carbs digest",
-   },
-   {
-     image: karelaImg,
-     isHero: false,
-     name: "Karela",
-     dosage: "30 mg",
-     description: "Moves sugar into cells without insulin",
-   },{
-     image: haldiImg,
-     isHero: false,
-     name: "Haldi",
-     dosage: "20 mg",
-     description: "Cools the inflammation blocking your metabolism",
-   },{
-     image: amlaImg,
-     isHero: false,
-     name: "Amla",
-     dosage: "20 mg",
-     description: "Protects cells that process your energy",
-   },
- 
- ];
-const containerRef = useRef(null);
+  const ingredients = [
+    {
+      image: berberineImg,
+      isHero: true,
+      name: "Berberine",
+      dosage: "500 mg",
+      description: "Guides your cells to use glucose better",
+    },
+    {
+      image: gurmarImg,
+      isHero: false,
+      name: "Gurmar",
+      dosage: "80 mg",
+      description: "Stops sugar rushing into your blood",
+    },
+    {
+      image: vijaysarImg,
+      isHero: false,
+      name: "Vijaysar",
+      dosage: "60 mg",
+      description: "Keeps your insulin-making cells healthy",
+    },
+    {
+      image: jambuImg,
+      isHero: false,
+      name: "Jambu Seeds",
+      dosage: "40 mg",
+      description: "Slows down how fast carbs digest",
+    },
+    {
+      image: karelaImg,
+      isHero: false,
+      name: "Karela",
+      dosage: "30 mg",
+      description: "Moves sugar into cells without insulin",
+    },
+    {
+      image: haldiImg,
+      isHero: false,
+      name: "Haldi",
+      dosage: "20 mg",
+      description: "Cools the inflammation blocking your metabolism",
+    },
+    {
+      image: amlaImg,
+      isHero: false,
+      name: "Amla",
+      dosage: "20 mg",
+      description: "Protects cells that process your energy",
+    },
+  ];
+  const containerRef = useRef(null);
 
-    useEffect(() => {
+  useEffect(() => {
     const container = containerRef.current;
 
     const handleWheel = (e) => {
@@ -83,23 +82,24 @@ const containerRef = useRef(null);
   return (
     <section className="science-ingredients">
       <h2 className="section-title text-center">Key ingredients</h2>
-      
+
       <div className="ingredients-header">
         <div className="ingredients-title-wrapper">
           <h3 className="ingredients-subtitle">
-            7 ingredients.<br/>
+            7 ingredients.
+            <br />
             Zero fillers.
           </h3>
         </div>
         <div className="ingredients-desc-wrapper">
           <p className="ingredients-desc">
-            Each ingredient has a specific, evidence-backed role. Tap any to see how it fits the mechanism.
+            Each ingredient has a specific, evidence-backed role. Tap any to see
+            how it fits the mechanism.
           </p>
         </div>
       </div>
 
       <div className="scroll-wrap" ref={containerRef}>
-
         <div className="grid-is">
           {ingredients.map((ingredient, index) => (
             <div key={index} className="card-outer-wrapper-is">
@@ -109,7 +109,7 @@ const containerRef = useRef(null);
                   <span className="hero-badge-is">Hero Ingredient</span>
                 )}
                 <div className="img-container-is">
-                    <div className="img-circle-is"></div>
+                  <div className="img-circle-is"></div>
                   <img
                     src={ingredient.image}
                     alt={ingredient.name}
@@ -128,7 +128,7 @@ const containerRef = useRef(null);
           ))}
         </div>
       </div>
-      
+
       {/* <div className="ingredients-grid">
         {ingredients.map(ing => (
           <div className="ingredient-card-wrapper" key={ing.id}>

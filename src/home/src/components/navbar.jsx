@@ -86,7 +86,6 @@ function Navbar() {
               >
                 About
               </button>
-             
             </li>
 
             <li className="menu-item">

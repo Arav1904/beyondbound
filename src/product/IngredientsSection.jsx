@@ -8,7 +8,6 @@ import haldiImg from "./assets/haldi.png";
 import jambuImg from "./assets/jambuseeds.png";
 import karelaImg from "./assets/karela.png";
 
-
 const ingredients = [
   {
     image: berberineImg,
@@ -30,8 +29,7 @@ const ingredients = [
     name: "Vijaysar",
     dosage: "60 mg",
     description: "Keeps your insulin-making cells healthy",
-  }
-  ,
+  },
   {
     image: jambuImg,
     isHero: false,
@@ -45,26 +43,27 @@ const ingredients = [
     name: "Karela",
     dosage: "30 mg",
     description: "Moves sugar into cells without insulin",
-  },{
+  },
+  {
     image: haldiImg,
     isHero: false,
     name: "Haldi",
     dosage: "20 mg",
     description: "Cools the inflammation blocking your metabolism",
-  },{
+  },
+  {
     image: amlaImg,
     isHero: false,
     name: "Amla",
     dosage: "20 mg",
     description: "Protects cells that process your energy",
   },
-
 ];
 
 function IngredientsSection() {
   const containerRef = useRef(null);
 
-    useEffect(() => {
+  useEffect(() => {
     const container = containerRef.current;
 
     const handleWheel = (e) => {
@@ -81,7 +80,6 @@ function IngredientsSection() {
     };
   }, []);
 
-
   return (
     <div className="body-is">
       <section className="ingredients-container-is">
@@ -91,35 +89,34 @@ function IngredientsSection() {
         </header>
 
         <div className="scroll-wrap" ref={containerRef}>
-
-        <div className="grid-is">
-          {ingredients.map((ingredient, index) => (
-            <div key={index} className="card-outer-wrapper-is">
-              <div className="card-bg-is"></div> {/* The Teal Shadow Element */}
-              <div className="card-content-is">
-                {ingredient.isHero && (
-                  <span className="hero-badge-is">Hero Ingredient</span>
-                )}
-                <div className="img-container-is">
+          <div className="grid-is">
+            {ingredients.map((ingredient, index) => (
+              <div key={index} className="card-outer-wrapper-is">
+                <div className="card-bg-is"></div>{" "}
+                {/* The Teal Shadow Element */}
+                <div className="card-content-is">
+                  {ingredient.isHero && (
+                    <span className="hero-badge-is">Hero Ingredient</span>
+                  )}
+                  <div className="img-container-is">
                     <div className="img-circle-is"></div>
-                  <img
-                    src={ingredient.image}
-                    alt={ingredient.name}
-                    className="ingredient-img-is"
-                  />
-                </div>
-                <div className="content-is">
-                  <h3 className="ingredient-name-is">{ingredient.name}</h3>
-                  <p className="ingredient-dosage-is">{ingredient.dosage}</p>
-                  <p className="ingredient-description-is">
-                    {ingredient.description}
-                  </p>
+                    <img
+                      src={ingredient.image}
+                      alt={ingredient.name}
+                      className="ingredient-img-is"
+                    />
+                  </div>
+                  <div className="content-is">
+                    <h3 className="ingredient-name-is">{ingredient.name}</h3>
+                    <p className="ingredient-dosage-is">{ingredient.dosage}</p>
+                    <p className="ingredient-description-is">
+                      {ingredient.description}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-
+            ))}
+          </div>
         </div>
       </section>
     </div>
@@ -127,4 +124,3 @@ function IngredientsSection() {
 }
 
 export default IngredientsSection;
-

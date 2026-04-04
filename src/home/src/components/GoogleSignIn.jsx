@@ -1,1 +1,1 @@
-export { default } from '../../../GoogleSignIn'
+export { default } from "../../../GoogleSignIn";

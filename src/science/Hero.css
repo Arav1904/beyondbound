@@ -115,45 +115,83 @@
 }
 
 @media (max-width: 480px) {
+
   .science-hero {
-    height: 60vh; /* 🔥 reduced from 100vh */
-    min-height: 380px;
-    background-position: center 35%; /* 🔥 better framing */
+    height: 100svh;
+    min-height: 600px;
+    background-size: cover;
+    background-position: 18% center;
   }
 
   .science-hero-overlay {
-    padding: 1.5rem; /* 🔥 reduced padding */
-    justify-content: flex-end;
+    padding: 22px 18px 24px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* keeps heading top, stats bottom */
+    align-items: center;            /* ← CENTER horizontally */
+    height: 100%;
+    min-height: 100%;
+    box-sizing: border-box;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
   .science-hero-content {
-    margin-top: 1rem; /* 🔥 reduce top spacing */
+    margin-top: 0;
+    width: 100%;                    /* heading still stretches full width */
+    align-self: flex-start;         /* ← heading stays LEFT even when overlay is centered */
   }
 
   .science-hero-title {
-    font-size: 1.4rem;
-    line-height: 1.1;
+    font-size: 1.65rem;
+    line-height: 1.15;
+    text-align: left;
+    max-width: 210px;
+    margin: 0;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.65);
   }
 
   .science-hero-stats {
+    width: 88%;
+    height: 60%;                     /* ← slightly inset from edges = centered look */
+    max-width: 320px;               /* caps width on wider phones */
+    margin: 0 auto;
+    margin-bottom: 20%;                 /* ← centers the box horizontally */
     flex-direction: column;
-    gap: 0.8rem;
-    padding: 0.8rem;
-    border-radius: 8px;
-    margin-bottom: 0.8rem;
+    padding: 0;
+    gap: 0;
+    background: rgba(18, 18, 18, 0.72);
+    border: 1.5px solid #ffffff;
+    border-radius: 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
   .science-stat-box {
-    border: none;
-    padding: 0.6rem 0;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 14px 18px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .science-stat-box.border-none {
+    border-bottom: none;
   }
 
   .science-stat-value {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
+    font-weight: 400;
+    margin: 0 0 4px 0;
   }
 
   .science-stat-label {
-    font-size: 0.7rem;
+    font-size: 1.9rem;
+    line-height: 1.4;
+    opacity: 0.88;
+    margin: 0;
   }
 }
 

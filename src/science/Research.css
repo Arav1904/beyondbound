@@ -180,7 +180,7 @@
   }
 
   .research-number {
-    font-size: 4rem;
+    font-size: 4rem !important;
   }
 
   .research-subtitle {

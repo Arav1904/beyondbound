@@ -172,51 +172,88 @@
 }
 
 @media (max-width: 480px) {
+
   .science-mechanism {
-    padding: 2rem 1rem;
+    padding: 28px 20px 32px;   /* tight top, breathing room bottom */
   }
+
+  /* ── TITLE ── */
+ @media (max-width: 480px) {
 
   .section-title {
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.1;
+    font-size: 1.75rem !important;   /* increased from 1.35rem */
+    color: #000000 !important;       /* force black */
+    margin-bottom: 16px;
+    line-height: 1.2;
+    text-align: center;
+    font-weight: 100 !important;       /* force normal weight */
   }
 
+}
+
+  /* ── IMAGE: full width, no bottom gap ── */
+  .mechanism-image-wrapper {
+    border-radius: 16px;
+    margin-bottom: 20px;       /* CRITICAL: was large/undefined, causing the empty gap */
+    box-shadow: none;
+    width: 100%;
+    order: -1;                 /* image always first on mobile */
+  }
+
+  .mechanism-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 16px;
+  }
+
+  /* ── CONTAINER: stack tightly ── */
+  .mechanism-container {
+    flex-direction: column;
+    gap: 0;                    /* remove the 4rem desktop gap — kills the empty space */
+    align-items: stretch;
+  }
+
+  /* ── SUBTITLE "3 steps. One result." ── */
   .mechanism-subtitle {
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
+    font-size: 1.55rem;
+    margin-bottom: 10px;
+    line-height: 1.2;
   }
 
+  /* ── DESCRIPTION ── */
   .mechanism-desc {
-    font-size: 0.95rem;
-    margin-bottom: 1.5rem;
+    font-size: 0.93rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
     max-width: 100%;
   }
 
+  /* ── STEPS ── */
   .mechanism-step {
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1rem 0;
+    flex-direction: row;       /* keep number + title on same row like target */
+    gap: 14px;
+    padding: 13px 0;
+    align-items: flex-start;
   }
 
   .step-num {
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    min-width: 28px;
+    margin-bottom: 0;
+    color: #ccc;
   }
 
   .step-title {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0;
   }
 
   .step-desc {
     font-size: 0.85rem;
   }
-
-  .mechanism-image-wrapper {
-    border-radius: 16px;
-  }
 }
-
 @media (max-width: 375px) {
   .science-mechanism {
     padding: 1.5rem 0.8rem;

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./navbar.css";
 import beyondLogo from "./assets/beyond.svg";
 import useMenuStore from "./useMenuStore";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 
 function Navbar() {
   const activeMenu = useMenuStore((state) => state.activeMenu);
@@ -191,20 +191,14 @@ function Navbar() {
                 About
               </button>
             </li>
-
-            <li className="menu-item">
-              <button
-                type="button"
-                className="menu-trigger"
-                onClick={() => navigateTo("contact")}
-              >
-                Contact
-              </button>
-            </li>
           </ul>
 
           <div className="navbar-actions">
-            <button type="button" className="nav-contact-us-btn">
+            <button
+              type="button"
+              className="nav-contact-us-btn"
+              onClick={() => navigateTo("contact")}
+            >
               Contact Us
               <ArrowUpRight size={"18px"} />
             </button>
@@ -299,7 +293,7 @@ function Navbar() {
 
           <button
             type="button"
-            className={`hamburger${mobileOpen ? " hamburger--open" : ""}`}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-transparent text-slate-700 shadow-none transition hover:bg-transparent md:hidden"
             onClick={() => {
               setMobileOpen((prev) => {
                 const next = !prev;
@@ -309,85 +303,90 @@ function Navbar() {
 
                 return next;
               });
-              window.scrollTo({ top: 0, behavior: "smooth" });
-              setActivePage("home");
             }}
             aria-label="Toggle navigation"
             aria-expanded={mobileOpen}
           >
-            <span className="bar" />
-            <span className="bar" />
-            <span className="bar" />
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </nav>
 
         {mobileOpen && (
-          <div className="mobile-menu">
+          <div className="border-t border-slate-200 bg-white px-4 py-3 md:hidden">
+            <ul className="space-y-1">
+              <li>
+                <button
+                  type="button"
+                  className="w-full rounded-lg px-3 py-2 text-left text-base font-medium text-slate-700 transition hover:bg-slate-100"
+                  onClick={() => {
+                    navigateTo("home");
+                  }}
+                >
+                  Home
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  className="w-full rounded-lg px-3 py-2 text-left text-base font-medium text-slate-700 transition hover:bg-slate-100"
+                  onClick={() => {
+                    navigateTo("products");
+                  }}
+                >
+                  Products
+                </button>
+              </li>
+
+              {isAdmin ? (
+                <li>
+                  <button
+                    type="button"
+                    className="w-full rounded-lg px-3 py-2 text-left text-base font-medium text-slate-700 transition hover:bg-slate-100"
+                    onClick={() => {
+                      navigateTo("admin");
+                    }}
+                  >
+                    Admin
+                  </button>
+                </li>
+              ) : null}
+
+              <li>
+                <button
+                  type="button"
+                  className="w-full rounded-lg px-3 py-2 text-left text-base font-medium text-slate-700 transition hover:bg-slate-100"
+                  onClick={() => {
+                    navigateTo("science");
+                  }}
+                >
+                  Science
+                </button>
+              </li>
+
+              <li>
+                <button
+                  type="button"
+                  className="w-full rounded-lg px-3 py-2 text-left text-base font-medium text-slate-700 transition hover:bg-slate-100"
+                  onClick={() => {
+                    navigateTo("about");
+                  }}
+                >
+                  About
+                </button>
+              </li>
+            </ul>
+
             <button
               type="button"
-              className="mobile-link"
-              onClick={() => {
-                navigateTo("home");
-              }}
+              className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-slate-900 px-4 py-2.5 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
+              onClick={() => navigateTo("contact")}
             >
-              Home
+              Contact Us
+              <ArrowUpRight size={16} />
             </button>
-            <button
-              type="button"
-              className="mobile-link"
-              onClick={() => {
-                navigateTo("products");
-              }}
-            >
-              Products
-            </button>
-
-            {isAdmin ? (
-              <button
-                type="button"
-                className="mobile-link"
-                onClick={() => {
-                  navigateTo("admin");
-                }}
-              >
-                Admin
-              </button>
-            ) : null}
-
-            <button
-              type="button"
-              className="mobile-link"
-              onClick={() => {
-                navigateTo("science");
-              }}
-            >
-              Science
-            </button>
-
-            <button
-              type="button"
-              className="mobile-link"
-              onClick={() => {
-                navigateTo("about");
-              }}
-            >
-              About
-            </button>
-
-            <button
-              type="button"
-              className="mobile-link"
-              onClick={() => {
-                navigateTo("contact");
-              }}
-            >
-              Contact
-            </button>
-
-            <br />
 
             {signedInUser ? (
-              <div className="mobile-profile-block">
+              <div className="mobile-profile-block mt-3">
                 <button
                   type="button"
                   className="mobile-profile-trigger"
@@ -417,24 +416,24 @@ function Navbar() {
                 </button>
 
                 {mobileProfileOpen && (
-                  <div className="mobile-profile-actions">
+                  <div className="mobile-profile-actions mt-2">
                     <button
                       type="button"
-                      className="mobile-link"
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
                       onClick={() => openAccountSection("profile")}
                     >
                       Edit Profile
                     </button>
                     <button
                       type="button"
-                      className="mobile-link"
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
                       onClick={() => openAccountSection("address")}
                     >
                       Manage Address
                     </button>
                     <button
                       type="button"
-                      className="mobile-link"
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
                       onClick={() => openAccountSection("orders")}
                     >
                       Order History
@@ -442,7 +441,7 @@ function Navbar() {
                     {isAdmin ? (
                       <button
                         type="button"
-                        className="mobile-link"
+                        className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
                         onClick={() => navigateTo("admin")}
                       >
                         Admin Dashboard
@@ -450,7 +449,7 @@ function Navbar() {
                     ) : null}
                     <button
                       type="button"
-                      className="mobile-link"
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
                       onClick={handleSignOut}
                     >
                       Sign Out
@@ -459,10 +458,10 @@ function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="navbar-actions">
+              <div className="mt-3">
                 <button
                   type="button"
-                  className="nav-signup-btn"
+                  className="w-full rounded-full bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
                   onClick={openAuthModal}
                 >
                   Sign Up

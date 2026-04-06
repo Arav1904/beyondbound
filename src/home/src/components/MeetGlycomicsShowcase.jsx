@@ -29,13 +29,17 @@ function MeetGlycomicsShowcase() {
 							</h3>
 
 							<div
-								className="mgs-ingredient-wrap"
+								className="w-full max-w-[420px] h-7 overflow-hidden relative"
 								aria-label="Ingredients"
-								style={{ '--ingredient-count': ingredients.length }}
 							>
-								<div className="mgs-ingredient-track" aria-hidden="true">
+								<div className="flex flex-col gap-2 animate-scrollUp" aria-hidden="true">
 									{loopIngredients.map((ingredient, index) => (
-										<p key={`${ingredient}-${index}`} className="mgs-ingredient">{ingredient}</p>
+										<p 
+											key={`${ingredient}-${index}`} 
+											className="m-0 pl-2 w-full h-7 font-['Bree_Serif'] font-normal text-2xl leading-7 text-zinc-600 whitespace-nowrap flex items-center justify-start"
+										>
+											{ingredient}
+										</p>
 									))}
 								</div>
 							</div>

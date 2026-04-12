@@ -1,5 +1,7 @@
+import mongoose from "mongoose";
 import Cart from "../models/Cart.js";
 import Order from "../models/Order.js";
+import Product from "../models/Product.js";
 import { createAuditLog } from "../utils/auditLog.js";
 
 const parsePagination = (query) => {
@@ -9,6 +11,66 @@ const parsePagination = (query) => {
     page,
     limit,
     skip: (page - 1) * limit,
+  };
+};
+
+const toPositiveInt = (value, fallback = 1) => {
+  const parsed = Number.parseInt(value, 10);
+  if (Number.isNaN(parsed) || parsed < 1) {
+    return fallback;
+  }
+
+  return parsed;
+};
+
+const toMongoObjectId = (value) => {
+  if (!mongoose.Types.ObjectId.isValid(value)) {
+    return null;
+  }
+
+  return new mongoose.Types.ObjectId(value);
+};
+
+const escapeRegex = (value) => String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const resolveProductForPreorder = async (identifier) => {
+  const normalized = String(identifier || "").trim();
+  if (!normalized) {
+    return null;
+  }
+
+  const filters = [{ slug: normalized }];
+
+  if (mongoose.Types.ObjectId.isValid(normalized)) {
+    filters.push({ _id: normalized });
+  }
+
+  filters.push({ name: new RegExp(`^${escapeRegex(normalized)}$`, "i") });
+
+  return Product.findOne({
+    isActive: true,
+    $or: filters,
+  });
+};
+
+const resolveOrderItem = (product, requestedSize, requestedQuantity) => {
+  const quantity = toPositiveInt(requestedQuantity, 1);
+  const normalizedSize = String(requestedSize || "").trim();
+  const packSizes = Array.isArray(product.packSizes) ? product.packSizes : [];
+  const matchedPack = packSizes.find((pack) => String(pack.value || "") === normalizedSize);
+
+  const price = Number(matchedPack?.price ?? product.price ?? 0);
+  const image = Array.isArray(product.images) && product.images.length > 0
+    ? String(product.images[0] || "")
+    : "";
+
+  return {
+    productId: String(product._id),
+    productName: matchedPack ? `${product.name} (${matchedPack.label})` : String(product.name || ""),
+    size: matchedPack ? String(matchedPack.value || "") : normalizedSize,
+    quantity,
+    price: Number.isFinite(price) && price >= 0 ? price : 0,
+    image,
   };
 };
 
@@ -65,7 +127,15 @@ const toPublicOrder = (order) => ({
 
 export const placeOrder = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ userId: req.userId });
+    const mongoUserId = toMongoObjectId(req.userId);
+    if (!mongoUserId) {
+      return res.status(400).json({
+        success: false,
+        error: "Cart checkout is unavailable for this session. Use the preorder form flow.",
+      });
+    }
+
+    const cart = await Cart.findOne({ userId: mongoUserId });
 
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({
@@ -80,7 +150,7 @@ export const placeOrder = async (req, res) => {
 
     const order = await Order.create({
       orderNumber: await createUniqueOrderNumber(),
-      userId: req.userId,
+      userId: mongoUserId,
       customer: {
         name: req.user.name || "",
         email: req.user.email || "",
@@ -141,7 +211,30 @@ export const getMyOrders = async (req, res) => {
     const { page, limit, skip } = parsePagination(req.query);
     const status = String(req.query.status || "").trim();
 
-    const filter = { userId: req.userId };
+    const filter = {};
+    const mongoUserId = toMongoObjectId(req.userId);
+
+    if (mongoUserId) {
+      filter.userId = mongoUserId;
+    } else {
+      const email = String(req.user?.email || "").trim().toLowerCase();
+      if (!email) {
+        return res.status(200).json({
+          success: true,
+          count: 0,
+          pagination: {
+            page,
+            limit,
+            totalCount: 0,
+            totalPages: 1,
+          },
+          data: [],
+        });
+      }
+
+      filter["customer.email"] = email;
+    }
+
     if (status) {
       filter.status = status;
     }
@@ -166,6 +259,100 @@ export const getMyOrders = async (req, res) => {
     return res.status(500).json({
       success: false,
       error: "Failed to fetch orders",
+      message: error.message,
+    });
+  }
+};
+
+export const placePreorderFromForm = async (req, res) => {
+  try {
+    const productIdentifier = String(
+      req.body?.productId || req.body?.productIdentifier || req.body?.productSlug || "",
+    ).trim();
+
+    if (!productIdentifier) {
+      return res.status(400).json({
+        success: false,
+        error: "Product is required",
+      });
+    }
+
+    const product = await resolveProductForPreorder(productIdentifier);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: "Product not found",
+      });
+    }
+
+    if (product.isPreorderEnabled === false) {
+      return res.status(409).json({
+        success: false,
+        error: "Pre-order is currently disabled for this product",
+      });
+    }
+
+    const customerName = String(req.body?.name || req.user?.name || "").trim();
+    const customerEmail = String(req.body?.email || req.user?.email || "")
+      .trim()
+      .toLowerCase();
+    const customerPhone = String(req.body?.phone || req.user?.phone || "").trim();
+
+    if (!customerName || !customerEmail || !customerPhone) {
+      return res.status(400).json({
+        success: false,
+        error: "Name, email, and phone are required",
+      });
+    }
+
+    const customerAddress = normalizeAddress(req.body?.address, req.user?.address);
+    const item = resolveOrderItem(product, req.body?.size, req.body?.quantity);
+    const mongoUserId = toMongoObjectId(req.userId);
+
+    const order = await Order.create({
+      orderNumber: await createUniqueOrderNumber(),
+      userId: mongoUserId,
+      customer: {
+        name: customerName,
+        email: customerEmail,
+        phone: customerPhone,
+        address: customerAddress,
+      },
+      items: [item],
+      shippingFee: Math.max(0, Number(req.body?.shippingFee) || 0),
+      taxAmount: Math.max(0, Number(req.body?.taxAmount) || 0),
+      discountAmount: Math.max(0, Number(req.body?.discountAmount) || 0),
+      paymentMethod: "external",
+      paymentStatus: "pending",
+      status: "preorder_requested",
+      notes: String(req.body?.notes || "").trim(),
+      placedAt: new Date(),
+    });
+
+    await createAuditLog({
+      req,
+      actorId: mongoUserId,
+      actorEmail: customerEmail,
+      action: "order.preorder_form_requested",
+      entityType: "order",
+      entityId: order._id,
+      metadata: {
+        orderNumber: order.orderNumber,
+        productId: item.productId,
+        quantity: item.quantity,
+        total: order.total,
+      },
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Pre-order submitted successfully",
+      data: toPublicOrder(order),
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to submit preorder form",
       message: error.message,
     });
   }

@@ -19,15 +19,9 @@ const Login = ({
   const setIsLoginModalOpen = useMenuStore(
     (state) => state.setIsLoginModalOpen,
   );
-  const [formData, setFormData] = useState({
-    email: "",
-  });
-  const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [authSuccessUser, setAuthSuccessUser] = useState(null);
   const [authStage, setAuthStage] = useState("idle");
   const [authError, setAuthError] = useState("");
-  const otpInputRefs = useRef([]);
   const successTimerRef = useRef(null);
   const isAuthenticated = Boolean(signedInUser);
 
@@ -57,62 +51,6 @@ const Login = ({
       setIsLoginModalOpen(false);
     }, 1600);
   }, [isAuthenticated, isModal, setIsLoginModalOpen, signedInUser]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleOtpChange = (index, value) => {
-    if (!/^\d*$/.test(value)) return; // Only allow numbers
-
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    // Auto-focus to next input
-    if (value && index < 5) {
-      otpInputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleOtpKeyDown = (index, e) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      otpInputRefs.current[index - 1]?.focus();
-    }
-  };
-
-  const handleGenerateOTP = () => {
-    if (!formData.email) {
-      alert("Please enter your email");
-      return;
-    }
-    setAuthError("");
-    console.log("Generating OTP for:", formData.email);
-    setOtpSent(true);
-    // Add OTP generation logic here
-  };
-
-  const handleVerifyOTP = () => {
-    const otpCode = otp.join("");
-    console.log("Verifying OTP:", otpCode);
-    // Add OTP verification logic here
-  };
-
-  const handleResendOTP = () => {
-    console.log("Resending OTP to:", formData.email);
-    setOtp(["", "", "", "", "", ""]);
-    otpInputRefs.current[0]?.focus();
-    // Add resend logic here
-  };
-
-  const handleSendOtpEmail = () => {
-    console.log("Sending OTP to email:", formData.email);
-    // Add email OTP logic here
-  };
 
   const handleGoogleUserChange = async (nextUser) => {
     if (successTimerRef.current) {
@@ -145,8 +83,6 @@ const Login = ({
 
       setAuthSuccessUser(session.user || nextUser);
       setAuthStage("success");
-      setOtpSent(false);
-      setOtp(["", "", "", "", "", ""]);
       setCartMessage("Signed in successfully. Cart synced to your account.");
 
       if (session.user?.role === "admin") {
@@ -167,16 +103,6 @@ const Login = ({
     } finally {
       setCartSyncing(false);
     }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.email) {
-      alert("Please enter your email");
-      return;
-    }
-    console.log("Form submitted:", formData);
-    // Add form submission logic
   };
 
   const container = isModal
@@ -236,74 +162,6 @@ const Login = ({
                   This usually takes a second.
                 </p>
               </>
-            ) : otpSent ? (
-              <>
-                <div className="otp-header">VERIFY YOUR NUMBER</div>
-                <h1 className="form-title">Enter the code</h1>
-                <p className="otp-info">
-                  We sent a 6-digit code to {formData.email}
-                </p>
-
-                {/* OTP Input Boxes */}
-                <div className="otp-container">
-                  {otp.map((digit, index) => (
-                    <input
-                      key={index}
-                      ref={(el) => (otpInputRefs.current[index] = el)}
-                      type="text"
-                      maxLength="1"
-                      value={digit}
-                      onChange={(e) => handleOtpChange(index, e.target.value)}
-                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                      className="otp-input"
-                    />
-                  ))}
-                </div>
-
-                {/* Resend Link */}
-                <p className="otp-resend">
-                  Didn't receive it?{" "}
-                  <button
-                    type="button"
-                    className="otp-resend-link"
-                    onClick={handleResendOTP}
-                  >
-                    Resend code now
-                  </button>
-                </p>
-
-                {/* Verify Button */}
-                <button
-                  type="button"
-                  className="btn-submit"
-                  onClick={handleVerifyOTP}
-                >
-                  Verify & Continue <span className="arrow">→</span>
-                </button>
-
-                {/* Send OTP to Email */}
-                <button
-                  type="button"
-                  className="btn-send-email"
-                  onClick={handleSendOtpEmail}
-                >
-                  Send OTP to email
-                </button>
-
-                {/* Back to Email */}
-                <p className="otp-back">
-                  <button
-                    type="button"
-                    className="otp-back-link"
-                    onClick={() => {
-                      setOtpSent(false);
-                      setOtp(["", "", "", "", "", ""]);
-                    }}
-                  >
-                    Back to email
-                  </button>
-                </p>
-              </>
             ) : (
               <>
                 <h1 className="form-title">Smarter Blood Sugar Starts Here</h1>
@@ -324,34 +182,6 @@ const Login = ({
                   buttonOptions={{ text: "signin_with", shape: "rectangular" }}
                   showSignedInState={false}
                 />
-
-                <div className="form-divider">
-                  <span>or use email</span>
-                </div>
-
-                {/* Form */}
-                <form onSubmit={handleSubmit}>
-                  <div className="form-group">
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Enter your email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                      className="form-input"
-                    />
-                  </div>
-
-                  {/* Generate OTP Button */}
-                  <button
-                    type="button"
-                    className="btn-submit"
-                    onClick={handleGenerateOTP}
-                  >
-                    Continue With OTP
-                  </button>
-                </form>
 
                 {/* Signup Link */}
                 <p className="signup-prompt">

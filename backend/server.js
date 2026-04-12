@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import path from "path";
+import { fileURLToPath } from "url";
 import testimonialRoutes from "./routes/testimonials.js";
 import authRoutes from "./routes/auth.js";
 import cartRoutes from "./routes/cart.js";
@@ -11,10 +13,14 @@ import adminRoutes from "./routes/admin.js";
 import supportRoutes from "./routes/support.js";
 import orderRoutes from "./routes/orders.js";
 import productRoutes from "./routes/products.js";
+import preorderRoutes from "./routes/preorder.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+let mongoConnected = false;
 
 const allowedOrigins = (process.env.CORS_ORIGIN || "")
   .split(",")
@@ -85,23 +91,56 @@ app.use(
 );
 app.use(express.json({ limit: "100kb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "public")));
 app.use("/api", apiLimiter);
 app.use("/api/auth", authLimiter);
 
 // MongoDB Connection
 mongoose
-  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/beyond-bound")
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log("MongoDB connection error:", err));
+  .connect(
+    process.env.MONGO_URI ||
+      process.env.MONGODB_URI ||
+      "mongodb://localhost:27017/beyondbound_preorders",
+  )
+  .then(() => {
+    mongoConnected = true;
+    console.log("MongoDB connected");
+  })
+  .catch((err) => {
+    mongoConnected = false;
+    console.log("MongoDB connection error:", err);
+  });
+
+mongoose.connection.on("connected", () => {
+  mongoConnected = true;
+});
+
+mongoose.connection.on("disconnected", () => {
+  mongoConnected = false;
+});
+
+const requireMongoConnection = (_req, res, next) => {
+  if (mongoConnected || mongoose.connection.readyState === 1) {
+    return next();
+  }
+
+  return res.status(503).json({
+    success: false,
+    error:
+      "Database features are temporarily unavailable. Auth can continue, but this endpoint requires MongoDB.",
+  });
+};
 
 // Routes
-app.use("/api/testimonials", testimonialRoutes);
+app.use("/api/testimonials", requireMongoConnection, testimonialRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/cart", cartRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/support", supportRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/products", productRoutes);
+app.use("/api/cart", requireMongoConnection, cartRoutes);
+app.use("/api/orders", requireMongoConnection, orderRoutes);
+app.use("/api/preorder", requireMongoConnection, preorderRoutes);
+app.use("/api/support", requireMongoConnection, supportRoutes);
+app.use("/api/admin", requireMongoConnection, adminRoutes);
+app.use("/admin", adminRoutes);
+app.use("/api/products", requireMongoConnection, productRoutes);
 
 // Root endpoint for browser visits
 app.get("/", (req, res) => {
@@ -115,10 +154,21 @@ app.get("/", (req, res) => {
       authMe: "/api/auth/me",
       cart: "/api/cart",
       orders: "/api/orders",
+      preorder: "/api/preorder",
       support: "/api/support",
       admin: "/api/admin",
       products: "/api/products",
     },
+  });
+});
+
+// API root endpoint for quick sanity checks.
+app.get("/api", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Beyond Bound API is running",
+    mongoConnected: mongoConnected || mongoose.connection.readyState === 1,
+    docs: "/api/health",
   });
 });
 

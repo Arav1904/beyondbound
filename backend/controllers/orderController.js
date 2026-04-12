@@ -7,7 +7,10 @@ import { ensurePrimaryProductExists } from "../utils/productBootstrap.js";
 
 const parsePagination = (query) => {
   const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
-  const limit = Math.min(100, Math.max(1, Number.parseInt(query.limit, 10) || 20));
+  const limit = Math.min(
+    100,
+    Math.max(1, Number.parseInt(query.limit, 10) || 20),
+  );
   return {
     page,
     limit,
@@ -32,7 +35,8 @@ const toMongoObjectId = (value) => {
   return new mongoose.Types.ObjectId(value);
 };
 
-const escapeRegex = (value) => String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const escapeRegex = (value) =>
+  String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const slugify = (value) =>
   String(value || "")
@@ -98,7 +102,10 @@ const resolveProductForPreorder = async (identifier) => {
     return null;
   }
 
-  const slugPrefixRegex = new RegExp(`^${escapeRegex(normalizedSlug)}(?:-|$)`, "i");
+  const slugPrefixRegex = new RegExp(
+    `^${escapeRegex(normalizedSlug)}(?:-|$)`,
+    "i",
+  );
   return Product.findOne({
     isActive: true,
     $or: [{ slug: normalizedSlug }, { slug: slugPrefixRegex }],
@@ -128,16 +135,21 @@ const resolveOrderItem = (product, requestedSize, requestedQuantity) => {
   const quantity = toPositiveInt(requestedQuantity, 1);
   const normalizedSize = String(requestedSize || "").trim();
   const packSizes = Array.isArray(product.packSizes) ? product.packSizes : [];
-  const matchedPack = packSizes.find((pack) => String(pack.value || "") === normalizedSize);
+  const matchedPack = packSizes.find(
+    (pack) => String(pack.value || "") === normalizedSize,
+  );
 
   const price = Number(matchedPack?.price ?? product.price ?? 0);
-  const image = Array.isArray(product.images) && product.images.length > 0
-    ? String(product.images[0] || "")
-    : "";
+  const image =
+    Array.isArray(product.images) && product.images.length > 0
+      ? String(product.images[0] || "")
+      : "";
 
   return {
     productId: String(product._id),
-    productName: matchedPack ? `${product.name} (${matchedPack.label})` : String(product.name || ""),
+    productName: matchedPack
+      ? `${product.name} (${matchedPack.label})`
+      : String(product.name || ""),
     size: matchedPack ? String(matchedPack.value || "") : normalizedSize,
     quantity,
     price: Number.isFinite(price) && price >= 0 ? price : 0,
@@ -172,7 +184,8 @@ const normalizeAddress = (address, fallback = {}) => ({
   city: String(address?.city || fallback?.city || "").trim(),
   state: String(address?.state || fallback?.state || "").trim(),
   postalCode: String(address?.postalCode || fallback?.postalCode || "").trim(),
-  country: String(address?.country || fallback?.country || "India").trim() || "India",
+  country:
+    String(address?.country || fallback?.country || "India").trim() || "India",
 });
 
 const toPublicOrder = (order) => ({
@@ -202,7 +215,8 @@ export const placeOrder = async (req, res) => {
     if (!mongoUserId) {
       return res.status(400).json({
         success: false,
-        error: "Cart checkout is unavailable for this session. Use the preorder form flow.",
+        error:
+          "Cart checkout is unavailable for this session. Use the preorder form flow.",
       });
     }
 
@@ -239,7 +253,8 @@ export const placeOrder = async (req, res) => {
       shippingFee,
       taxAmount,
       discountAmount,
-      paymentMethod: String(req.body?.paymentMethod || "external").trim() || "external",
+      paymentMethod:
+        String(req.body?.paymentMethod || "external").trim() || "external",
       paymentStatus: "pending",
       status: "preorder_requested",
       notes: String(req.body?.notes || "").trim(),
@@ -288,7 +303,9 @@ export const getMyOrders = async (req, res) => {
     if (mongoUserId) {
       filter.userId = mongoUserId;
     } else {
-      const email = String(req.user?.email || "").trim().toLowerCase();
+      const email = String(req.user?.email || "")
+        .trim()
+        .toLowerCase();
       if (!email) {
         return res.status(200).json({
           success: true,
@@ -368,7 +385,8 @@ export const placePreorderFromForm = async (req, res) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        error: "Product not found. Please refresh and select the product again.",
+        error:
+          "Product not found. Please refresh and select the product again.",
       });
     }
 
@@ -383,7 +401,9 @@ export const placePreorderFromForm = async (req, res) => {
     const customerEmail = String(req.body?.email || req.user?.email || "")
       .trim()
       .toLowerCase();
-    const customerPhone = String(req.body?.phone || req.user?.phone || "").trim();
+    const customerPhone = String(
+      req.body?.phone || req.user?.phone || "",
+    ).trim();
 
     if (!customerName || !customerEmail || !customerPhone) {
       return res.status(400).json({
@@ -392,7 +412,10 @@ export const placePreorderFromForm = async (req, res) => {
       });
     }
 
-    const customerAddress = normalizeAddress(req.body?.address, req.user?.address);
+    const customerAddress = normalizeAddress(
+      req.body?.address,
+      req.user?.address,
+    );
     const item = resolveOrderItem(product, req.body?.size, req.body?.quantity);
     const mongoUserId = toMongoObjectId(req.userId);
 

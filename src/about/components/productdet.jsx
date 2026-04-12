@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react';
-import '../css/productdet.css';
-import withGlycoImg from '../assets/withglyco.jpeg';
-import withoutGlycoImg from '../assets/withoutglyco.jpeg';
-import usePrimaryProduct from '../../hooks/usePrimaryProduct';
-import { buildPrimaryPreorderDraft } from '../../services/productCatalog';
-import useMenuStore from '../../useMenuStore';
+import React, { useState, useRef } from "react";
+import "../css/productdet.css";
+import withGlycoImg from "../assets/withglyco.jpeg";
+import withoutGlycoImg from "../assets/withoutglyco.jpeg";
+import usePrimaryProduct from "../../hooks/usePrimaryProduct";
+import { buildPrimaryPreorderDraft } from "../../services/productCatalog";
+import useMenuStore from "../../useMenuStore";
 
 export default function ProductDet() {
   const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
@@ -32,7 +32,7 @@ export default function ProductDet() {
 
     const rect = containerRef.current.getBoundingClientRect();
     const newPosition = ((e.clientX - rect.left) / rect.width) * 100;
-    
+
     if (newPosition >= 0 && newPosition <= 100) {
       setSliderPosition(newPosition);
     }
@@ -52,7 +52,7 @@ export default function ProductDet() {
 
     const rect = containerRef.current.getBoundingClientRect();
     const newPosition = ((e.touches[0].clientX - rect.left) / rect.width) * 100;
-    
+
     if (newPosition >= 0 && newPosition <= 100) {
       setSliderPosition(newPosition);
     }
@@ -61,7 +61,7 @@ export default function ProductDet() {
   const handleAddToCart = () => {
     openPreOrderModal(
       buildPrimaryPreorderDraft(product, {
-        sizeValue: '60',
+        sizeValue: "60",
         quantity: 1,
         fallbackImage: withGlycoImg,
       }),
@@ -69,7 +69,7 @@ export default function ProductDet() {
   };
 
   return (
-    <div 
+    <div
       id="product-det"
       ref={containerRef}
       className="product-det-container"
@@ -85,9 +85,7 @@ export default function ProductDet() {
           <span className="title-subtitle">Stable Today</span>
         </h2>
 
-        <div 
-          className="comparison-container"
-        >
+        <div className="comparison-container">
           {/* With Glyco Image - Background */}
           <img
             src={withGlycoImg}
@@ -96,7 +94,7 @@ export default function ProductDet() {
           />
 
           {/* Without Glyco Image - Overlay */}
-          <div 
+          <div
             className="comparison-image-overlay"
             style={{ width: `${sliderPosition}%` }}
           >
@@ -108,7 +106,7 @@ export default function ProductDet() {
           </div>
 
           {/* Slider Divider */}
-          <div 
+          <div
             ref={sliderRef}
             className="slider-divider"
             style={{ left: `${sliderPosition}%` }}
@@ -124,14 +122,26 @@ export default function ProductDet() {
           </div>
 
           {/* Labels */}
-          <div className="slider-label slider-label--left" style={{ opacity: isDragging ? 0 : 1 }}>After</div>
-          <div className="slider-label slider-label--right" style={{ opacity: isDragging ? 0 : 1 }}>Before</div>
+          <div
+            className="slider-label slider-label--left"
+            style={{ opacity: isDragging ? 0 : 1 }}
+          >
+            After
+          </div>
+          <div
+            className="slider-label slider-label--right"
+            style={{ opacity: isDragging ? 0 : 1 }}
+          >
+            Before
+          </div>
 
           <div className="click-hint">Drag to compare</div>
         </div>
 
         <div className="benefits-container">
-          <div className={`benefits-column ${sliderPosition < 50 ? 'active' : ''}`}>
+          <div
+            className={`benefits-column ${sliderPosition < 50 ? "active" : ""}`}
+          >
             <h3>With Glycomics</h3>
             <ul className="benefits-list">
               <li>
@@ -157,7 +167,9 @@ export default function ProductDet() {
             </ul>
           </div>
 
-          <div className={`benefits-column ${sliderPosition >= 50 ? 'active' : ''}`}>
+          <div
+            className={`benefits-column ${sliderPosition >= 50 ? "active" : ""}`}
+          >
             <h3>Without Glycomics</h3>
             <ul className="benefits-list">
               <li>
@@ -184,9 +196,14 @@ export default function ProductDet() {
           </div>
         </div>
 
-        <button type="button" className="add-to-cart-btn" onClick={handleAddToCart}>PRE-ORDER NOW</button>
+        <button
+          type="button"
+          className="add-to-cart-btn"
+          onClick={handleAddToCart}
+        >
+          PRE-ORDER NOW
+        </button>
       </div>
     </div>
   );
 }
-

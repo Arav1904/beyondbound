@@ -1,10 +1,10 @@
- import React, { useState } from 'react';
-import '../css/OurStory.css';
-import bottleAbout from '../assets/bottleabout.png';
-import { ChevronDown } from 'lucide-react';
-import usePrimaryProduct from '../../hooks/usePrimaryProduct';
-import { buildPrimaryPreorderDraft } from '../../services/productCatalog';
-import useMenuStore from '../../useMenuStore';
+import React, { useState } from "react";
+import "../css/OurStory.css";
+import bottleAbout from "../assets/bottleabout.png";
+import { ChevronDown } from "lucide-react";
+import usePrimaryProduct from "../../hooks/usePrimaryProduct";
+import { buildPrimaryPreorderDraft } from "../../services/productCatalog";
+import useMenuStore from "../../useMenuStore";
 
 const OurStory = () => {
   const [expandedItem, setExpandedItem] = useState(null);
@@ -14,7 +14,7 @@ const OurStory = () => {
   const handleShopNow = () => {
     openPreOrderModal(
       buildPrimaryPreorderDraft(product, {
-        sizeValue: '60',
+        sizeValue: "60",
         quantity: 1,
         fallbackImage: bottleAbout,
       }),
@@ -27,42 +27,53 @@ const OurStory = () => {
         <div className="story-bg-text">OUR STORY</div>
         <h2>Our Story</h2>
       </div>
-      
+
       <div className="gap-section">
-        <h3><span className="section-number">01</span> The Gap</h3>
+        <h3>
+          <span className="section-number">01</span> The Gap
+        </h3>
         <div className="gap-cards">
           <div className="gap-card">
-            <div className="gap-card-header">
-            </div>
+            <div className="gap-card-header"></div>
             <h4>Overpriced Supplements</h4>
-            <p>Brands support an exorbitant pricing system with exploitation in the supply chain and zero brand loyalty back.</p>
+            <p>
+              Brands support an exorbitant pricing system with exploitation in
+              the supply chain and zero brand loyalty back.
+            </p>
           </div>
           <div className="gap-card">
-            <div className="gap-card-header">
-            </div>
+            <div className="gap-card-header"></div>
             <h4>Poor Standardization</h4>
-            <p>Ayurvedic supplements lack regulation, resulting in compromised quality, undefined potency, and trust issues.</p>
+            <p>
+              Ayurvedic supplements lack regulation, resulting in compromised
+              quality, undefined potency, and trust issues.
+            </p>
           </div>
           <div className="gap-card">
-            <div className="gap-card-header">
-            </div>
+            <div className="gap-card-header"></div>
             <h4>Lack of Transparency</h4>
-            <p>Ingredient sourcing, ethical practices, formulation standards, and supply chain remain largely undisclosed.</p>
+            <p>
+              Ingredient sourcing, ethical practices, formulation standards, and
+              supply chain remain largely undisclosed.
+            </p>
           </div>
         </div>
       </div>
 
       <div className="solution-section">
-        <h3><span className="section-number">02</span> The Solution</h3>
+        <h3>
+          <span className="section-number">02</span> The Solution
+        </h3>
         <p className="solution-description">
-          We built our entire formulation philosophy around three non-negotiable principles.
+          We built our entire formulation philosophy around three non-negotiable
+          principles.
         </p>
 
         <div className="solution-content">
           <div className="solution-items">
             <div className="solution-item-wrapper">
-              <button 
-                className={`solution-item ${expandedItem === 1 ? 'expanded' : ''}`}
+              <button
+                className={`solution-item ${expandedItem === 1 ? "expanded" : ""}`}
                 onClick={() => setExpandedItem(expandedItem === 1 ? null : 1)}
               >
                 <div className="solution-item-left">
@@ -78,8 +89,8 @@ const OurStory = () => {
               )}
             </div>
             <div className="solution-item-wrapper">
-              <button 
-                className={`solution-item ${expandedItem === 2 ? 'expanded' : ''}`}
+              <button
+                className={`solution-item ${expandedItem === 2 ? "expanded" : ""}`}
                 onClick={() => setExpandedItem(expandedItem === 2 ? null : 2)}
               >
                 <div className="solution-item-left">
@@ -95,8 +106,8 @@ const OurStory = () => {
               )}
             </div>
             <div className="solution-item-wrapper">
-              <button 
-                className={`solution-item ${expandedItem === 3 ? 'expanded' : ''}`}
+              <button
+                className={`solution-item ${expandedItem === 3 ? "expanded" : ""}`}
                 onClick={() => setExpandedItem(expandedItem === 3 ? null : 3)}
               >
                 <div className="solution-item-left">
@@ -107,11 +118,15 @@ const OurStory = () => {
               </button>
               {expandedItem === 3 && (
                 <div className="solution-content-dropdown">
-                  <p>Ethical sourcing | Sustainable practices | Quality assured</p>
+                  <p>
+                    Ethical sourcing | Sustainable practices | Quality assured
+                  </p>
                 </div>
               )}
             </div>
-            <button onClick={handleShopNow} className="shop-now-btn">Pre-order now →</button>
+            <button onClick={handleShopNow} className="shop-now-btn">
+              Pre-order now →
+            </button>
           </div>
 
           <div className="solution-image">
@@ -145,4 +160,3 @@ const OurStory = () => {
 };
 
 export default OurStory;
-

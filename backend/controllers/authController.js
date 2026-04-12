@@ -26,10 +26,13 @@ const ADMIN_ALLOWLIST = new Set(
     .filter(Boolean),
 );
 
-const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
+const googleClient = GOOGLE_CLIENT_ID
+  ? new OAuth2Client(GOOGLE_CLIENT_ID)
+  : null;
 const statelessProfiles = new Map();
 
-const isAllowlistedAdmin = (email) => ADMIN_ALLOWLIST.has(String(email || "").toLowerCase());
+const isAllowlistedAdmin = (email) =>
+  ADMIN_ALLOWLIST.has(String(email || "").toLowerCase());
 
 const toPublicUser = (user) => ({
   id: String(user.id || user._id || user.googleId || user.email || ""),
@@ -97,7 +100,10 @@ const buildCartFromItems = (userId, items = []) => {
   };
 };
 
-const profileKeyFor = (email) => String(email || "").trim().toLowerCase();
+const profileKeyFor = (email) =>
+  String(email || "")
+    .trim()
+    .toLowerCase();
 
 const getStoredProfile = (email) => {
   const key = profileKeyFor(email);
@@ -242,7 +248,9 @@ export const googleSignIn = async (req, res) => {
 
 export const getCurrentSession = async (req, res) => {
   try {
-    const currentEmail = String(req.user?.email || "").trim().toLowerCase();
+    const currentEmail = String(req.user?.email || "")
+      .trim()
+      .toLowerCase();
     const storedProfile = getStoredProfile(currentEmail);
     const nowIso = new Date().toISOString();
 
@@ -288,13 +296,18 @@ export const getCurrentSession = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const nextName =
-      typeof req.body?.name === "string" ? req.body.name.trim() : req.user?.name || "";
+      typeof req.body?.name === "string"
+        ? req.body.name.trim()
+        : req.user?.name || "";
     const nextPhone =
-      typeof req.body?.phone === "string" ? req.body.phone.trim() : req.user?.phone || "";
+      typeof req.body?.phone === "string"
+        ? req.body.phone.trim()
+        : req.user?.phone || "";
 
-    const rawAddress = req.body?.address && typeof req.body.address === "object"
-      ? req.body.address
-      : req.user?.address || emptyAddress();
+    const rawAddress =
+      req.body?.address && typeof req.body.address === "object"
+        ? req.body.address
+        : req.user?.address || emptyAddress();
 
     const updatedUser = {
       ...req.user,
@@ -302,12 +315,12 @@ export const updateProfile = async (req, res) => {
       name: nextName,
       phone: nextPhone,
       address: {
-      line1: rawAddress?.line1 || "",
-      line2: rawAddress?.line2 || "",
-      city: rawAddress?.city || "",
-      state: rawAddress?.state || "",
-      postalCode: rawAddress?.postalCode || "",
-      country: rawAddress?.country || "India",
+        line1: rawAddress?.line1 || "",
+        line2: rawAddress?.line2 || "",
+        city: rawAddress?.city || "",
+        state: rawAddress?.state || "",
+        postalCode: rawAddress?.postalCode || "",
+        country: rawAddress?.country || "India",
       },
       updatedAt: new Date().toISOString(),
     };

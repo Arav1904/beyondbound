@@ -63,7 +63,9 @@ export const ensurePrimaryProductExists = async () => {
     return anyActivePreorder;
   }
 
-  const existingBySlug = await Product.findOne({ slug: DEFAULT_PRIMARY_PRODUCT.slug });
+  const existingBySlug = await Product.findOne({
+    slug: DEFAULT_PRIMARY_PRODUCT.slug,
+  });
   if (existingBySlug) {
     return enableProductForPreorder(existingBySlug);
   }
@@ -72,7 +74,9 @@ export const ensurePrimaryProductExists = async () => {
     return await Product.create(DEFAULT_PRIMARY_PRODUCT);
   } catch (error) {
     if (error?.code === 11000) {
-      const duplicate = await Product.findOne({ slug: DEFAULT_PRIMARY_PRODUCT.slug });
+      const duplicate = await Product.findOne({
+        slug: DEFAULT_PRIMARY_PRODUCT.slug,
+      });
       return enableProductForPreorder(duplicate);
     }
 

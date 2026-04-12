@@ -63,7 +63,9 @@ export const normalizePrimaryProduct = (product) => {
     id: String(product.id || product._id || FALLBACK_PRIMARY_PRODUCT.id),
     slug: String(product.slug || FALLBACK_PRIMARY_PRODUCT.slug),
     name: String(product.name || FALLBACK_PRIMARY_PRODUCT.name),
-    description: String(product.description || FALLBACK_PRIMARY_PRODUCT.description),
+    description: String(
+      product.description || FALLBACK_PRIMARY_PRODUCT.description,
+    ),
     price: toNonNegativeNumber(product.price, FALLBACK_PRIMARY_PRODUCT.price),
     compareAtPrice: toNonNegativeNumber(
       product.compareAtPrice,
@@ -85,9 +87,10 @@ export const normalizePrimaryProduct = (product) => {
 };
 
 export const getPrimaryImage = (product, fallbackImage = "") => {
-  const image = Array.isArray(product?.images) && product.images.length > 0
-    ? String(product.images[0])
-    : "";
+  const image =
+    Array.isArray(product?.images) && product.images.length > 0
+      ? String(product.images[0])
+      : "";
 
   return image || String(fallbackImage || "");
 };

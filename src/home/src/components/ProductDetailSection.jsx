@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
-import frontImg from '../assets/bottles.png';
-import backImg from '../assets/back.jpg';
-import sideImg from '../assets/side.jpg';
-import labelImg from '../assets/101.png';
-import { ShieldIcon, ArrowRight } from 'lucide-react';
-import usePrimaryProduct from '../../../hooks/usePrimaryProduct';
-import { buildPrimaryPreorderDraft, getPrimaryImage } from '../../../services/productCatalog';
-import useMenuStore from '../../../useMenuStore';
+import React, { useState } from "react";
+import frontImg from "../assets/bottles.png";
+import backImg from "../assets/back.jpg";
+import sideImg from "../assets/side.jpg";
+import labelImg from "../assets/101.png";
+import { ShieldIcon, ArrowRight } from "lucide-react";
+import usePrimaryProduct from "../../../hooks/usePrimaryProduct";
+import {
+  buildPrimaryPreorderDraft,
+  getPrimaryImage,
+} from "../../../services/productCatalog";
+import useMenuStore from "../../../useMenuStore";
 
-import '../css/productDetailSection.css';
+import "../css/productDetailSection.css";
 
 const ProductDetailSection = () => {
   const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
@@ -16,30 +19,34 @@ const ProductDetailSection = () => {
   const images = [frontImg, backImg, sideImg, labelImg];
   const [mainImage, setMainImage] = useState(frontImg);
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState('60');
+  const [selectedSize, setSelectedSize] = useState("60");
   const [activeAccordion, setActiveAccordion] = useState(null);
 
   const sizes = packSizes;
   const resolvedSelectedSize = sizes.some((size) => size.value === selectedSize)
     ? selectedSize
-    : (sizes[sizes.length - 1]?.value || "60");
+    : sizes[sizes.length - 1]?.value || "60";
   const currentPrice =
-    sizes.find((size) => size.value === resolvedSelectedSize)?.price || product.price;
+    sizes.find((size) => size.value === resolvedSelectedSize)?.price ||
+    product.price;
   const primaryImage = getPrimaryImage(product, frontImg);
 
   const accordionData = [
     {
       title: "Information",
-      content: "This premium supplement is crafted in a GMP-certified facility. Each batch undergoes rigorous third-party testing to ensure purity and potency."
+      content:
+        "This premium supplement is crafted in a GMP-certified facility. Each batch undergoes rigorous third-party testing to ensure purity and potency.",
     },
     {
       title: "Benefits",
-      content: "Supports healthy insulin sensitivity, reduces sugar cravings, and provides sustained energy levels throughout the day without the crash."
+      content:
+        "Supports healthy insulin sensitivity, reduces sugar cravings, and provides sustained energy levels throughout the day without the crash.",
     },
     {
       title: "Ingredients",
-      content: "Contains a proprietary blend of Gymnema Sylvestre, Bitter Melon, Fenugreek, and Chromium Picolinate for maximum metabolic support."
-    }
+      content:
+        "Contains a proprietary blend of Gymnema Sylvestre, Bitter Melon, Fenugreek, and Chromium Picolinate for maximum metabolic support.",
+    },
   ];
 
   const toggleAccordion = (index) => {
@@ -57,16 +64,20 @@ const ProductDetailSection = () => {
   };
 
   return (
-    <div className='body-pp'>
+    <div className="body-pp">
       <div className="product-container">
         {/* Left: Image Gallery */}
         <div className="gallery-section">
-          <div className="thumbnails" role="tablist" aria-label="Product image thumbnails">
+          <div
+            className="thumbnails"
+            role="tablist"
+            aria-label="Product image thumbnails"
+          >
             {images.map((img, index) => (
               <button
                 key={index}
                 type="button"
-                className={`thumb-box ${mainImage === img ? 'active' : ''}`}
+                className={`thumb-box ${mainImage === img ? "active" : ""}`}
                 onClick={() => setMainImage(img)}
                 role="tab"
                 aria-selected={mainImage === img}
@@ -85,15 +96,18 @@ const ProductDetailSection = () => {
         <div className="details-section">
           <div className="badge-row">
             <span className="badge stock-badge">Pre-order Open</span>
-            <span className="badge refund-badge"><ShieldIcon size={'16px'}/> 100% Refund Guarantee</span>
+            <span className="badge refund-badge">
+              <ShieldIcon size={"16px"} /> 100% Refund Guarantee
+            </span>
           </div>
 
           <h1 className="product-title">{product.name}</h1>
           <p className="price">M.R.P : ₹ {currentPrice}</p>
 
           <p className="description">
-            Experience the power of scientifically-validated Ayurvedic ingredients. 
-            Glycomics is formulated to support healthy glucose metabolism and overall metabolic wellness.
+            Experience the power of scientifically-validated Ayurvedic
+            ingredients. Glycomics is formulated to support healthy glucose
+            metabolism and overall metabolic wellness.
           </p>
 
           <div className="size-selector">
@@ -103,7 +117,7 @@ const ProductDetailSection = () => {
                 <button
                   key={size.value}
                   type="button"
-                  className={`size-btn ${resolvedSelectedSize === size.value ? 'active' : ''}`}
+                  className={`size-btn ${resolvedSelectedSize === size.value ? "active" : ""}`}
                   onClick={() => setSelectedSize(size.value)}
                 >
                   {size.label}
@@ -114,16 +128,35 @@ const ProductDetailSection = () => {
 
           <div className="purchase-actions">
             <div className="quantity-counter" aria-label="Quantity selector">
-              <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity" disabled={quantity <= 1}>−</button>
+              <button
+                type="button"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                aria-label="Decrease quantity"
+                disabled={quantity <= 1}
+              >
+                −
+              </button>
               <span>{quantity}</span>
-              <button type="button" onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity">+</button>
+              <button
+                type="button"
+                onClick={() => setQuantity(quantity + 1)}
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
             </div>
-            <button type="button" className="add-to-cart-btn" onClick={handleShopNow}>
+            <button
+              type="button"
+              className="add-to-cart-btn"
+              onClick={handleShopNow}
+            >
               PRE-ORDER NOW <ArrowRight />
             </button>
           </div>
 
-          <a href="#" className="shipping-link">Pre-order dispatch and return policy</a>
+          <a href="#" className="shipping-link">
+            Pre-order dispatch and return policy
+          </a>
 
           <div className="accordion-section" role="list">
             {accordionData.map((item, index) => (
@@ -136,7 +169,13 @@ const ProductDetailSection = () => {
                 >
                   <span>{item.title}</span>
                 </button>
-                <span className="accordion-plus-icon" aria-hidden="true" onClick={() => toggleAccordion(index)}>{activeAccordion === index ? '-' : '+'}</span>
+                <span
+                  className="accordion-plus-icon"
+                  aria-hidden="true"
+                  onClick={() => toggleAccordion(index)}
+                >
+                  {activeAccordion === index ? "-" : "+"}
+                </span>
                 {activeAccordion === index && (
                   <div className="accordion-content">
                     <p>{item.content}</p>

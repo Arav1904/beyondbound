@@ -1,9 +1,9 @@
-import React from 'react';
-import './GlycomicsCard.css';
-import bottleImg from '../home/bottles.png';
-import usePrimaryProduct from '../hooks/usePrimaryProduct';
-import { buildPrimaryPreorderDraft } from '../services/productCatalog';
-import useMenuStore from '../useMenuStore';
+import React from "react";
+import "./GlycomicsCard.css";
+import bottleImg from "../home/bottles.png";
+import usePrimaryProduct from "../hooks/usePrimaryProduct";
+import { buildPrimaryPreorderDraft } from "../services/productCatalog";
+import useMenuStore from "../useMenuStore";
 
 const GlycomicsCard = () => {
   const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
@@ -20,7 +20,7 @@ const GlycomicsCard = () => {
   const handleAddToCart = () => {
     openPreOrderModal(
       buildPrimaryPreorderDraft(product, {
-        sizeValue: '60',
+        sizeValue: "60",
         quantity: 1,
         fallbackImage: bottleImg,
       }),
@@ -30,7 +30,6 @@ const GlycomicsCard = () => {
   return (
     <div className="container">
       <div className="card-wrapper">
-        
         {/* Left Column */}
         <div className="column">
           <h2 className="title muted">Without Glycomics</h2>
@@ -56,7 +55,6 @@ const GlycomicsCard = () => {
             ))}
           </div>
         </div>
-
       </div>
 
       <button type="button" className="cart-button" onClick={handleAddToCart}>

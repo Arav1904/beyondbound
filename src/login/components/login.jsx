@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "../css/login.css";
 import GoogleSignIn from "../../GoogleSignIn";
 import useMenuStore from "../../useMenuStore";
+import { signInWithGoogle } from "../../services/cartApi";
 
 const Login = ({
   imageUrl = "https://via.placeholder.com/300",
@@ -10,7 +11,11 @@ const Login = ({
   onSwitchToSignup = () => {},
 }) => {
   const signedInUser = useMenuStore((state) => state.signedInUser);
-  const setSignedInUser = useMenuStore((state) => state.setSignedInUser);
+  const cartItems = useMenuStore((state) => state.cartItems);
+  const setAuthSession = useMenuStore((state) => state.setAuthSession);
+  const setCartSyncing = useMenuStore((state) => state.setCartSyncing);
+  const setCartMessage = useMenuStore((state) => state.setCartMessage);
+  const setActivePage = useMenuStore((state) => state.setActivePage);
   const setIsLoginModalOpen = useMenuStore(
     (state) => state.setIsLoginModalOpen,
   );
@@ -109,13 +114,12 @@ const Login = ({
     // Add email OTP logic here
   };
 
-  const handleGoogleUserChange = (nextUser) => {
+  const handleGoogleUserChange = async (nextUser) => {
     if (successTimerRef.current) {
       window.clearTimeout(successTimerRef.current);
     }
 
     if (!nextUser?.credential) {
-      setSignedInUser(null);
       if (!isAuthenticated) {
         setAuthStage("idle");
         setAuthSuccessUser(null);
@@ -123,17 +127,45 @@ const Login = ({
       return;
     }
 
-    setSignedInUser(nextUser);
+    setAuthStage("authenticating");
     setAuthError("");
-    setAuthSuccessUser(nextUser);
-    setAuthStage("success");
-    setOtpSent(false);
-    setOtp(["", "", "", "", "", ""]);
+    setCartSyncing(true);
 
-    if (isModal) {
-      successTimerRef.current = window.setTimeout(() => {
-        setIsLoginModalOpen(false);
-      }, 1600);
+    try {
+      const session = await signInWithGoogle({
+        credential: nextUser.credential,
+        guestCartItems: cartItems,
+      });
+
+      setAuthSession({
+        token: session.token,
+        user: session.user,
+        cart: session.cart,
+      });
+
+      setAuthSuccessUser(session.user || nextUser);
+      setAuthStage("success");
+      setOtpSent(false);
+      setOtp(["", "", "", "", "", ""]);
+      setCartMessage("Signed in successfully. Cart synced to your account.");
+
+      if (session.user?.role === "admin") {
+        setActivePage("admin");
+      }
+
+      if (isModal) {
+        successTimerRef.current = window.setTimeout(() => {
+          setIsLoginModalOpen(false);
+        }, 1600);
+      }
+    } catch (error) {
+      const message = error.message || "Sign in failed. Please try again.";
+      setAuthError(message);
+      setCartMessage(message);
+      setAuthStage("idle");
+      setAuthSuccessUser(null);
+    } finally {
+      setCartSyncing(false);
     }
   };
 

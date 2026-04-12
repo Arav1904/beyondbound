@@ -1,7 +1,7 @@
 {
-  "name": "beyond-bound-backend",
+  "name": "beyond-bound-preorder",
   "version": "1.0.0",
-  "description": "Backend API for Beyond Bound",
+  "description": "Pre-order backend for Beyond Bound",
   "type": "module",
   "main": "server.js",
   "scripts": {
@@ -16,16 +16,16 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.3",
     "express-rate-limit": "^7.5.0",
     "express-validator": "^7.0.0",
     "google-auth-library": "^9.15.1",
     "helmet": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^7.6.0"
+    "mongoose": "^8.3.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.1.0"
   }
 }

@@ -1,8 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const GOOGLE_GSI_SCRIPT = "https://accounts.google.com/gsi/client";
-const DEFAULT_GOOGLE_CLIENT_ID =
-  "647437966024-0ubbv4rmbennr1some8g5o2agr3poanh.apps.googleusercontent.com";
+
+function isValidGoogleClientId(value) {
+  const normalized = String(value || "").trim();
+  if (!normalized) {
+    return false;
+  }
+
+  if (/YOUR_(CLIENT_ID|GOOGLE_CLIENT_ID)/i.test(normalized)) {
+    return false;
+  }
+
+  return /^[0-9]+-[a-z0-9_-]+\.apps\.googleusercontent\.com$/i.test(normalized);
+}
 
 function decodeCredential(credential) {
   try {
@@ -34,8 +45,8 @@ function GoogleSignIn({
   buttonOptions = {},
   showSignedInState = true,
 }) {
-  const clientId =
-    import.meta.env.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID;
+  const rawClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const clientId = isValidGoogleClientId(rawClientId) ? rawClientId : "";
   const buttonRef = useRef(null);
   const [localUser, setLocalUser] = useState(null);
   const user = initialUser ?? (showSignedInState ? localUser : null);

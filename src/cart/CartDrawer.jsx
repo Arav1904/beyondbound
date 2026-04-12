@@ -25,7 +25,9 @@ function CartDrawer() {
   const updateLocalCartItemQuantity = useMenuStore(
     (state) => state.updateLocalCartItemQuantity,
   );
-  const removeLocalCartItem = useMenuStore((state) => state.removeLocalCartItem);
+  const removeLocalCartItem = useMenuStore(
+    (state) => state.removeLocalCartItem,
+  );
   const clearCartLocal = useMenuStore((state) => state.clearCartLocal);
   const setCartMessage = useMenuStore((state) => state.setCartMessage);
 
@@ -38,7 +40,9 @@ function CartDrawer() {
       setCartFromServer(cart);
     } catch (error) {
       fallbackAction?.();
-      setCartMessage(error.message || "Cart sync failed. Saved locally instead.");
+      setCartMessage(
+        error.message || "Cart sync failed. Saved locally instead.",
+      );
     } finally {
       setCartSyncing(false);
     }
@@ -153,9 +157,16 @@ function CartDrawer() {
               <article key={item.id} className="cart-line-item">
                 <div className="cart-line-image-wrap">
                   {item.image ? (
-                    <img src={item.image} alt={item.productName} className="cart-line-image" />
+                    <img
+                      src={item.image}
+                      alt={item.productName}
+                      className="cart-line-image"
+                    />
                   ) : (
-                    <span className="cart-line-image cart-line-image--fallback" aria-hidden="true">
+                    <span
+                      className="cart-line-image cart-line-image--fallback"
+                      aria-hidden="true"
+                    >
                       BB
                     </span>
                   )}
@@ -163,7 +174,9 @@ function CartDrawer() {
 
                 <div className="cart-line-main">
                   <p className="cart-line-name">{item.productName}</p>
-                  {item.size ? <p className="cart-line-meta">Size: {item.size}</p> : null}
+                  {item.size ? (
+                    <p className="cart-line-meta">Size: {item.size}</p>
+                  ) : null}
                   <p className="cart-line-price">₹{item.price.toFixed(2)}</p>
 
                   <div className="cart-line-actions">

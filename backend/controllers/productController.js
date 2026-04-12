@@ -4,7 +4,10 @@ import { ensurePrimaryProductExists } from "../utils/productBootstrap.js";
 
 const parsePagination = (query) => {
   const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
-  const limit = Math.min(100, Math.max(1, Number.parseInt(query.limit, 10) || 20));
+  const limit = Math.min(
+    100,
+    Math.max(1, Number.parseInt(query.limit, 10) || 20),
+  );
   return {
     page,
     limit,
@@ -78,7 +81,10 @@ export const getPublicProducts = async (req, res) => {
     const { page, limit, skip } = parsePagination(req.query);
     const category = String(req.query.category || "").trim();
     const search = String(req.query.search || "").trim();
-    const preorderOnly = String(req.query.preorderOnly || "").trim().toLowerCase() === "true";
+    const preorderOnly =
+      String(req.query.preorderOnly || "")
+        .trim()
+        .toLowerCase() === "true";
 
     if (!category && !search) {
       await ensurePrimaryProductExists();
@@ -95,8 +101,16 @@ export const getPublicProducts = async (req, res) => {
     }
 
     if (search) {
-      const regex = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
-      filters.$or = [{ name: regex }, { slug: regex }, { description: regex }, { tags: regex }];
+      const regex = new RegExp(
+        search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+        "i",
+      );
+      filters.$or = [
+        { name: regex },
+        { slug: regex },
+        { description: regex },
+        { tags: regex },
+      ];
     }
 
     const [products, totalCount] = await Promise.all([

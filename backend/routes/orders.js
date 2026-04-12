@@ -1,8 +1,8 @@
 import express from "express";
 import {
-	getMyOrders,
-	placeOrder,
-	placePreorderFromForm,
+  getMyOrders,
+  placeOrder,
+  placePreorderFromForm,
 } from "../controllers/orderController.js";
 import { authenticate } from "../middleware/auth.js";
 

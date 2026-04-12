@@ -1,6 +1,9 @@
 const DEFAULT_LOCAL_API_BASE_URL = "http://localhost:5000/api";
 
-const normalizeBaseUrl = (value) => String(value || "").trim().replace(/\/+$/, "");
+const normalizeBaseUrl = (value) =>
+  String(value || "")
+    .trim()
+    .replace(/\/+$/, "");
 
 const resolveApiBaseUrl = () => {
   const configuredBaseUrl = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL);
@@ -144,7 +147,9 @@ export async function fetchMyOrders(token, params = {}) {
   });
 
   const queryString = query.toString();
-  return apiRequest(`/orders/my${queryString ? `?${queryString}` : ""}`, { token });
+  return apiRequest(`/orders/my${queryString ? `?${queryString}` : ""}`, {
+    token,
+  });
 }
 
 export { API_BASE_URL };

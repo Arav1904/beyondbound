@@ -30,7 +30,9 @@ function PreOrderModal() {
   const preOrderDraft = useMenuStore((state) => state.preOrderDraft);
   const closePreOrderModal = useMenuStore((state) => state.closePreOrderModal);
   const setAuthMode = useMenuStore((state) => state.setAuthMode);
-  const setIsLoginModalOpen = useMenuStore((state) => state.setIsLoginModalOpen);
+  const setIsLoginModalOpen = useMenuStore(
+    (state) => state.setIsLoginModalOpen,
+  );
   const setCartMessage = useMenuStore((state) => state.setCartMessage);
 
   const { product } = usePrimaryProduct();
@@ -55,7 +57,10 @@ function PreOrderModal() {
   );
 
   const effectiveDraft = useMemo(() => {
-    if (preOrderDraft && (preOrderDraft.productId || preOrderDraft.productSlug)) {
+    if (
+      preOrderDraft &&
+      (preOrderDraft.productId || preOrderDraft.productSlug)
+    ) {
       return {
         ...fallbackDraft,
         ...preOrderDraft,
@@ -73,7 +78,9 @@ function PreOrderModal() {
 
     setFormData((previous) => ({
       ...previous,
-      productId: String(effectiveDraft.productId || effectiveDraft.productSlug || ""),
+      productId: String(
+        effectiveDraft.productId || effectiveDraft.productSlug || "",
+      ),
       productSlug: String(effectiveDraft.productSlug || ""),
       productName: String(effectiveDraft.productName || "Glycomics"),
       size: String(effectiveDraft.size || "60"),
@@ -162,7 +169,10 @@ function PreOrderModal() {
       });
 
       const orderNumber =
-        response?.data?.orderNumber || response?.orderNumber || response?.data?.id || "requested";
+        response?.data?.orderNumber ||
+        response?.orderNumber ||
+        response?.data?.id ||
+        "requested";
       setCartMessage(`Pre-order ${orderNumber} submitted successfully.`);
       closePreOrderModal();
     } catch (submitError) {
@@ -174,10 +184,17 @@ function PreOrderModal() {
 
   return (
     <div className="preorder-modal-overlay" onClick={closePreOrderModal}>
-      <div className="preorder-modal-card" onClick={(event) => event.stopPropagation()}>
+      <div
+        className="preorder-modal-card"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="preorder-modal-header">
           <h2>Pre-Order Form</h2>
-          <button type="button" className="preorder-close-btn" onClick={closePreOrderModal}>
+          <button
+            type="button"
+            className="preorder-close-btn"
+            onClick={closePreOrderModal}
+          >
             x
           </button>
         </div>
@@ -185,7 +202,11 @@ function PreOrderModal() {
         {!isAuthenticated ? (
           <div className="preorder-auth-state">
             <p>Please sign in to submit your pre-order.</p>
-            <button type="button" className="preorder-submit-btn" onClick={openLogin}>
+            <button
+              type="button"
+              className="preorder-submit-btn"
+              onClick={openLogin}
+            >
               Sign In to Continue
             </button>
           </div>
@@ -214,7 +235,9 @@ function PreOrderModal() {
                 min="1"
                 max="20"
                 value={formData.quantity}
-                onChange={(event) => updateField("quantity", event.target.value)}
+                onChange={(event) =>
+                  updateField("quantity", event.target.value)
+                }
                 required
               />
             </label>
@@ -275,7 +298,9 @@ function PreOrderModal() {
                 <input
                   type="text"
                   value={formData.address.city}
-                  onChange={(event) => updateAddress("city", event.target.value)}
+                  onChange={(event) =>
+                    updateAddress("city", event.target.value)
+                  }
                   required
                 />
               </label>
@@ -284,7 +309,9 @@ function PreOrderModal() {
                 <input
                   type="text"
                   value={formData.address.state}
-                  onChange={(event) => updateAddress("state", event.target.value)}
+                  onChange={(event) =>
+                    updateAddress("state", event.target.value)
+                  }
                   required
                 />
               </label>
@@ -293,7 +320,9 @@ function PreOrderModal() {
                 <input
                   type="text"
                   value={formData.address.postalCode}
-                  onChange={(event) => updateAddress("postalCode", event.target.value)}
+                  onChange={(event) =>
+                    updateAddress("postalCode", event.target.value)
+                  }
                   required
                 />
               </label>
@@ -311,7 +340,11 @@ function PreOrderModal() {
 
             {error ? <p className="preorder-error">{error}</p> : null}
 
-            <button type="submit" className="preorder-submit-btn" disabled={isSubmitting}>
+            <button
+              type="submit"
+              className="preorder-submit-btn"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Submitting..." : "Submit Pre-Order"}
             </button>
           </form>

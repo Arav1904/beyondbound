@@ -206,7 +206,8 @@ const useMenuStore = create(
           isLoginModalOpen: false,
         }),
       setIsAccountModalOpen: (isOpen) => set({ isAccountModalOpen: isOpen }),
-      setAccountModalSection: (section) => set({ accountModalSection: section }),
+      setAccountModalSection: (section) =>
+        set({ accountModalSection: section }),
       updateAccountProfile: (updates) =>
         set((state) => {
           const nextProfile = {
@@ -315,7 +316,9 @@ const useMenuStore = create(
           preOrderDraft: null,
         }),
       setPreOrderDraft: (draft = null) =>
-        set({ preOrderDraft: draft && typeof draft === "object" ? draft : null }),
+        set({
+          preOrderDraft: draft && typeof draft === "object" ? draft : null,
+        }),
       setCartSyncing: (isSyncing) => set({ isCartSyncing: isSyncing }),
       setCartMessage: (message) => set({ cartMessage: message }),
       clearCartMessage: () => set({ cartMessage: "" }),

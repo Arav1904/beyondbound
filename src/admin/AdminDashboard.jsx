@@ -332,7 +332,8 @@ function AdminDashboard() {
     try {
       await updateAdminTestimonial(authToken, testimonial._id, {
         status,
-        moderationNote: status === "approved" ? "Approved by admin" : "Rejected by admin",
+        moderationNote:
+          status === "approved" ? "Approved by admin" : "Rejected by admin",
       });
       showSuccess(`Testimonial ${status}`);
       refresh();
@@ -404,7 +405,9 @@ function AdminDashboard() {
             ? draft.isPreorderEnabled
             : product.isPreorderEnabled,
         isActive:
-          typeof draft.isActive === "boolean" ? draft.isActive : product.isActive,
+          typeof draft.isActive === "boolean"
+            ? draft.isActive
+            : product.isActive,
       });
       showSuccess("Product updated");
       refresh();
@@ -489,7 +492,8 @@ function AdminDashboard() {
             <h3>Recent Orders</h3>
             {(overview.recentOrders || []).map((item) => (
               <p key={item._id}>
-                {item.orderNumber} · {item.status} · {formatCurrency(item.total)}
+                {item.orderNumber} · {item.status} ·{" "}
+                {formatCurrency(item.total)}
               </p>
             ))}
           </section>
@@ -551,7 +555,8 @@ function AdminDashboard() {
             <h3>Top Products</h3>
             {(analytics.topProducts || []).map((item) => (
               <p key={item.productId || item.productName}>
-                {item.productName} · {item.totalQuantity} sold · {formatCurrency(item.totalRevenue)}
+                {item.productName} · {item.totalQuantity} sold ·{" "}
+                {formatCurrency(item.totalRevenue)}
               </p>
             ))}
           </section>
@@ -746,7 +751,12 @@ function AdminDashboard() {
                 <div className="admin-row-actions">
                   <button
                     type="button"
-                    onClick={() => onUpdateUserRole(user, user.role === "admin" ? "user" : "admin")}
+                    onClick={() =>
+                      onUpdateUserRole(
+                        user,
+                        user.role === "admin" ? "user" : "admin",
+                      )
+                    }
                     disabled={saving}
                   >
                     {user.role === "admin" ? "Demote" : "Promote"}
@@ -790,13 +800,17 @@ function AdminDashboard() {
                 <td>
                   {order.customer?.name || "-"}
                   <br />
-                  <span className="admin-muted">{order.customer?.email || "-"}</span>
+                  <span className="admin-muted">
+                    {order.customer?.email || "-"}
+                  </span>
                 </td>
                 <td>{formatCurrency(order.total)}</td>
                 <td>
                   <select
                     value={draft.status || order.status}
-                    onChange={(event) => applyRowDraft(order._id, "status", event.target.value)}
+                    onChange={(event) =>
+                      applyRowDraft(order._id, "status", event.target.value)
+                    }
                   >
                     {ORDER_STATUSES.map((status) => (
                       <option key={status} value={status}>
@@ -810,14 +824,22 @@ function AdminDashboard() {
                     type="text"
                     value={draft.trackingNumber ?? order.trackingNumber ?? ""}
                     onChange={(event) =>
-                      applyRowDraft(order._id, "trackingNumber", event.target.value)
+                      applyRowDraft(
+                        order._id,
+                        "trackingNumber",
+                        event.target.value,
+                      )
                     }
                     placeholder="Tracking"
                   />
                 </td>
                 <td>{formatDate(order.placedAt)}</td>
                 <td>
-                  <button type="button" onClick={() => onSaveOrderStatus(order)} disabled={saving}>
+                  <button
+                    type="button"
+                    onClick={() => onSaveOrderStatus(order)}
+                    disabled={saving}
+                  >
                     Save
                   </button>
                 </td>
@@ -892,7 +914,9 @@ function AdminDashboard() {
             type="text"
             value={productDraft.name}
             placeholder="Product name"
-            onChange={(event) => setProductDraft((prev) => ({ ...prev, name: event.target.value }))}
+            onChange={(event) =>
+              setProductDraft((prev) => ({ ...prev, name: event.target.value }))
+            }
             required
           />
           <input
@@ -900,7 +924,10 @@ function AdminDashboard() {
             value={productDraft.category}
             placeholder="Category"
             onChange={(event) =>
-              setProductDraft((prev) => ({ ...prev, category: event.target.value }))
+              setProductDraft((prev) => ({
+                ...prev,
+                category: event.target.value,
+              }))
             }
           />
           <input
@@ -909,7 +936,12 @@ function AdminDashboard() {
             step="0.01"
             value={productDraft.price}
             placeholder="Price"
-            onChange={(event) => setProductDraft((prev) => ({ ...prev, price: event.target.value }))}
+            onChange={(event) =>
+              setProductDraft((prev) => ({
+                ...prev,
+                price: event.target.value,
+              }))
+            }
             required
           />
           <input
@@ -918,7 +950,10 @@ function AdminDashboard() {
             value={productDraft.inventory}
             placeholder="Inventory"
             onChange={(event) =>
-              setProductDraft((prev) => ({ ...prev, inventory: event.target.value }))
+              setProductDraft((prev) => ({
+                ...prev,
+                inventory: event.target.value,
+              }))
             }
             required
           />
@@ -926,14 +961,22 @@ function AdminDashboard() {
             type="url"
             value={productDraft.image}
             placeholder="Image URL"
-            onChange={(event) => setProductDraft((prev) => ({ ...prev, image: event.target.value }))}
+            onChange={(event) =>
+              setProductDraft((prev) => ({
+                ...prev,
+                image: event.target.value,
+              }))
+            }
           />
           <input
             type="text"
             value={productDraft.description}
             placeholder="Description"
             onChange={(event) =>
-              setProductDraft((prev) => ({ ...prev, description: event.target.value }))
+              setProductDraft((prev) => ({
+                ...prev,
+                description: event.target.value,
+              }))
             }
           />
           <input
@@ -994,7 +1037,9 @@ function AdminDashboard() {
                       min="0"
                       step="0.01"
                       value={draft.price ?? product.price}
-                      onChange={(event) => applyRowDraft(product._id, "price", event.target.value)}
+                      onChange={(event) =>
+                        applyRowDraft(product._id, "price", event.target.value)
+                      }
                     />
                   </td>
                   <td>
@@ -1003,7 +1048,11 @@ function AdminDashboard() {
                       min="0"
                       value={draft.inventory ?? product.inventory}
                       onChange={(event) =>
-                        applyRowDraft(product._id, "inventory", event.target.value)
+                        applyRowDraft(
+                          product._id,
+                          "inventory",
+                          event.target.value,
+                        )
                       }
                     />
                   </td>
@@ -1011,7 +1060,11 @@ function AdminDashboard() {
                     <input
                       type="number"
                       min="0"
-                      value={draft.estimatedDispatchDays ?? product.estimatedDispatchDays ?? 0}
+                      value={
+                        draft.estimatedDispatchDays ??
+                        product.estimatedDispatchDays ??
+                        0
+                      }
                       onChange={(event) =>
                         applyRowDraft(
                           product._id,
@@ -1048,7 +1101,11 @@ function AdminDashboard() {
                           : String(product.isActive)
                       }
                       onChange={(event) =>
-                        applyRowDraft(product._id, "isActive", event.target.value === "true")
+                        applyRowDraft(
+                          product._id,
+                          "isActive",
+                          event.target.value === "true",
+                        )
                       }
                     >
                       <option value="true">active</option>
@@ -1057,7 +1114,11 @@ function AdminDashboard() {
                   </td>
                   <td>
                     <div className="admin-row-actions">
-                      <button type="button" onClick={() => onSaveProduct(product)} disabled={saving}>
+                      <button
+                        type="button"
+                        onClick={() => onSaveProduct(product)}
+                        disabled={saving}
+                      >
                         Save
                       </button>
                       <button
@@ -1108,7 +1169,9 @@ function AdminDashboard() {
                 <td>
                   <select
                     value={draft.status || ticket.status}
-                    onChange={(event) => applyRowDraft(ticket._id, "status", event.target.value)}
+                    onChange={(event) =>
+                      applyRowDraft(ticket._id, "status", event.target.value)
+                    }
                   >
                     {TICKET_STATUSES.map((status) => (
                       <option key={status} value={status}>
@@ -1120,7 +1183,9 @@ function AdminDashboard() {
                 <td>
                   <select
                     value={draft.priority || ticket.priority}
-                    onChange={(event) => applyRowDraft(ticket._id, "priority", event.target.value)}
+                    onChange={(event) =>
+                      applyRowDraft(ticket._id, "priority", event.target.value)
+                    }
                   >
                     {TICKET_PRIORITIES.map((priority) => (
                       <option key={priority} value={priority}>
@@ -1134,11 +1199,17 @@ function AdminDashboard() {
                     type="text"
                     placeholder="Add note"
                     value={draft.adminNote || ""}
-                    onChange={(event) => applyRowDraft(ticket._id, "adminNote", event.target.value)}
+                    onChange={(event) =>
+                      applyRowDraft(ticket._id, "adminNote", event.target.value)
+                    }
                   />
                 </td>
                 <td>
-                  <button type="button" onClick={() => onSaveSupportTicket(ticket)} disabled={saving}>
+                  <button
+                    type="button"
+                    onClick={() => onSaveSupportTicket(ticket)}
+                    disabled={saving}
+                  >
                     Save
                   </button>
                 </td>
@@ -1152,7 +1223,11 @@ function AdminDashboard() {
 
   const renderActiveSection = () => {
     if (loading) {
-      return <p className="admin-empty">Loading {SECTION_LABELS[activeSection]}...</p>;
+      return (
+        <p className="admin-empty">
+          Loading {SECTION_LABELS[activeSection]}...
+        </p>
+      );
     }
 
     if (activeSection === "overview") {
@@ -1223,12 +1298,17 @@ function AdminDashboard() {
           <p className="admin-eyebrow">Control Center</p>
           <h1>Beyond Bound Admin</h1>
           <p className="admin-subline">
-            Manage users, pre-orders, testimonials, products, support, audit logs, and analytics in one place.
+            Manage users, pre-orders, testimonials, products, support, audit
+            logs, and analytics in one place.
           </p>
         </div>
       </section>
 
-      <section className="admin-tabs-row" role="tablist" aria-label="Admin sections">
+      <section
+        className="admin-tabs-row"
+        role="tablist"
+        aria-label="Admin sections"
+      >
         {sectionOptions.map((section) => (
           <button
             key={section}
@@ -1244,7 +1324,9 @@ function AdminDashboard() {
       {renderTableHeader()}
 
       {error ? <p className="admin-alert admin-alert-error">{error}</p> : null}
-      {success ? <p className="admin-alert admin-alert-success">{success}</p> : null}
+      {success ? (
+        <p className="admin-alert admin-alert-success">{success}</p>
+      ) : null}
 
       <section className="admin-content-card">{renderActiveSection()}</section>
 

@@ -63,7 +63,10 @@ const apiLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: Math.max(10, Number.parseInt(process.env.AUTH_RATE_LIMIT_MAX || "40", 10)),
+  max: Math.max(
+    10,
+    Number.parseInt(process.env.AUTH_RATE_LIMIT_MAX || "40", 10),
+  ),
   standardHeaders: true,
   legacyHeaders: false,
   message: {

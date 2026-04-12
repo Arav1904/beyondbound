@@ -37,7 +37,9 @@ function App() {
   const logout = useMenuStore((state) => state.logout);
   const isCartOpen = useMenuStore((state) => state.isCartOpen);
   const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
-  const isPreOrderModalOpen = useMenuStore((state) => state.isPreOrderModalOpen);
+  const isPreOrderModalOpen = useMenuStore(
+    (state) => state.isPreOrderModalOpen,
+  );
   const cartTotalItems = useMenuStore((state) => state.cartTotalItems);
   const cartMessage = useMenuStore((state) => state.cartMessage);
   const clearCartMessage = useMenuStore((state) => state.clearCartMessage);

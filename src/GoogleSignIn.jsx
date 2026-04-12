@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const GOOGLE_GSI_SCRIPT = "https://accounts.google.com/gsi/client";
+const DEFAULT_GOOGLE_CLIENT_ID =
+  "647437966024-0ubbv4rmbennr1some8g5o2agr3poanh.apps.googleusercontent.com";
 
 function isValidGoogleClientId(value) {
   const normalized = String(value || "").trim();
@@ -46,7 +48,11 @@ function GoogleSignIn({
   showSignedInState = true,
 }) {
   const rawClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-  const clientId = isValidGoogleClientId(rawClientId) ? rawClientId : "";
+  const clientId = isValidGoogleClientId(rawClientId)
+    ? rawClientId
+    : isValidGoogleClientId(DEFAULT_GOOGLE_CLIENT_ID)
+      ? DEFAULT_GOOGLE_CLIENT_ID
+      : "";
   const buttonRef = useRef(null);
   const [localUser, setLocalUser] = useState(null);
   const user = initialUser ?? (showSignedInState ? localUser : null);
@@ -166,7 +172,7 @@ function GoogleSignIn({
   if (!clientId) {
     return (
       <p className="google-signin-missing">
-        Set <code>VITE_GOOGLE_CLIENT_ID</code> in your <code>.env.local</code>{" "}
+        Set <code>VITE_GOOGLE_CLIENT_ID</code> in your <code>.env</code> or <code>.env.local</code>{" "}
         to enable Google Sign-In.
       </p>
     );

@@ -1,6 +1,9 @@
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 
+const DEFAULT_GOOGLE_CLIENT_ID =
+  "647437966024-0ubbv4rmbennr1some8g5o2agr3poanh.apps.googleusercontent.com";
+
 const isValidGoogleClientId = (value) => {
   const normalized = String(value || "").trim();
   if (!normalized) {
@@ -16,7 +19,9 @@ const isValidGoogleClientId = (value) => {
 
 const GOOGLE_CLIENT_ID = isValidGoogleClientId(process.env.GOOGLE_CLIENT_ID)
   ? process.env.GOOGLE_CLIENT_ID.trim()
-  : "";
+  : isValidGoogleClientId(DEFAULT_GOOGLE_CLIENT_ID)
+    ? DEFAULT_GOOGLE_CLIENT_ID
+    : "";
 const JWT_SECRET = process.env.JWT_SECRET || "development-secret-change-me";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 const ADMIN_ALLOWLIST = new Set(

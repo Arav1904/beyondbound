@@ -114,3 +114,26 @@ export const buildPrimaryCartItem = (
     image: getPrimaryImage(normalized, fallbackImage),
   };
 };
+
+export const buildPrimaryPreorderDraft = (
+  product,
+  { sizeValue = "60", quantity = 1, fallbackImage = "" } = {},
+) => {
+  const normalized = normalizePrimaryProduct(product);
+  const sizes = normalizePackSizes(normalized);
+  const selectedSize =
+    sizes.find((size) => size.value === String(sizeValue)) ||
+    sizes[sizes.length - 1] ||
+    FALLBACK_PRIMARY_PRODUCT.packSizes[1];
+
+  return {
+    productId: String(normalized.id || normalized.slug || "glycomics"),
+    productSlug: String(normalized.slug || "glycomics"),
+    productName: String(normalized.name || "Glycomics"),
+    image: getPrimaryImage(normalized, fallbackImage),
+    size: String(selectedSize.value || ""),
+    sizeLabel: String(selectedSize.label || ""),
+    quantity: toPositiveInt(quantity, 1),
+    unitPrice: toNonNegativeNumber(selectedSize.price, normalized.price),
+  };
+};

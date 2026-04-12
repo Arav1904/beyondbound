@@ -1,13 +1,28 @@
 import React from "react";
 import "./CTA.css";
+import useMenuStore from "../useMenuStore";
+import usePrimaryProduct from "../hooks/usePrimaryProduct";
+import { buildPrimaryPreorderDraft } from "../services/productCatalog";
 
 const CTA = () => {
+  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
+  const { product } = usePrimaryProduct();
+
   const benefits = [
     "100% refund guarantee",
     "Priority pre-order dispatch",
     "Secure reservation",
     "AYUSH certified",
   ];
+
+  const handlePreOrder = () => {
+    openPreOrderModal(
+      buildPrimaryPreorderDraft(product, {
+        sizeValue: "60",
+        quantity: 1,
+      }),
+    );
+  };
 
   return (
     <section className="science-cta">
@@ -27,7 +42,9 @@ const CTA = () => {
           </p>
 
           <div className="cta-buttons">
-            <button className="cta-btn primary">Pre-order Glycomics</button>
+            <button className="cta-btn primary" onClick={handlePreOrder}>
+              Pre-order Glycomics
+            </button>
             <button className="cta-btn secondary">
               Book a free consultation
             </button>

@@ -1,12 +1,12 @@
 import React from 'react';
 import './GlycomicsCard.css';
 import bottleImg from '../home/bottles.png';
-import useCartActions from '../hooks/useCartActions';
 import usePrimaryProduct from '../hooks/usePrimaryProduct';
-import { buildPrimaryCartItem } from '../services/productCatalog';
+import { buildPrimaryPreorderDraft } from '../services/productCatalog';
+import useMenuStore from '../useMenuStore';
 
 const GlycomicsCard = () => {
-  const { addProductToCart } = useCartActions();
+  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
   const { product } = usePrimaryProduct();
 
   const data = [
@@ -18,8 +18,8 @@ const GlycomicsCard = () => {
   ];
 
   const handleAddToCart = () => {
-    addProductToCart(
-      buildPrimaryCartItem(product, {
+    openPreOrderModal(
+      buildPrimaryPreorderDraft(product, {
         sizeValue: '60',
         quantity: 1,
         fallbackImage: bottleImg,

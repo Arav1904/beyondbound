@@ -1,10 +1,10 @@
 import React from 'react';
 import { CircleX, CircleCheck, ArrowRight } from 'lucide-react';
 import './GlycomicsComparison.css';
-import useCartActions from '../hooks/useCartActions';
 import bottleImg from '../home/bottles.png';
 import usePrimaryProduct from '../hooks/usePrimaryProduct';
-import { buildPrimaryCartItem } from '../services/productCatalog';
+import { buildPrimaryPreorderDraft } from '../services/productCatalog';
+import useMenuStore from '../useMenuStore';
 
 const ComparisonCard = ({ title, items, variant }) => {
   const isPositive = variant === 'with';
@@ -33,7 +33,7 @@ const ComparisonCard = ({ title, items, variant }) => {
 };
 
 const GlycomicsComparison = () => {
-  const { addProductToCart } = useCartActions();
+  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
   const { product } = usePrimaryProduct();
 
   const data = {
@@ -54,8 +54,8 @@ const GlycomicsComparison = () => {
   };
 
   const handleShopNow = () => {
-    addProductToCart(
-      buildPrimaryCartItem(product, {
+    openPreOrderModal(
+      buildPrimaryPreorderDraft(product, {
         sizeValue: '60',
         quantity: 1,
         fallbackImage: bottleImg,

@@ -141,6 +141,22 @@ function AdminDashboard() {
 
   useEffect(() => {
     if (!canAccessAdmin) {
+      return undefined;
+    }
+
+    if (!["orders", "overview"].includes(activeSection)) {
+      return undefined;
+    }
+
+    const interval = window.setInterval(() => {
+      setRefreshTick((prev) => prev + 1);
+    }, 8000);
+
+    return () => window.clearInterval(interval);
+  }, [activeSection, canAccessAdmin]);
+
+  useEffect(() => {
+    if (!canAccessAdmin) {
       return;
     }
 

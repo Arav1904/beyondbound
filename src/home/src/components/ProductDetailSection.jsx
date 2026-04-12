@@ -4,14 +4,14 @@ import backImg from '../assets/back.jpg';
 import sideImg from '../assets/side.jpg';
 import labelImg from '../assets/101.png';
 import { ShieldIcon, ArrowRight } from 'lucide-react';
-import useCartActions from '../../../hooks/useCartActions';
 import usePrimaryProduct from '../../../hooks/usePrimaryProduct';
-import { buildPrimaryCartItem, getPrimaryImage } from '../../../services/productCatalog';
+import { buildPrimaryPreorderDraft, getPrimaryImage } from '../../../services/productCatalog';
+import useMenuStore from '../../../useMenuStore';
 
 import '../css/productDetailSection.css';
 
 const ProductDetailSection = () => {
-  const { addProductToCart } = useCartActions();
+  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
   const { product, packSizes } = usePrimaryProduct();
   const images = [frontImg, backImg, sideImg, labelImg];
   const [mainImage, setMainImage] = useState(frontImg);
@@ -47,8 +47,8 @@ const ProductDetailSection = () => {
   };
 
   const handleShopNow = () => {
-    addProductToCart(
-      buildPrimaryCartItem(product, {
+    openPreOrderModal(
+      buildPrimaryPreorderDraft(product, {
         sizeValue: resolvedSelectedSize,
         quantity,
         fallbackImage: primaryImage,

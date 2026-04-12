@@ -1,0 +1,118 @@
+.preorder-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.preorder-modal-card {
+  width: min(680px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.35);
+  padding: 18px;
+}
+
+.preorder-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.preorder-modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #0f172a;
+}
+
+.preorder-close-btn {
+  border: none;
+  background: #f1f5f9;
+  color: #0f172a;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.preorder-form {
+  display: grid;
+  gap: 10px;
+}
+
+.preorder-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.88rem;
+  color: #334155;
+}
+
+.preorder-form input,
+.preorder-form textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.92rem;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.preorder-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.preorder-grid-two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.preorder-grid-three {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.preorder-submit-btn {
+  border: none;
+  background: #0f766e;
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.preorder-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.preorder-error {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 0.84rem;
+}
+
+.preorder-auth-state {
+  display: grid;
+  gap: 12px;
+}
+
+.preorder-auth-state p {
+  margin: 0;
+  color: #334155;
+}
+
+@media (max-width: 640px) {
+  .preorder-grid-two,
+  .preorder-grid-three {
+    grid-template-columns: 1fr;
+  }
+}

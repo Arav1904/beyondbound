@@ -124,6 +124,14 @@ export async function placeOrder(token, payload = {}) {
   });
 }
 
+export async function submitPreorderForm(token, payload = {}) {
+  return apiRequest("/orders/preorder-form", {
+    method: "POST",
+    token,
+    body: payload,
+  });
+}
+
 export async function fetchMyOrders(token, params = {}) {
   const query = new URLSearchParams();
 

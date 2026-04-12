@@ -2,18 +2,18 @@
 import '../css/OurStory.css';
 import bottleAbout from '../assets/bottleabout.png';
 import { ChevronDown } from 'lucide-react';
-import useCartActions from '../../hooks/useCartActions';
 import usePrimaryProduct from '../../hooks/usePrimaryProduct';
-import { buildPrimaryCartItem } from '../../services/productCatalog';
+import { buildPrimaryPreorderDraft } from '../../services/productCatalog';
+import useMenuStore from '../../useMenuStore';
 
 const OurStory = () => {
   const [expandedItem, setExpandedItem] = useState(null);
-  const { addProductToCart } = useCartActions();
+  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
   const { product } = usePrimaryProduct();
 
   const handleShopNow = () => {
-    addProductToCart(
-      buildPrimaryCartItem(product, {
+    openPreOrderModal(
+      buildPrimaryPreorderDraft(product, {
         sizeValue: '60',
         quantity: 1,
         fallbackImage: bottleAbout,

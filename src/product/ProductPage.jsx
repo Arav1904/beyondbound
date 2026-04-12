@@ -3,13 +3,13 @@ import frontImg from '../home/bottles.png';
 import backImg from '../home/back.jpg';
 import sideImg from '../home/side.jpg';
 import labelImg from '../home/101.png';
-import useCartActions from "../hooks/useCartActions";
 import usePrimaryProduct from "../hooks/usePrimaryProduct";
-import { buildPrimaryCartItem, getPrimaryImage } from "../services/productCatalog";
+import { buildPrimaryPreorderDraft, getPrimaryImage } from "../services/productCatalog";
+import useMenuStore from "../useMenuStore";
 
 import './ProductPage.css';
 const ProductPage = () => {
-  const { addProductToCart } = useCartActions();
+  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
   const { product, packSizes } = usePrimaryProduct();
   const images = [frontImg, backImg, sideImg, labelImg];
   const [mainImage, setMainImage] = useState(frontImg);
@@ -45,8 +45,8 @@ const ProductPage = () => {
   };
 
   const handleAddToCart = () => {
-    addProductToCart(
-      buildPrimaryCartItem(product, {
+    openPreOrderModal(
+      buildPrimaryPreorderDraft(product, {
         sizeValue: resolvedSelectedSize,
         quantity,
         fallbackImage: primaryImage,

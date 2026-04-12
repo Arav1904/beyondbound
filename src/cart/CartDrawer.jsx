@@ -2,7 +2,6 @@ import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import useMenuStore from "../useMenuStore";
 import {
   clearServerCart,
-  placeOrder,
   removeCartItem,
   updateCartItem,
 } from "../services/cartApi";
@@ -18,6 +17,11 @@ function CartDrawer() {
   const setCartSyncing = useMenuStore((state) => state.setCartSyncing);
   const setCartFromServer = useMenuStore((state) => state.setCartFromServer);
   const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
+  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
+  const setAuthMode = useMenuStore((state) => state.setAuthMode);
+  const setIsLoginModalOpen = useMenuStore(
+    (state) => state.setIsLoginModalOpen,
+  );
   const updateLocalCartItemQuantity = useMenuStore(
     (state) => state.updateLocalCartItemQuantity,
   );
@@ -81,9 +85,11 @@ function CartDrawer() {
     clearCartLocal();
   };
 
-  const handlePreOrder = async () => {
+  const handlePreOrder = () => {
     if (!isAuthenticated) {
-      setCartMessage("Please sign in to request a pre-order.");
+      setCartMessage("Please sign in to continue your pre-order.");
+      setAuthMode("login");
+      setIsLoginModalOpen(true);
       return;
     }
 
@@ -91,20 +97,20 @@ function CartDrawer() {
       return;
     }
 
-    setCartSyncing(true);
-
-    try {
-      const response = await placeOrder(authToken);
-      clearCartLocal();
-      setCartMessage(
-        `Pre-order ${response.orderNumber || response?.data?.orderNumber || "requested"} submitted successfully.`,
-      );
-      setIsCartOpen(false);
-    } catch (error) {
-      setCartMessage(error.message || "Could not submit pre-order right now.");
-    } finally {
-      setCartSyncing(false);
-    }
+    const firstItem = cartItems[0];
+    openPreOrderModal(
+      firstItem
+        ? {
+            productId: firstItem.productId,
+            productName: firstItem.productName,
+            size: firstItem.size,
+            quantity: firstItem.quantity,
+            image: firstItem.image,
+            unitPrice: firstItem.price,
+          }
+        : null,
+    );
+    setIsCartOpen(false);
   };
 
   return (
@@ -218,7 +224,7 @@ function CartDrawer() {
             onClick={handlePreOrder}
             disabled={cartItems.length === 0}
           >
-            Request Pre-Order
+            Open Pre-Order Form
           </button>
         </footer>
       </aside>

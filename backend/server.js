@@ -13,7 +13,6 @@ import adminRoutes from "./routes/admin.js";
 import supportRoutes from "./routes/support.js";
 import orderRoutes from "./routes/orders.js";
 import productRoutes from "./routes/products.js";
-import preorderRoutes from "./routes/preorder.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -136,10 +135,8 @@ app.use("/api/testimonials", requireMongoConnection, testimonialRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/cart", requireMongoConnection, cartRoutes);
 app.use("/api/orders", requireMongoConnection, orderRoutes);
-app.use("/api/preorder", requireMongoConnection, preorderRoutes);
 app.use("/api/support", requireMongoConnection, supportRoutes);
 app.use("/api/admin", requireMongoConnection, adminRoutes);
-app.use("/admin", adminRoutes);
 app.use("/api/products", requireMongoConnection, productRoutes);
 
 // Root endpoint for browser visits
@@ -154,7 +151,8 @@ app.get("/", (req, res) => {
       authMe: "/api/auth/me",
       cart: "/api/cart",
       orders: "/api/orders",
-      preorder: "/api/preorder",
+      preorderForm: "/api/orders/preorder-form",
+      preorderFromCart: "/api/orders/preorder",
       support: "/api/support",
       admin: "/api/admin",
       products: "/api/products",

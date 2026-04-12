@@ -1,9 +1,9 @@
 import '../css/transformationSection.css'
 
 import transformationImage from '../../docglycos1.jpeg'
-import useCartActions from '../../../hooks/useCartActions'
 import usePrimaryProduct from '../../../hooks/usePrimaryProduct'
-import { buildPrimaryCartItem } from '../../../services/productCatalog'
+import { buildPrimaryPreorderDraft } from '../../../services/productCatalog'
+import useMenuStore from '../../../useMenuStore'
 
 const metrics = [
 	{
@@ -24,12 +24,12 @@ const metrics = [
 ]
 
 function TransformationSection() {
-	const { addProductToCart } = useCartActions()
+	const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal)
 	const { product } = usePrimaryProduct()
 
 	const handleShopNow = () => {
-		addProductToCart(
-			buildPrimaryCartItem(product, {
+		openPreOrderModal(
+			buildPrimaryPreorderDraft(product, {
 				sizeValue: '60',
 				quantity: 1,
 				fallbackImage: transformationImage,

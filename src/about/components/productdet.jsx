@@ -2,12 +2,12 @@ import React, { useState, useRef } from 'react';
 import '../css/productdet.css';
 import withGlycoImg from '../assets/withglyco.jpeg';
 import withoutGlycoImg from '../assets/withoutglyco.jpeg';
-import useCartActions from '../../hooks/useCartActions';
 import usePrimaryProduct from '../../hooks/usePrimaryProduct';
-import { buildPrimaryCartItem } from '../../services/productCatalog';
+import { buildPrimaryPreorderDraft } from '../../services/productCatalog';
+import useMenuStore from '../../useMenuStore';
 
 export default function ProductDet() {
-  const { addProductToCart } = useCartActions();
+  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
   const { product } = usePrimaryProduct();
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
@@ -59,8 +59,8 @@ export default function ProductDet() {
   };
 
   const handleAddToCart = () => {
-    addProductToCart(
-      buildPrimaryCartItem(product, {
+    openPreOrderModal(
+      buildPrimaryPreorderDraft(product, {
         sizeValue: '60',
         quantity: 1,
         fallbackImage: withGlycoImg,

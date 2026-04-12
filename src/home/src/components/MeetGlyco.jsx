@@ -4,12 +4,12 @@ import bottleImg from '../../bottle.jpeg'
 import reviewImageOne from '../../image 32.png'
 import reviewImageTwo from '../../image 33.png'
 import reviewImageThree from '../../image 34.png'
-import useCartActions from '../../../hooks/useCartActions'
 import usePrimaryProduct from '../../../hooks/usePrimaryProduct'
-import { buildPrimaryCartItem } from '../../../services/productCatalog'
+import { buildPrimaryPreorderDraft } from '../../../services/productCatalog'
+import useMenuStore from '../../../useMenuStore'
 
 function MeetGlycomics() {
-	const { addProductToCart } = useCartActions()
+	const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal)
 	const { product } = usePrimaryProduct()
 
 	const compareAtPrice =
@@ -22,8 +22,8 @@ function MeetGlycomics() {
 			: 0
 
 	const handleShopNow = () => {
-		addProductToCart(
-			buildPrimaryCartItem(product, {
+		openPreOrderModal(
+			buildPrimaryPreorderDraft(product, {
 				sizeValue: '60',
 				quantity: 1,
 				fallbackImage: bottleImg,

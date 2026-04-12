@@ -53,6 +53,25 @@ const resolveProductForPreorder = async (identifier) => {
   });
 };
 
+const resolveProductWithFallbackIdentifier = async (identifier) => {
+  const direct = await resolveProductForPreorder(identifier);
+  if (direct) {
+    return direct;
+  }
+
+  const normalized = String(identifier || "").trim();
+  if (!/-\d+$/.test(normalized)) {
+    return null;
+  }
+
+  const trimmedIdentifier = normalized.replace(/-\d+$/, "");
+  if (!trimmedIdentifier) {
+    return null;
+  }
+
+  return resolveProductForPreorder(trimmedIdentifier);
+};
+
 const resolveOrderItem = (product, requestedSize, requestedQuantity) => {
   const quantity = toPositiveInt(requestedQuantity, 1);
   const normalizedSize = String(requestedSize || "").trim();
@@ -277,7 +296,7 @@ export const placePreorderFromForm = async (req, res) => {
       });
     }
 
-    const product = await resolveProductForPreorder(productIdentifier);
+    const product = await resolveProductWithFallbackIdentifier(productIdentifier);
     if (!product) {
       return res.status(404).json({
         success: false,

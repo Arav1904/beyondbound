@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import './LandingDetails.css';
 import TrustStandards from './trust';
 import { ArrowRight, Star } from 'lucide-react';
-import useCartActions from '../hooks/useCartActions';
 import bottleImg from '../home/bottles.png';
 import usePrimaryProduct from '../hooks/usePrimaryProduct';
-import { buildPrimaryCartItem } from '../services/productCatalog';
+import { buildPrimaryPreorderDraft } from '../services/productCatalog';
+import useMenuStore from '../useMenuStore';
 
 const LandingDetails = () => {
   const [openIndex, setOpenIndex] = useState(null);
-  const { addProductToCart } = useCartActions();
+  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
   const { product } = usePrimaryProduct();
 
   const testimonials = [
@@ -27,8 +27,8 @@ const LandingDetails = () => {
   ];
 
   const handleShopNow = () => {
-    addProductToCart(
-      buildPrimaryCartItem(product, {
+    openPreOrderModal(
+      buildPrimaryPreorderDraft(product, {
         sizeValue: '60',
         quantity: 1,
         fallbackImage: bottleImg,

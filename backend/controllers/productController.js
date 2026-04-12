@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Product from "../models/Product.js";
+import { ensurePrimaryProductExists } from "../utils/productBootstrap.js";
 
 const parsePagination = (query) => {
   const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
@@ -79,6 +80,10 @@ export const getPublicProducts = async (req, res) => {
     const search = String(req.query.search || "").trim();
     const preorderOnly = String(req.query.preorderOnly || "").trim().toLowerCase() === "true";
 
+    if (!category && !search) {
+      await ensurePrimaryProductExists();
+    }
+
     const filters = { isActive: true };
 
     if (category) {
@@ -121,6 +126,8 @@ export const getPublicProducts = async (req, res) => {
 
 export const getPrimaryProduct = async (_req, res) => {
   try {
+    await ensurePrimaryProductExists();
+
     let product = await Product.findOne({
       isActive: true,
       isPreorderEnabled: true,

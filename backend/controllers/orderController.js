@@ -3,6 +3,7 @@ import Cart from "../models/Cart.js";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import { createAuditLog } from "../utils/auditLog.js";
+import { ensurePrimaryProductExists } from "../utils/productBootstrap.js";
 
 const parsePagination = (query) => {
   const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
@@ -350,6 +351,17 @@ export const placePreorderFromForm = async (req, res) => {
       product = await resolveProductWithFallbackIdentifier(identifier);
       if (product) {
         break;
+      }
+    }
+
+    if (!product) {
+      const activePreorderCount = await Product.countDocuments({
+        isActive: true,
+        isPreorderEnabled: true,
+      });
+
+      if (activePreorderCount === 0) {
+        product = await ensurePrimaryProductExists();
       }
     }
 

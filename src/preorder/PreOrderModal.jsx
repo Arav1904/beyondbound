@@ -38,6 +38,7 @@ function PreOrderModal() {
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     productId: "",
+    productSlug: "",
     productName: "",
     size: "60",
     quantity: 1,
@@ -73,6 +74,7 @@ function PreOrderModal() {
     setFormData((previous) => ({
       ...previous,
       productId: String(effectiveDraft.productId || effectiveDraft.productSlug || ""),
+      productSlug: String(effectiveDraft.productSlug || ""),
       productName: String(effectiveDraft.productName || "Glycomics"),
       size: String(effectiveDraft.size || "60"),
       quantity: toPositiveInt(effectiveDraft.quantity, 1),
@@ -137,6 +139,12 @@ function PreOrderModal() {
     try {
       const response = await submitPreorderForm(authToken, {
         productId: formData.productId,
+        productSlug: formData.productSlug,
+        productName: formData.productName,
+        productIdentifier:
+          String(formData.productSlug || "").trim() ||
+          String(formData.productId || "").trim() ||
+          String(formData.productName || "").trim(),
         size: formData.size,
         quantity: toPositiveInt(formData.quantity, 1),
         notes: formData.notes,

@@ -33,6 +33,42 @@ const toMongoObjectId = (value) => {
 
 const escapeRegex = (value) => String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+const slugify = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
+const cleanIdentifierCandidate = (value) => {
+  const normalized = String(value || "").trim();
+  if (!normalized) {
+    return "";
+  }
+
+  const withoutParenSuffix = normalized.replace(/\s*\([^)]*\)\s*$/, "").trim();
+  return withoutParenSuffix || normalized;
+};
+
+const buildProductIdentifierCandidates = (payload = {}) => {
+  const candidates = [];
+
+  const pushIfPresent = (value) => {
+    const normalized = cleanIdentifierCandidate(value);
+    if (normalized) {
+      candidates.push(normalized);
+    }
+  };
+
+  pushIfPresent(payload.productId);
+  pushIfPresent(payload.productIdentifier);
+  pushIfPresent(payload.productSlug);
+  pushIfPresent(payload.productName);
+
+  return Array.from(new Set(candidates));
+};
+
 const resolveProductForPreorder = async (identifier) => {
   const normalized = String(identifier || "").trim();
   if (!normalized) {
@@ -47,10 +83,25 @@ const resolveProductForPreorder = async (identifier) => {
 
   filters.push({ name: new RegExp(`^${escapeRegex(normalized)}$`, "i") });
 
-  return Product.findOne({
+  const exactMatch = await Product.findOne({
     isActive: true,
     $or: filters,
   });
+
+  if (exactMatch) {
+    return exactMatch;
+  }
+
+  const normalizedSlug = slugify(normalized);
+  if (!normalizedSlug || normalizedSlug === normalized) {
+    return null;
+  }
+
+  const slugPrefixRegex = new RegExp(`^${escapeRegex(normalizedSlug)}(?:-|$)`, "i");
+  return Product.findOne({
+    isActive: true,
+    $or: [{ slug: normalizedSlug }, { slug: slugPrefixRegex }],
+  }).sort({ updatedAt: -1 });
 };
 
 const resolveProductWithFallbackIdentifier = async (identifier) => {
@@ -285,22 +336,27 @@ export const getMyOrders = async (req, res) => {
 
 export const placePreorderFromForm = async (req, res) => {
   try {
-    const productIdentifier = String(
-      req.body?.productId || req.body?.productIdentifier || req.body?.productSlug || "",
-    ).trim();
+    const productIdentifiers = buildProductIdentifierCandidates(req.body);
 
-    if (!productIdentifier) {
+    if (productIdentifiers.length === 0) {
       return res.status(400).json({
         success: false,
         error: "Product is required",
       });
     }
 
-    const product = await resolveProductWithFallbackIdentifier(productIdentifier);
+    let product = null;
+    for (const identifier of productIdentifiers) {
+      product = await resolveProductWithFallbackIdentifier(identifier);
+      if (product) {
+        break;
+      }
+    }
+
     if (!product) {
       return res.status(404).json({
         success: false,
-        error: "Product not found",
+        error: "Product not found. Please refresh and select the product again.",
       });
     }
 

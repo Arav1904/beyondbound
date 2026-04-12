@@ -82,7 +82,8 @@ Authenticated user:
 - `DELETE /api/cart/items/:itemId`
 - `DELETE /api/cart`
 - `POST /api/cart/merge`
-- `POST /api/orders/preorder`
+- `POST /api/orders/preorder-form`
+- `POST /api/orders/preorder` (preorder from cart)
 - `POST /api/orders/place` (legacy alias)
 - `GET /api/orders/my`
 

@@ -5,6 +5,8 @@ import { buildPrimaryPreorderDraft } from "../services/productCatalog";
 import { submitPreorderForm } from "../services/cartApi";
 import "./PreOrderModal.css";
 
+const SIZE_OPTIONS = ["20", "60"];
+
 const emptyAddress = () => ({
   line1: "",
   line2: "",
@@ -21,6 +23,11 @@ const toPositiveInt = (value, fallback = 1) => {
   }
 
   return parsed;
+};
+
+const normalizeSizeValue = (value) => {
+  const normalized = String(value || "").trim();
+  return SIZE_OPTIONS.includes(normalized) ? normalized : SIZE_OPTIONS[0];
 };
 
 function PreOrderModal() {
@@ -42,7 +49,7 @@ function PreOrderModal() {
     productId: "",
     productSlug: "",
     productName: "",
-    size: "20",
+    size: SIZE_OPTIONS[0],
     quantity: 1,
     notes: "",
     name: "",
@@ -52,7 +59,11 @@ function PreOrderModal() {
   });
 
   const fallbackDraft = useMemo(
-    () => buildPrimaryPreorderDraft(product, { sizeValue: "20", quantity: 1 }),
+    () =>
+      buildPrimaryPreorderDraft(product, {
+        sizeValue: SIZE_OPTIONS[0],
+        quantity: 1,
+      }),
     [product],
   );
 
@@ -83,7 +94,7 @@ function PreOrderModal() {
       ),
       productSlug: String(effectiveDraft.productSlug || ""),
       productName: String(effectiveDraft.productName || "Glycomics"),
-      size: String(effectiveDraft.size || "20"),
+      size: normalizeSizeValue(effectiveDraft.size),
       quantity: toPositiveInt(effectiveDraft.quantity, 1),
       name: String(accountProfile?.name || signedInUser?.name || ""),
       email: String(accountProfile?.email || signedInUser?.email || ""),
@@ -141,6 +152,12 @@ function PreOrderModal() {
       return;
     }
 
+    const normalizedSize = normalizeSizeValue(formData.size);
+    if (normalizedSize !== String(formData.size || "").trim()) {
+      setError("Please choose a valid size (20 or 60).");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -152,7 +169,7 @@ function PreOrderModal() {
           String(formData.productSlug || "").trim() ||
           String(formData.productId || "").trim() ||
           String(formData.productName || "").trim(),
-        size: formData.size,
+        size: normalizedSize,
         quantity: toPositiveInt(formData.quantity, 1),
         notes: formData.notes,
         name: formData.name,
@@ -219,12 +236,17 @@ function PreOrderModal() {
               </label>
               <label>
                 Size
-                <input
-                  type="text"
+                <select
                   value={formData.size}
                   onChange={(event) => updateField("size", event.target.value)}
                   required
-                />
+                >
+                  {SIZE_OPTIONS.map((sizeOption) => (
+                    <option key={sizeOption} value={sizeOption}>
+                      {sizeOption}
+                    </option>
+                  ))}
+                </select>
               </label>
             </div>
 

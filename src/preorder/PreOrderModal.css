@@ -55,6 +55,7 @@
 }
 
 .preorder-form input,
+.preorder-form select,
 .preorder-form textarea {
   width: 100%;
   border: 1px solid #cbd5e1;

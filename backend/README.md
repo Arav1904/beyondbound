@@ -25,6 +25,13 @@ Set at least:
 - `CORS_ORIGIN`
 - `ADMIN_ALLOWLIST`
 
+Optional for automated customer confirmation emails via Zapier/Make webhook:
+
+- `ORDER_CONFIRMATION_WEBHOOK_URL`
+- `ORDER_CONFIRMATION_WEBHOOK_SECRET` (optional shared secret header)
+- `ORDER_CONFIRMATION_WEBHOOK_SOURCE` (optional, default: `beyond-bound-backend`)
+- `ORDER_CONFIRMATION_WEBHOOK_TIMEOUT_MS` (optional, default: `5000`)
+
 3. Run backend
 
 ```bash
@@ -119,3 +126,18 @@ Admin (`requireAdmin` + allowlist):
 - Order lifecycle now runs in pre-order mode (`preorder_requested`, `preorder_confirmed`, etc.)
 - Legacy order statuses (`placed`, `confirmed`, `packed`) are still accepted for compatibility
 - Audit logging is enabled for auth, support, testimonials, pre-order creation, and admin mutations
+
+## Automated Confirmation Webhook
+
+If `ORDER_CONFIRMATION_WEBHOOK_URL` is configured, the backend will POST a webhook payload immediately after successful pre-order creation from:
+
+- `POST /api/orders/preorder`
+- `POST /api/orders/preorder-form`
+
+The payload includes fields designed for no-code mapping, such as:
+
+- `customer_email`, `customer_name`, `order_number`, `order_date`, `order_status`
+- `items_summary`, `item_count`, `items`
+- `total`, `subtotal`, `shipping_fee`, `tax_amount`, `discount_amount`
+
+Use these fields directly in Zapier/Make to send a customer confirmation email from the admin mailbox.

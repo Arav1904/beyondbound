@@ -4,6 +4,7 @@ import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import { createAuditLog } from "../utils/auditLog.js";
 import { ensurePrimaryProductExists } from "../utils/productBootstrap.js";
+import { notifyPreorderConfirmationWebhook } from "../utils/orderConfirmationWebhook.js";
 
 const parsePagination = (query) => {
   const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
@@ -278,6 +279,11 @@ export const placeOrder = async (req, res) => {
       },
     });
 
+    await notifyPreorderConfirmationWebhook(order, {
+      sourceEndpoint: "/api/orders/preorder",
+      flow: "cart",
+    });
+
     return res.status(201).json({
       success: true,
       message: "Pre-order request submitted successfully",
@@ -452,6 +458,11 @@ export const placePreorderFromForm = async (req, res) => {
         quantity: item.quantity,
         total: order.total,
       },
+    });
+
+    await notifyPreorderConfirmationWebhook(order, {
+      sourceEndpoint: "/api/orders/preorder-form",
+      flow: "preorder_form",
     });
 
     return res.status(201).json({

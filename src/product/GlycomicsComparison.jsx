@@ -66,7 +66,7 @@ const GlycomicsComparison = () => {
   const handleShopNow = () => {
     openPreOrderModal(
       buildPrimaryPreorderDraft(product, {
-        sizeValue: "60",
+        sizeValue: "20",
         quantity: 1,
         fallbackImage: bottleImg,
       }),

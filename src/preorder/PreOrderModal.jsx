@@ -42,7 +42,7 @@ function PreOrderModal() {
     productId: "",
     productSlug: "",
     productName: "",
-    size: "60",
+    size: "20",
     quantity: 1,
     notes: "",
     name: "",
@@ -52,7 +52,7 @@ function PreOrderModal() {
   });
 
   const fallbackDraft = useMemo(
-    () => buildPrimaryPreorderDraft(product, { sizeValue: "60", quantity: 1 }),
+    () => buildPrimaryPreorderDraft(product, { sizeValue: "20", quantity: 1 }),
     [product],
   );
 
@@ -83,7 +83,7 @@ function PreOrderModal() {
       ),
       productSlug: String(effectiveDraft.productSlug || ""),
       productName: String(effectiveDraft.productName || "Glycomics"),
-      size: String(effectiveDraft.size || "60"),
+      size: String(effectiveDraft.size || "20"),
       quantity: toPositiveInt(effectiveDraft.quantity, 1),
       name: String(accountProfile?.name || signedInUser?.name || ""),
       email: String(accountProfile?.email || signedInUser?.email || ""),

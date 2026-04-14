@@ -120,7 +120,7 @@ export const buildPrimaryCartItem = (
 
 export const buildPrimaryPreorderDraft = (
   product,
-  { sizeValue = "60", quantity = 1, fallbackImage = "" } = {},
+  { sizeValue = "20", quantity = 1, fallbackImage = "" } = {},
 ) => {
   const normalized = normalizePrimaryProduct(product);
   const sizes = normalizePackSizes(normalized);

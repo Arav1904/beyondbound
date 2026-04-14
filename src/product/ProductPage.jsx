@@ -17,13 +17,13 @@ const ProductPage = () => {
   const images = [frontImg, backImg, sideImg, labelImg];
   const [mainImage, setMainImage] = useState(frontImg);
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState("60");
+  const [selectedSize, setSelectedSize] = useState("20");
   const [activeAccordion, setActiveAccordion] = useState(null);
 
   const sizes = packSizes;
   const resolvedSelectedSize = sizes.some((size) => size.value === selectedSize)
     ? selectedSize
-    : sizes[sizes.length - 1]?.value || "60";
+    : sizes[sizes.length - 1]?.value || "20";
   const currentPrice =
     sizes.find((size) => size.value === resolvedSelectedSize)?.price ||
     product.price;

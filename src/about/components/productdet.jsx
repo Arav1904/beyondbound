@@ -61,7 +61,7 @@ export default function ProductDet() {
   const handleAddToCart = () => {
     openPreOrderModal(
       buildPrimaryPreorderDraft(product, {
-        sizeValue: "60",
+        sizeValue: "20",
         quantity: 1,
         fallbackImage: withGlycoImg,
       }),

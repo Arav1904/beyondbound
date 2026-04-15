@@ -240,7 +240,7 @@ export const placeOrder = async (req, res) => {
       customer: {
         name: req.user.name || "",
         email: req.user.email || "",
-        phone: req.user.phone || "",
+        phone: String(req.body?.phone || req.user.phone || "").trim(),
         address: normalizeAddress(req.body?.address, req.user.address),
       },
       items: cart.items.map((item) => ({

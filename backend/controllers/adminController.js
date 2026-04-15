@@ -137,6 +137,15 @@ const formatPagination = (page, limit, totalCount) => ({
   totalPages: Math.max(1, Math.ceil(totalCount / limit)),
 });
 
+const normalizeAddressSnapshot = (address = {}) => ({
+  line1: String(address?.line1 || "").trim(),
+  line2: String(address?.line2 || "").trim(),
+  city: String(address?.city || "").trim(),
+  state: String(address?.state || "").trim(),
+  postalCode: String(address?.postalCode || "").trim(),
+  country: String(address?.country || "").trim(),
+});
+
 export const getAdminOverview = async (_req, res) => {
   try {
     const [
@@ -361,6 +370,10 @@ export const getAdminOrders = async (req, res) => {
         { orderNumber: regex },
         { "customer.name": regex },
         { "customer.email": regex },
+        { "customer.phone": regex },
+        { "customer.address.line1": regex },
+        { "customer.address.city": regex },
+        { "customer.address.state": regex },
       ];
     }
 
@@ -369,15 +382,43 @@ export const getAdminOrders = async (req, res) => {
         .sort({ placedAt: -1 })
         .skip(skip)
         .limit(limit)
-        .populate("userId", "name email"),
+        .populate("userId", "name email phone address"),
       Order.countDocuments(filters),
     ]);
 
+    const enrichedOrders = orders.map((order) => {
+      const serializedOrder = order.toObject();
+      const userSnapshot = serializedOrder.userId || {};
+      const customerSnapshot = serializedOrder.customer || {};
+      const customerAddress = normalizeAddressSnapshot(customerSnapshot.address);
+      const userAddress = normalizeAddressSnapshot(userSnapshot.address);
+
+      return {
+        ...serializedOrder,
+        customer: {
+          ...customerSnapshot,
+          name: String(customerSnapshot.name || userSnapshot.name || "").trim(),
+          email: String(customerSnapshot.email || userSnapshot.email || "")
+            .trim()
+            .toLowerCase(),
+          phone: String(customerSnapshot.phone || userSnapshot.phone || "").trim(),
+          address: {
+            line1: customerAddress.line1 || userAddress.line1,
+            line2: customerAddress.line2 || userAddress.line2,
+            city: customerAddress.city || userAddress.city,
+            state: customerAddress.state || userAddress.state,
+            postalCode: customerAddress.postalCode || userAddress.postalCode,
+            country: customerAddress.country || userAddress.country || "India",
+          },
+        },
+      };
+    });
+
     return res.status(200).json({
       success: true,
-      count: orders.length,
+      count: enrichedOrders.length,
       pagination: formatPagination(page, limit, totalCount),
-      data: orders,
+      data: enrichedOrders,
     });
   } catch (error) {
     return res.status(500).json({

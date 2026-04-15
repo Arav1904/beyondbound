@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import useMenuStore from "../useMenuStore";
 import {
   archiveAdminProduct,
@@ -64,6 +64,28 @@ const formatDate = (value) => {
 
 const formatCurrency = (value) => `₹${Number(value || 0).toFixed(2)}`;
 
+const formatOrderAddress = (address = {}) => {
+  const line1 = String(address?.line1 || "").trim();
+  const line2 = String(address?.line2 || "").trim();
+  const postalCode = String(address?.postalCode || "").trim();
+  const country = String(address?.country || "").trim();
+
+  const lineAddress = [line1, line2].filter(Boolean).join(", ");
+  const withPostalCode = [lineAddress, postalCode].filter(Boolean).join(" - ");
+  const fullAddress = [withPostalCode, country].filter(Boolean).join(", ");
+
+  return fullAddress || "-";
+};
+
+const formatOrderCustomerPhone = (order) =>
+  String(order?.customer?.phone || "").trim() || "-";
+
+const formatOrderCity = (order) =>
+  String(order?.customer?.address?.city || "").trim() || "-";
+
+const formatOrderState = (order) =>
+  String(order?.customer?.address?.state || "").trim() || "-";
+
 function AdminDashboard() {
   const authToken = useMenuStore((state) => state.authToken);
   const signedInUser = useMenuStore((state) => state.signedInUser);
@@ -82,6 +104,7 @@ function AdminDashboard() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [refreshTick, setRefreshTick] = useState(0);
+  const [expandedOrderRows, setExpandedOrderRows] = useState({});
 
   const [productDraft, setProductDraft] = useState({
     name: "",
@@ -119,6 +142,13 @@ function AdminDashboard() {
         ...(prev[id] || {}),
         [field]: value,
       },
+    }));
+  };
+
+  const toggleOrderDetails = (orderId) => {
+    setExpandedOrderRows((prev) => ({
+      ...prev,
+      [orderId]: !prev[orderId],
     }));
   };
 
@@ -277,6 +307,7 @@ function AdminDashboard() {
     setStatusFilter("");
     setError("");
     setRowDrafts({});
+    setExpandedOrderRows({});
   };
 
   const refresh = () => setRefreshTick((prev) => prev + 1);
@@ -794,56 +825,101 @@ function AdminDashboard() {
         <tbody>
           {records.map((order) => {
             const draft = rowDrafts[order._id] || {};
+            const isExpanded = Boolean(expandedOrderRows[order._id]);
+            const detailsPanelId = `admin-order-details-${order._id}`;
+            const phoneNumber = formatOrderCustomerPhone(order);
+            const address = formatOrderAddress(order?.customer?.address);
+            const city = formatOrderCity(order);
+            const state = formatOrderState(order);
+
             return (
-              <tr key={order._id}>
-                <td>{order.orderNumber}</td>
-                <td>
-                  {order.customer?.name || "-"}
-                  <br />
-                  <span className="admin-muted">
-                    {order.customer?.email || "-"}
-                  </span>
-                </td>
-                <td>{formatCurrency(order.total)}</td>
-                <td>
-                  <select
-                    value={draft.status || order.status}
-                    onChange={(event) =>
-                      applyRowDraft(order._id, "status", event.target.value)
-                    }
-                  >
-                    {ORDER_STATUSES.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    value={draft.trackingNumber ?? order.trackingNumber ?? ""}
-                    onChange={(event) =>
-                      applyRowDraft(
-                        order._id,
-                        "trackingNumber",
-                        event.target.value,
-                      )
-                    }
-                    placeholder="Tracking"
-                  />
-                </td>
-                <td>{formatDate(order.placedAt)}</td>
-                <td>
-                  <button
-                    type="button"
-                    onClick={() => onSaveOrderStatus(order)}
-                    disabled={saving}
-                  >
-                    Save
-                  </button>
-                </td>
-              </tr>
+              <Fragment key={order._id}>
+                <tr>
+                  <td>{order.orderNumber}</td>
+                  <td>
+                    {order.customer?.name || "-"}
+                    <br />
+                    <span className="admin-muted">
+                      {order.customer?.email || "-"}
+                    </span>
+                  </td>
+                  <td>{formatCurrency(order.total)}</td>
+                  <td>
+                    <select
+                      value={draft.status || order.status}
+                      onChange={(event) =>
+                        applyRowDraft(order._id, "status", event.target.value)
+                      }
+                    >
+                      {ORDER_STATUSES.map((status) => (
+                        <option key={status} value={status}>
+                          {status}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={draft.trackingNumber ?? order.trackingNumber ?? ""}
+                      onChange={(event) =>
+                        applyRowDraft(
+                          order._id,
+                          "trackingNumber",
+                          event.target.value,
+                        )
+                      }
+                      placeholder="Tracking"
+                    />
+                  </td>
+                  <td>{formatDate(order.placedAt)}</td>
+                  <td>
+                    <div className="admin-row-actions">
+                      <button
+                        type="button"
+                        onClick={() => onSaveOrderStatus(order)}
+                        disabled={saving}
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        className={`admin-order-detail-toggle${isExpanded ? " is-open" : ""}`}
+                        onClick={() => toggleOrderDetails(order._id)}
+                        aria-expanded={isExpanded}
+                        aria-controls={detailsPanelId}
+                      >
+                        {isExpanded ? "Hide details" : "View details"}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                {isExpanded ? (
+                  <tr className="admin-order-detail-row">
+                    <td colSpan={7}>
+                      <div id={detailsPanelId} className="admin-order-detail-panel">
+                        <article className="admin-order-detail-item">
+                          <p className="admin-order-detail-label">Phone Number</p>
+                          <p className="admin-order-detail-value">{phoneNumber}</p>
+                        </article>
+                        <article className="admin-order-detail-item">
+                          <p className="admin-order-detail-label">Address</p>
+                          <p className="admin-order-detail-value">{address}</p>
+                        </article>
+                        <article className="admin-order-detail-item">
+                          <p className="admin-order-detail-label">City</p>
+                          <p className="admin-order-detail-value">{city}</p>
+                        </article>
+                        <article className="admin-order-detail-item">
+                          <p className="admin-order-detail-label">State</p>
+                          <p className="admin-order-detail-value">{state}</p>
+                        </article>
+                      </div>
+                    </td>
+                  </tr>
+                ) : null}
+              </Fragment>
             );
           })}
         </tbody>

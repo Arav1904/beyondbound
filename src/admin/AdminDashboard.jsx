@@ -898,10 +898,17 @@ function AdminDashboard() {
                 {isExpanded ? (
                   <tr className="admin-order-detail-row">
                     <td colSpan={7}>
-                      <div id={detailsPanelId} className="admin-order-detail-panel">
+                      <div
+                        id={detailsPanelId}
+                        className="admin-order-detail-panel"
+                      >
                         <article className="admin-order-detail-item">
-                          <p className="admin-order-detail-label">Phone Number</p>
-                          <p className="admin-order-detail-value">{phoneNumber}</p>
+                          <p className="admin-order-detail-label">
+                            Phone Number
+                          </p>
+                          <p className="admin-order-detail-value">
+                            {phoneNumber}
+                          </p>
                         </article>
                         <article className="admin-order-detail-item">
                           <p className="admin-order-detail-label">Address</p>

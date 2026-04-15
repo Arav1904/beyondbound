@@ -35,7 +35,10 @@ const TICKET_PRIORITIES = ["low", "medium", "high"];
 
 const parsePagination = (query) => {
   const page = Math.max(1, Number.parseInt(query.page, 10) || 1);
-  const limit = Math.min(100, Math.max(1, Number.parseInt(query.limit, 10) || 20));
+  const limit = Math.min(
+    100,
+    Math.max(1, Number.parseInt(query.limit, 10) || 20),
+  );
   return {
     page,
     limit,
@@ -108,7 +111,8 @@ const parsePackSizes = (value, fallbackPrice) => {
   return parsed;
 };
 
-const escapeRegex = (value) => String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const escapeRegex = (value) =>
+  String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const toRegex = (value) => new RegExp(escapeRegex(value), "i");
 
@@ -170,10 +174,15 @@ export const getAdminOverview = async (_req, res) => {
       Order.countDocuments({ status: { $in: PENDING_ORDER_STATUSES } }),
       Testimonial.countDocuments({ status: "pending" }),
       Testimonial.countDocuments({ status: "approved" }),
-      SupportTicket.countDocuments({ status: { $in: ["open", "in_progress"] } }),
+      SupportTicket.countDocuments({
+        status: { $in: ["open", "in_progress"] },
+      }),
       Product.countDocuments({ isActive: true }),
       Product.countDocuments({ inventory: { $lte: 10 }, isActive: true }),
-      User.find({}).sort({ createdAt: -1 }).limit(5).select("name email role isActive createdAt"),
+      User.find({})
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .select("name email role isActive createdAt"),
       Order.find({})
         .sort({ placedAt: -1 })
         .limit(5)
@@ -189,7 +198,9 @@ export const getAdminOverview = async (_req, res) => {
       { $group: { _id: null, totalRevenue: { $sum: "$total" } } },
     ]);
 
-    const totalRevenue = Number((revenueResult[0]?.totalRevenue || 0).toFixed(2));
+    const totalRevenue = Number(
+      (revenueResult[0]?.totalRevenue || 0).toFixed(2),
+    );
 
     return res.status(200).json({
       success: true,
@@ -248,7 +259,9 @@ export const getAdminUsers = async (req, res) => {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .select("name email role isActive phone lastLoginAt createdAt updatedAt"),
+        .select(
+          "name email role isActive phone lastLoginAt createdAt updatedAt",
+        ),
       User.countDocuments(filters),
     ]);
 
@@ -390,7 +403,9 @@ export const getAdminOrders = async (req, res) => {
       const serializedOrder = order.toObject();
       const userSnapshot = serializedOrder.userId || {};
       const customerSnapshot = serializedOrder.customer || {};
-      const customerAddress = normalizeAddressSnapshot(customerSnapshot.address);
+      const customerAddress = normalizeAddressSnapshot(
+        customerSnapshot.address,
+      );
       const userAddress = normalizeAddressSnapshot(userSnapshot.address);
 
       return {
@@ -401,7 +416,9 @@ export const getAdminOrders = async (req, res) => {
           email: String(customerSnapshot.email || userSnapshot.email || "")
             .trim()
             .toLowerCase(),
-          phone: String(customerSnapshot.phone || userSnapshot.phone || "").trim(),
+          phone: String(
+            customerSnapshot.phone || userSnapshot.phone || "",
+          ).trim(),
           address: {
             line1: customerAddress.line1 || userAddress.line1,
             line2: customerAddress.line2 || userAddress.line2,
@@ -445,7 +462,11 @@ export const updateAdminOrderStatus = async (req, res) => {
 
     let hasUpdates = false;
 
-    if (typeof status === "string" && ORDER_STATUSES.includes(status) && status !== order.status) {
+    if (
+      typeof status === "string" &&
+      ORDER_STATUSES.includes(status) &&
+      status !== order.status
+    ) {
       order.status = status;
       order.statusHistory.push({
         status,
@@ -581,7 +602,8 @@ export const createAdminProduct = async (req, res) => {
     const product = await Product.create({
       name,
       description: String(req.body?.description || "").trim(),
-      category: String(req.body?.category || "supplement").trim() || "supplement",
+      category:
+        String(req.body?.category || "supplement").trim() || "supplement",
       price,
       compareAtPrice: Math.max(0, Number(req.body?.compareAtPrice) || 0),
       inventory: Math.max(0, Number.parseInt(req.body?.inventory, 10) || 0),
@@ -691,7 +713,10 @@ export const updateAdminProduct = async (req, res) => {
     }
 
     if (req.body?.estimatedDispatchDays !== undefined) {
-      const estimatedDispatchDays = Number.parseInt(req.body.estimatedDispatchDays, 10);
+      const estimatedDispatchDays = Number.parseInt(
+        req.body.estimatedDispatchDays,
+        10,
+      );
       if (!Number.isNaN(estimatedDispatchDays) && estimatedDispatchDays >= 0) {
         product.estimatedDispatchDays = estimatedDispatchDays;
       }
@@ -1022,14 +1047,19 @@ export const getAdminAnalytics = async (req, res) => {
   try {
     const startDate = parseDateRange(req.query.range);
 
-    const [newUsers, orderCount, ticketCount, testimonialCount, pendingTestimonials] =
-      await Promise.all([
-        User.countDocuments({ createdAt: { $gte: startDate } }),
-        Order.countDocuments({ placedAt: { $gte: startDate } }),
-        SupportTicket.countDocuments({ createdAt: { $gte: startDate } }),
-        Testimonial.countDocuments({ createdAt: { $gte: startDate } }),
-        Testimonial.countDocuments({ status: "pending" }),
-      ]);
+    const [
+      newUsers,
+      orderCount,
+      ticketCount,
+      testimonialCount,
+      pendingTestimonials,
+    ] = await Promise.all([
+      User.countDocuments({ createdAt: { $gte: startDate } }),
+      Order.countDocuments({ placedAt: { $gte: startDate } }),
+      SupportTicket.countDocuments({ createdAt: { $gte: startDate } }),
+      Testimonial.countDocuments({ createdAt: { $gte: startDate } }),
+      Testimonial.countDocuments({ status: "pending" }),
+    ]);
 
     const [revenueResult, topProducts, ordersByStatus] = await Promise.all([
       Order.aggregate([
@@ -1061,7 +1091,9 @@ export const getAdminAnalytics = async (req, res) => {
               productName: "$items.productName",
             },
             totalQuantity: { $sum: "$items.quantity" },
-            totalRevenue: { $sum: { $multiply: ["$items.price", "$items.quantity"] } },
+            totalRevenue: {
+              $sum: { $multiply: ["$items.price", "$items.quantity"] },
+            },
           },
         },
         { $sort: { totalQuantity: -1 } },

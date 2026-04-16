@@ -79,6 +79,7 @@ function Navbar() {
     setMobileOpen(false);
     setMobileProfileOpen(false);
     setProfileMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleLogoClick = () => {

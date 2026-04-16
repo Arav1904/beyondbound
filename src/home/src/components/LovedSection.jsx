@@ -1,32 +1,26 @@
 import "../css/lovedSection.css";
 
 import starIcon from "../../Icon (7).png";
-import sarahImage from "../../Image (Sarah M.).png";
-import jamesImage from "../../Image (James K.).png";
-import emilyImage from "../../Image (Emily R.).png";
 
 const testimonials = [
   {
     id: "sarah",
     name: "Naina Sharma",
     role: "Verified Customer",
-    image: sarahImage,
     quote:
       "My insulin levels have never been so balanced, totally recommend glycomics!! Worth every penny!!",
   },
   {
     id: "james",
-    name: "James K.",
+    name: "Hisham Damudi.",
     role: "Verified Customer",
-    image: jamesImage,
     quote:
       '"The quality is exceptional. I appreciate the transparency in ingredients and the natural formulation. Highly recommended!"',
   },
   {
     id: "emily",
-    name: "Emily R.",
+    name: "Rahul Verma",
     role: "Verified Customer",
-    image: emilyImage,
     quote:
       "I've tried many supplements, but Beyond Bound stands out. The results are noticeable and I love that it's all-natural.",
   },
@@ -77,12 +71,8 @@ function LovedSection() {
                 </div>
                 <p className="loved-quote">{item.quote}</p>
                 <div className="loved-profile">
-                  <img
-                    src={item.image}
-                    alt={item.name}
+                  <div
                     className="loved-avatar"
-                    loading="lazy"
-                    decoding="async"
                   />
                   <div className="loved-meta">
                     <p className="loved-name">{item.name}</p>

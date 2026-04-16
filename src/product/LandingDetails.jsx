@@ -16,17 +16,14 @@ const LandingDetails = () => {
     {
       name: "Naina Sharma",
       text: "My insulin levels have never been so balanced, totally recommend glycomics!! Worth every penny!!",
-      img: "https://i.pravatar.cc/100?u=1",
     },
     {
-      name: "James K.",
+      name: "Hisham Damudi.",
       text: "The quality is exceptional. I appreciate the transparency in ingredients and the natural formulation. Highly recommended!",
-      img: "https://i.pravatar.cc/100?u=2",
     },
     {
-      name: "Emily R.",
+      name: "Rahul Verma",
       text: "I've tried many supplements, but Beyond Bound stands out. The results are noticeable and I love that it's all-natural.",
-      img: "https://i.pravatar.cc/100?u=3",
     },
   ];
 
@@ -66,37 +63,37 @@ const LandingDetails = () => {
   return (
     <div className="landing-container-ld">
       {/* Testimonial Header */}
-      <section className="testimonial-section-ld">
-        <h2 className="main-quote-ld">
+      <section className="py-12 md:py-20">
+        <h2 className="text-center text-2xl md:text-4xl lg:text-5xl font-semibold leading-tight max-w-4xl mx-auto mb-6 md:mb-10">
           “My blood sugar used to spike after every meal and I'd feel exhausted.
           After 3 weeks on Glycomics, that afternoon crash is completely gone.
           My doctor noticed the difference too”
         </h2>
-        <p className="quote-author-ld">
-          <Star size={"20px"} fill="#0d7377" color="#0d7377" />
-          <Star size={"20px"} fill="#0d7377" color="#0d7377" />
-          <Star size={"20px"} fill="#0d7377" color="#0d7377" />
-          <Star size={"20px"} fill="#0d7377" color="#0d7377" />
-          <Star size={"20px"} fill="#0d7377" color="#0d7377" />
-          &nbsp;&nbsp;~Naina Sharma
+        <p className="text-center text-gray-600 mb-8 flex flex-wrap items-center justify-center gap-2 text-base md:text-lg">
+          <Star size={20} fill="#0d7377" color="#0d7377" />
+          <Star size={20} fill="#0d7377" color="#0d7377" />
+          <Star size={20} fill="#0d7377" color="#0d7377" />
+          <Star size={20} fill="#0d7377" color="#0d7377" />
+          <Star size={20} fill="#0d7377" color="#0d7377" />
+          <span>~Naina Sharma</span>
         </p>
 
-        <div className="testimonial-grid-ld ">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {testimonials.map((t, i) => (
-            <div key={i} className="test-card-ld">
-              <div className="stars-ld">
-                <Star size={"16px"} fill="#c9a87c" color="#c9a87c" />
-                <Star size={"16px"} fill="#c9a87c" color="#c9a87c" />
-                <Star size={"16px"} fill="#c9a87c" color="#c9a87c" />
-                <Star size={"16px"} fill="#c9a87c" color="#c9a87c" />
-                <Star size={"16px"} fill="#c9a87c" color="#c9a87c" />
+            <div key={i} className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
+              <div className="flex gap-1 mb-4">
+                <Star size={18} fill="#c9a87c" color="#c9a87c" />
+                <Star size={18} fill="#c9a87c" color="#c9a87c" />
+                <Star size={18} fill="#c9a87c" color="#c9a87c" />
+                <Star size={18} fill="#c9a87c" color="#c9a87c" />
+                <Star size={18} fill="#c9a87c" color="#c9a87c" />
               </div>
-              <p className="test-text-ld">"{t.text}"</p>
-              <div className="user-info-ld">
-                <img src={t.img} alt={t.name} className="avatar-ld" />
-                <div>
-                  <div className="user-name-ld">{t.name}</div>
-                  <div className="verified-ld">Verified Customer</div>
+              <p className="text-gray-700 text-base leading-relaxed mb-6 italic">"{t.text}"</p>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0"></div>
+                <div className="min-w-0">
+                  <div className="font-semibold text-gray-900 text-sm">{t.name}</div>
+                  <div className="text-gray-500 text-xs">Verified Customer</div>
                 </div>
               </div>
             </div>

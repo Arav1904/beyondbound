@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import AuditLog from "../models/AuditLog.js";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
@@ -15,6 +16,7 @@ const ORDER_STATUSES = [
   "preorder_confirmed",
   "processing",
   "shipped",
+  "out_for_delivery",
   "delivered",
   "cancelled",
   "refunded",
@@ -27,6 +29,7 @@ const PENDING_ORDER_STATUSES = [
   "preorder_confirmed",
   "processing",
   "shipped",
+  "out_for_delivery",
 ];
 const PAYMENT_STATUSES = ["pending", "paid", "failed", "refunded"];
 const TESTIMONIAL_STATUSES = ["pending", "approved", "rejected"];
@@ -149,6 +152,15 @@ const normalizeAddressSnapshot = (address = {}) => ({
   postalCode: String(address?.postalCode || "").trim(),
   country: String(address?.country || "").trim(),
 });
+
+const toMongoObjectIdOrNull = (value) => {
+  const normalized = String(value || "").trim();
+  if (!mongoose.Types.ObjectId.isValid(normalized)) {
+    return null;
+  }
+
+  return new mongoose.Types.ObjectId(normalized);
+};
 
 export const getAdminOverview = async (_req, res) => {
   try {
@@ -449,7 +461,13 @@ export const getAdminOrders = async (req, res) => {
 export const updateAdminOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, paymentStatus, trackingNumber, note } = req.body;
+    const { status, paymentStatus, trackingNumber, note, estimatedDeliveryDate } =
+      req.body;
+    const hasEstimatedDeliveryInput = Object.prototype.hasOwnProperty.call(
+      req.body || {},
+      "estimatedDeliveryDate",
+    );
+    const statusNote = typeof note === "string" ? note.trim() : "";
 
     const order = await Order.findById(id);
 
@@ -470,8 +488,8 @@ export const updateAdminOrderStatus = async (req, res) => {
       order.status = status;
       order.statusHistory.push({
         status,
-        note: String(note || "").trim(),
-        updatedBy: req.userId,
+        note: statusNote,
+        updatedBy: toMongoObjectIdOrNull(req.userId),
         at: new Date(),
       });
       hasUpdates = true;
@@ -487,13 +505,49 @@ export const updateAdminOrderStatus = async (req, res) => {
     }
 
     if (typeof trackingNumber === "string") {
-      order.trackingNumber = trackingNumber.trim();
-      hasUpdates = true;
+      const nextTrackingNumber = trackingNumber.trim();
+      if (nextTrackingNumber !== order.trackingNumber) {
+        order.trackingNumber = nextTrackingNumber;
+        hasUpdates = true;
+      }
     }
 
-    if (typeof note === "string" && note.trim()) {
-      order.notes = note.trim();
-      hasUpdates = true;
+    if (typeof note === "string") {
+      const nextNote = note.trim();
+      if (nextNote !== order.notes) {
+        order.notes = nextNote;
+        hasUpdates = true;
+      }
+    }
+
+    if (hasEstimatedDeliveryInput) {
+      if (
+        estimatedDeliveryDate === null ||
+        String(estimatedDeliveryDate || "").trim() === ""
+      ) {
+        if (order.estimatedDeliveryDate !== null) {
+          order.estimatedDeliveryDate = null;
+          hasUpdates = true;
+        }
+      } else {
+        const parsedEstimatedDate = new Date(estimatedDeliveryDate);
+        if (Number.isNaN(parsedEstimatedDate.getTime())) {
+          return res.status(400).json({
+            success: false,
+            error: "Invalid estimated delivery date",
+          });
+        }
+
+        const currentTime = order.estimatedDeliveryDate
+          ? new Date(order.estimatedDeliveryDate).getTime()
+          : null;
+        const nextTime = parsedEstimatedDate.getTime();
+
+        if (currentTime !== nextTime) {
+          order.estimatedDeliveryDate = parsedEstimatedDate;
+          hasUpdates = true;
+        }
+      }
     }
 
     if (!hasUpdates) {
@@ -516,6 +570,8 @@ export const updateAdminOrderStatus = async (req, res) => {
         status: order.status,
         paymentStatus: order.paymentStatus,
         trackingNumber: order.trackingNumber,
+        estimatedDeliveryDate: order.estimatedDeliveryDate,
+        note: order.notes,
       },
     });
 

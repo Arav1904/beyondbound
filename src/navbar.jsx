@@ -15,6 +15,7 @@ function Navbar() {
   const setAuthMode = useMenuStore((state) => state.setAuthMode);
   const signedInUser = useMenuStore((state) => state.signedInUser);
   const openAccountModal = useMenuStore((state) => state.openAccountModal);
+  const openProfilePage = useMenuStore((state) => state.openProfilePage);
   const logout = useMenuStore((state) => state.logout);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -56,6 +57,13 @@ function Navbar() {
 
   const openAccountSection = (section) => {
     openAccountModal(section);
+    setProfileMenuOpen(false);
+    setMobileProfileOpen(false);
+    setMobileOpen(false);
+  };
+
+  const goToProfilePage = () => {
+    openProfilePage();
     setProfileMenuOpen(false);
     setMobileProfileOpen(false);
     setMobileOpen(false);
@@ -243,6 +251,13 @@ function Navbar() {
                     <button
                       type="button"
                       className="profile-dropdown-item"
+                      onClick={goToProfilePage}
+                    >
+                      Profile and Tracking Page
+                    </button>
+                    <button
+                      type="button"
+                      className="profile-dropdown-item"
                       onClick={() => openAccountSection("profile")}
                     >
                       Edit Profile
@@ -417,6 +432,13 @@ function Navbar() {
 
                 {mobileProfileOpen && (
                   <div className="mobile-profile-actions mt-2">
+                    <button
+                      type="button"
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                      onClick={goToProfilePage}
+                    >
+                      Profile and Tracking Page
+                    </button>
                     <button
                       type="button"
                       className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"

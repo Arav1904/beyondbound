@@ -39,6 +39,7 @@ const ORDER_STATUSES = [
   "preorder_confirmed",
   "processing",
   "shipped",
+  "out_for_delivery",
   "delivered",
   "cancelled",
   "refunded",
@@ -60,6 +61,20 @@ const formatDate = (value) => {
   }
 
   return date.toLocaleString();
+};
+
+const toDateTimeInputValue = (value) => {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const timezoneOffsetMs = date.getTimezoneOffset() * 60 * 1000;
+  return new Date(date.getTime() - timezoneOffsetMs).toISOString().slice(0, 16);
 };
 
 const formatCurrency = (value) => `₹${Number(value || 0).toFixed(2)}`;
@@ -342,13 +357,36 @@ function AdminDashboard() {
     const draft = rowDrafts[order._id] || {};
     const status = draft.status || order.status;
     const trackingNumber = draft.trackingNumber ?? order.trackingNumber;
+    const payload = {
+      status,
+      trackingNumber,
+    };
+
+    if (Object.prototype.hasOwnProperty.call(draft, "note")) {
+      payload.note = String(draft.note || "").trim();
+    }
+
+    if (Object.prototype.hasOwnProperty.call(draft, "estimatedDeliveryDate")) {
+      const estimatedDeliveryDate = String(
+        draft.estimatedDeliveryDate || "",
+      ).trim();
+
+      if (!estimatedDeliveryDate) {
+        payload.estimatedDeliveryDate = null;
+      } else {
+        const parsedDate = new Date(estimatedDeliveryDate);
+        if (Number.isNaN(parsedDate.getTime())) {
+          setError("Please enter a valid estimated delivery date/time");
+          return;
+        }
+
+        payload.estimatedDeliveryDate = parsedDate.toISOString();
+      }
+    }
 
     setSaving(true);
     try {
-      await updateAdminOrderStatus(authToken, order._id, {
-        status,
-        trackingNumber,
-      });
+      await updateAdminOrderStatus(authToken, order._id, payload);
       showSuccess("Order status updated");
       refresh();
     } catch (updateError) {
@@ -818,6 +856,7 @@ function AdminDashboard() {
             <th>Total</th>
             <th>Status</th>
             <th>Tracking</th>
+            <th>ETA</th>
             <th>Placed</th>
             <th>Actions</th>
           </tr>
@@ -872,6 +911,23 @@ function AdminDashboard() {
                       placeholder="Tracking"
                     />
                   </td>
+                  <td>
+                    <input
+                      type="datetime-local"
+                      value={
+                        draft.estimatedDeliveryDate ??
+                        toDateTimeInputValue(order.estimatedDeliveryDate)
+                      }
+                      onChange={(event) =>
+                        applyRowDraft(
+                          order._id,
+                          "estimatedDeliveryDate",
+                          event.target.value,
+                        )
+                      }
+                      placeholder="ETA"
+                    />
+                  </td>
                   <td>{formatDate(order.placedAt)}</td>
                   <td>
                     <div className="admin-row-actions">
@@ -897,7 +953,7 @@ function AdminDashboard() {
 
                 {isExpanded ? (
                   <tr className="admin-order-detail-row">
-                    <td colSpan={7}>
+                    <td colSpan={8}>
                       <div
                         id={detailsPanelId}
                         className="admin-order-detail-panel"
@@ -921,6 +977,17 @@ function AdminDashboard() {
                         <article className="admin-order-detail-item">
                           <p className="admin-order-detail-label">State</p>
                           <p className="admin-order-detail-value">{state}</p>
+                        </article>
+                        <article className="admin-order-detail-item admin-order-detail-item--wide">
+                          <p className="admin-order-detail-label">Update Note</p>
+                          <input
+                            type="text"
+                            value={draft.note ?? order.notes ?? ""}
+                            onChange={(event) =>
+                              applyRowDraft(order._id, "note", event.target.value)
+                            }
+                            placeholder="Optional note for this status update"
+                          />
                         </article>
                       </div>
                     </td>

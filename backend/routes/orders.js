@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getMyOrderById,
   getMyOrders,
   placeOrder,
   placePreorderFromForm,
@@ -10,6 +11,7 @@ const router = express.Router();
 
 router.use(authenticate);
 router.get("/my", getMyOrders);
+router.get("/my/:orderId", getMyOrderById);
 router.post("/place", placeOrder);
 router.post("/preorder", placeOrder);
 router.post("/preorder-form", placePreorderFromForm);

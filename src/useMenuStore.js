@@ -141,6 +141,7 @@ const useMenuStore = create(
       signedInUser: null,
       isAccountModalOpen: false,
       accountModalSection: "profile",
+      selectedProfileOrderId: "",
       accountProfile: createDefaultProfile(),
       cartItems: [],
       cartTotalItems: 0,
@@ -153,7 +154,21 @@ const useMenuStore = create(
 
       setActiveMenu: (menuName) => set({ activeMenu: menuName }),
       setActivePage: (pageName) =>
-        set({ activePage: pageName, activeMenu: null }),
+        set((state) => ({
+          activePage: pageName,
+          activeMenu: null,
+          selectedProfileOrderId:
+            pageName === "profile" ? state.selectedProfileOrderId : "",
+        })),
+      openProfilePage: (orderId = "") =>
+        set({
+          activePage: "profile",
+          activeMenu: null,
+          isAccountModalOpen: false,
+          selectedProfileOrderId: String(orderId || "").trim(),
+        }),
+      setSelectedProfileOrderId: (orderId) =>
+        set({ selectedProfileOrderId: String(orderId || "").trim() }),
       setIsLoginModalOpen: (isOpen) => set({ isLoginModalOpen: isOpen }),
       setAuthMode: (mode) => set({ authMode: mode }),
       setAuthToken: (token) => set({ authToken: token || null }),
@@ -237,6 +252,7 @@ const useMenuStore = create(
           isLoginModalOpen: false,
           isAccountModalOpen: false,
           accountModalSection: "profile",
+          selectedProfileOrderId: "",
           authToken: null,
           authMode: "login",
           isCartOpen: false,

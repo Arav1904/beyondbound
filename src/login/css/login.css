@@ -390,6 +390,10 @@
   margin-top: 6px;
 }
 
+.account-form-actions--start {
+  justify-content: flex-start;
+}
+
 .account-btn {
   border: none;
   border-radius: 8px;
@@ -450,10 +454,19 @@
 }
 
 .account-order-item {
+  width: 100%;
   border: 1px solid #dbe6f2;
   border-radius: 10px;
   background: #f9fbff;
   padding: 10px;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.account-order-item:hover {
+  border-color: #0d7377;
+  background: #f1fcfb;
 }
 
 .account-order-title {

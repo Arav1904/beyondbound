@@ -189,6 +189,42 @@ const normalizeAddress = (address, fallback = {}) => ({
     String(address?.country || fallback?.country || "India").trim() || "India",
 });
 
+const toPublicStatusHistory = (statusHistory = []) => {
+  if (!Array.isArray(statusHistory)) {
+    return [];
+  }
+
+  return statusHistory
+    .map((entry) => ({
+      status: String(entry?.status || "").trim(),
+      note: String(entry?.note || "").trim(),
+      at: entry?.at || null,
+    }))
+    .filter((entry) => entry.status);
+};
+
+const buildMyOrdersFilter = (req) => {
+  const mongoUserId = toMongoObjectId(req.userId);
+
+  if (mongoUserId) {
+    return {
+      userId: mongoUserId,
+    };
+  }
+
+  const email = String(req.user?.email || "")
+    .trim()
+    .toLowerCase();
+
+  if (!email) {
+    return null;
+  }
+
+  return {
+    "customer.email": email,
+  };
+};
+
 const toPublicOrder = (order) => ({
   id: order._id,
   orderNumber: order.orderNumber,
@@ -204,6 +240,8 @@ const toPublicOrder = (order) => ({
   paymentStatus: order.paymentStatus,
   paymentMethod: order.paymentMethod,
   trackingNumber: order.trackingNumber,
+  estimatedDeliveryDate: order.estimatedDeliveryDate,
+  statusHistory: toPublicStatusHistory(order.statusHistory),
   placedAt: order.placedAt,
   requestedAt: order.placedAt,
   createdAt: order.createdAt,
@@ -303,31 +341,24 @@ export const getMyOrders = async (req, res) => {
     const { page, limit, skip } = parsePagination(req.query);
     const status = String(req.query.status || "").trim();
 
-    const filter = {};
-    const mongoUserId = toMongoObjectId(req.userId);
-
-    if (mongoUserId) {
-      filter.userId = mongoUserId;
-    } else {
-      const email = String(req.user?.email || "")
-        .trim()
-        .toLowerCase();
-      if (!email) {
-        return res.status(200).json({
-          success: true,
-          count: 0,
-          pagination: {
-            page,
-            limit,
-            totalCount: 0,
-            totalPages: 1,
-          },
-          data: [],
-        });
-      }
-
-      filter["customer.email"] = email;
+    const ownershipFilter = buildMyOrdersFilter(req);
+    if (!ownershipFilter) {
+      return res.status(200).json({
+        success: true,
+        count: 0,
+        pagination: {
+          page,
+          limit,
+          totalCount: 0,
+          totalPages: 1,
+        },
+        data: [],
+      });
     }
+
+    const filter = {
+      ...ownershipFilter,
+    };
 
     if (status) {
       filter.status = status;
@@ -353,6 +384,57 @@ export const getMyOrders = async (req, res) => {
     return res.status(500).json({
       success: false,
       error: "Failed to fetch orders",
+      message: error.message,
+    });
+  }
+};
+
+export const getMyOrderById = async (req, res) => {
+  try {
+    const orderId = String(req.params.orderId || "").trim();
+    if (!orderId) {
+      return res.status(400).json({
+        success: false,
+        error: "Order id is required",
+      });
+    }
+
+    const ownershipFilter = buildMyOrdersFilter(req);
+    if (!ownershipFilter) {
+      return res.status(404).json({
+        success: false,
+        error: "Order not found",
+      });
+    }
+
+    let identifierFilter = { orderNumber: orderId };
+    const orderObjectId = toMongoObjectId(orderId);
+    if (orderObjectId) {
+      identifierFilter = {
+        $or: [{ _id: orderObjectId }, { orderNumber: orderId }],
+      };
+    }
+
+    const order = await Order.findOne({
+      ...ownershipFilter,
+      ...identifierFilter,
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: "Order not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: toPublicOrder(order),
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Failed to fetch order",
       message: error.message,
     });
   }

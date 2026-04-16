@@ -62,6 +62,7 @@ const statusHistorySchema = new mongoose.Schema(
         "preorder_confirmed",
         "processing",
         "shipped",
+        "out_for_delivery",
         "delivered",
         "cancelled",
         "refunded",
@@ -154,6 +155,7 @@ const orderSchema = new mongoose.Schema(
         "preorder_confirmed",
         "processing",
         "shipped",
+        "out_for_delivery",
         "delivered",
         "cancelled",
         "refunded",
@@ -176,6 +178,10 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: "",
       trim: true,
+    },
+    estimatedDeliveryDate: {
+      type: Date,
+      default: null,
     },
     notes: {
       type: String,

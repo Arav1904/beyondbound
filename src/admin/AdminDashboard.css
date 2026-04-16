@@ -227,6 +227,14 @@
   padding: 10px;
 }
 
+.admin-order-detail-item--wide {
+  grid-column: 1 / -1;
+}
+
+.admin-order-detail-item--wide input {
+  width: 100%;
+}
+
 .admin-order-detail-label {
   margin: 0 0 5px;
   color: #4c6686;

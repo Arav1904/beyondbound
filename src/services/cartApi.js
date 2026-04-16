@@ -152,4 +152,15 @@ export async function fetchMyOrders(token, params = {}) {
   });
 }
 
+export async function fetchMyOrderById(token, orderId) {
+  const normalizedOrderId = String(orderId || "").trim();
+  if (!normalizedOrderId) {
+    throw new Error("Order id is required");
+  }
+
+  return apiRequest(`/orders/my/${encodeURIComponent(normalizedOrderId)}`, {
+    token,
+  });
+}
+
 export { API_BASE_URL };

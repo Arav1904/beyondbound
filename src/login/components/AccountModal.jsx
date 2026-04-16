@@ -24,6 +24,7 @@ function AccountModal() {
   const setAccountModalSection = useMenuStore(
     (state) => state.setAccountModalSection,
   );
+  const openProfilePage = useMenuStore((state) => state.openProfilePage);
   const setIsAccountModalOpen = useMenuStore(
     (state) => state.setIsAccountModalOpen,
   );
@@ -64,7 +65,7 @@ function AccountModal() {
       try {
         const response = await fetchMyOrders(authToken, { page: 1, limit: 8 });
         if (!cancelled) {
-          setOrders(response.data || []);
+          setOrders(Array.isArray(response) ? response : response?.data || []);
         }
       } catch {
         if (!cancelled) {
@@ -161,6 +162,11 @@ function AccountModal() {
     setIsAccountModalOpen(false);
   };
 
+  const openTrackingPage = (orderId = "") => {
+    openProfilePage(orderId);
+    setIsAccountModalOpen(false);
+  };
+
   return (
     <section className="account-modal-panel" aria-label="Account settings">
       <header className="account-modal-header">
@@ -226,24 +232,42 @@ function AccountModal() {
           ) : orders.length > 0 ? (
             <div className="account-order-list">
               {orders.map((order) => (
-                <div key={order.id} className="account-order-item">
+                <button
+                  key={order.id || order.orderNumber}
+                  type="button"
+                  className="account-order-item"
+                  onClick={() => openTrackingPage(order.id || order.orderNumber)}
+                >
                   <p className="account-order-title">{order.orderNumber}</p>
                   <p className="account-order-meta">
-                    {order.status} · ₹{Number(order.total || 0).toFixed(2)} · {new Date(order.placedAt).toLocaleDateString()}
+                    {order.status} · INR {Number(order.total || 0).toFixed(2)} · {new Date(order.placedAt).toLocaleDateString()}
                   </p>
-                </div>
+                  <p className="account-order-meta">
+                    ETA: {order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString() : "Not available"}
+                  </p>
+                </button>
               ))}
             </div>
           ) : (
             <p className="account-placeholder-copy">No pre-orders submitted yet.</p>
           )}
-          <button
-            type="button"
-            className="account-btn account-btn--primary"
-            onClick={closeModal}
-          >
-            Done
-          </button>
+
+          <div className="account-form-actions account-form-actions--start">
+            <button
+              type="button"
+              className="account-btn account-btn--ghost"
+              onClick={closeModal}
+            >
+              Done
+            </button>
+            <button
+              type="button"
+              className="account-btn account-btn--primary"
+              onClick={() => openTrackingPage()}
+            >
+              Open Full Tracking Page
+            </button>
+          </div>
         </div>
       ) : (
         <form className="account-form" onSubmit={handleSave}>

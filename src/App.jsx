@@ -8,6 +8,7 @@ import Navbar from "./navbar.jsx";
 import Footer from "./footer.jsx";
 import Contact from "./contact/contact.jsx";
 import AdminDashboard from "./admin/AdminDashboard.jsx";
+import CustomerProfilePage from "./profile/CustomerProfilePage.jsx";
 import useMenuStore from "./useMenuStore";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -116,6 +117,7 @@ function App() {
         {activePage === "science" && <Science />}
         {activePage === "contact" && <Contact />}
         {activePage === "admin" && <AdminDashboard />}
+        {activePage === "profile" && <CustomerProfilePage />}
       </div>
       <Footer />
 

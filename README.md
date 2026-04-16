@@ -30,10 +30,15 @@ npm install
 
 3. Configure environment files
 
-- Frontend: `.env.local`
+- Frontend: copy `.env.example` to `.env` (or `.env.local`)
+
+```bash
+cp .env.example .env
+```
 
 ```env
 VITE_API_BASE_URL=http://localhost:5000/api
+VITE_GOOGLE_CLIENT_ID=647437966024-0ubbv4rmbennr1some8g5o2agr3poanh.apps.googleusercontent.com
 ```
 
 - Backend: `backend/.env`

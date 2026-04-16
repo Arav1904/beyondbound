@@ -167,15 +167,6 @@ function Navbar() {
               </li>
             ) : null}
 
-            {/* Add Product button only visible after login */}
-            {signedInUser && (
-              <li className="menu-item">
-                <button type="button" className="menu-trigger add-product-btn">
-                  Add Product
-                </button>
-              </li>
-            )}
-
             <li className="menu-item">
               <button
                 type="button"

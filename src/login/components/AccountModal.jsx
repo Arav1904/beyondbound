@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "../css/login.css";
 import useMenuStore from "../../useMenuStore";
 import { fetchMyOrders, updateProfile } from "../../services/cartApi";
+import useCartActions from "../../hooks/useCartActions";
 
 const EMPTY_ADDRESS = {
   line1: "",
@@ -28,16 +29,19 @@ function AccountModal() {
   const setIsAccountModalOpen = useMenuStore(
     (state) => state.setIsAccountModalOpen,
   );
+  const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
   const setSignedInUser = useMenuStore((state) => state.setSignedInUser);
   const updateAccountProfile = useMenuStore(
     (state) => state.updateAccountProfile,
   );
+  const { reorderOrderToCart } = useCartActions();
 
   const [draft, setDraft] = useState(accountProfile);
   const [saveStatus, setSaveStatus] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  const [reorderingOrderId, setReorderingOrderId] = useState("");
 
   useEffect(() => {
     setDraft(accountProfile);
@@ -167,6 +171,26 @@ function AccountModal() {
     setIsAccountModalOpen(false);
   };
 
+  const handleReorderOrder = async (order) => {
+    const orderId = String(order?.id || order?.orderNumber || "").trim();
+
+    if (!orderId || reorderingOrderId) {
+      return;
+    }
+
+    setReorderingOrderId(orderId);
+
+    try {
+      const summary = await reorderOrderToCart(order, { openCart: false });
+      if (summary.addedCount > 0) {
+        setIsAccountModalOpen(false);
+        setIsCartOpen(true);
+      }
+    } finally {
+      setReorderingOrderId("");
+    }
+  };
+
   return (
     <section className="account-modal-panel" aria-label="Account settings">
       <header className="account-modal-header">
@@ -224,32 +248,65 @@ function AccountModal() {
         <div className="account-placeholder">
           <p className="account-placeholder-title">Your pre-order history</p>
           <p className="account-placeholder-copy">
-            Current cart: {cartTotalItems} item{cartTotalItems === 1 ? "" : "s"} · subtotal ₹
-            {cartSubtotal.toFixed(2)}.
+            Current cart: {cartTotalItems} item{cartTotalItems === 1 ? "" : "s"}{" "}
+            · subtotal ₹{cartSubtotal.toFixed(2)}.
           </p>
           {ordersLoading ? (
             <p className="account-placeholder-copy">Loading orders...</p>
           ) : orders.length > 0 ? (
             <div className="account-order-list">
-              {orders.map((order) => (
-                <button
-                  key={order.id || order.orderNumber}
-                  type="button"
-                  className="account-order-item"
-                  onClick={() => openTrackingPage(order.id || order.orderNumber)}
-                >
-                  <p className="account-order-title">{order.orderNumber}</p>
-                  <p className="account-order-meta">
-                    {order.status} · INR {Number(order.total || 0).toFixed(2)} · {new Date(order.placedAt).toLocaleDateString()}
-                  </p>
-                  <p className="account-order-meta">
-                    ETA: {order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString() : "Not available"}
-                  </p>
-                </button>
-              ))}
+              {orders.map((order) => {
+                const orderId = order.id || order.orderNumber;
+                const isReordering = reorderingOrderId === orderId;
+
+                return (
+                  <article className="account-order-item" key={orderId}>
+                    <button
+                      type="button"
+                      className="account-order-track-btn"
+                      onClick={() => openTrackingPage(orderId)}
+                    >
+                      <p className="account-order-title">{order.orderNumber}</p>
+                      <p className="account-order-meta">
+                        {order.status} · INR{" "}
+                        {Number(order.total || 0).toFixed(2)} ·{" "}
+                        {new Date(order.placedAt).toLocaleDateString()}
+                      </p>
+                      <p className="account-order-meta">
+                        ETA:{" "}
+                        {order.estimatedDeliveryDate
+                          ? new Date(
+                              order.estimatedDeliveryDate,
+                            ).toLocaleDateString()
+                          : "Not available"}
+                      </p>
+                    </button>
+
+                    <div className="account-order-actions">
+                      <button
+                        type="button"
+                        className="account-btn account-btn--ghost account-btn--small"
+                        onClick={() => openTrackingPage(orderId)}
+                      >
+                        Track Order
+                      </button>
+                      <button
+                        type="button"
+                        className="account-btn account-btn--primary account-btn--small"
+                        onClick={() => handleReorderOrder(order)}
+                        disabled={isReordering}
+                      >
+                        {isReordering ? "Reordering..." : "Reorder"}
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           ) : (
-            <p className="account-placeholder-copy">No pre-orders submitted yet.</p>
+            <p className="account-placeholder-copy">
+              No pre-orders submitted yet.
+            </p>
           )}
 
           <div className="account-form-actions account-form-actions--start">

@@ -131,6 +131,12 @@
   font-weight: 600;
 }
 
+.customer-tracking-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .customer-primary-btn,
 .customer-secondary-btn {
   border: 1px solid transparent;
@@ -406,6 +412,16 @@
 
   .customer-order-list {
     max-height: 260px;
+  }
+
+  .customer-tracking-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .customer-tracking-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .customer-item-row {

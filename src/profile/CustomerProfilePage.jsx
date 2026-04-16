@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useMenuStore from "../useMenuStore";
 import { fetchMyOrderById, fetchMyOrders } from "../services/cartApi";
+import useCartActions from "../hooks/useCartActions";
 import "./CustomerProfilePage.css";
 
 const TIMELINE_STAGES = [
@@ -127,7 +128,9 @@ const buildTimeline = (order = {}) => {
 
   return TIMELINE_STAGES.map((stage, index) => {
     const isDelivered = String(order.status || "").trim() === "delivered";
-    const isCompleted = isDelivered ? index <= activeIndex : index < activeIndex;
+    const isCompleted = isDelivered
+      ? index <= activeIndex
+      : index < activeIndex;
 
     return {
       ...stage,
@@ -142,7 +145,9 @@ function CustomerProfilePage() {
   const signedInUser = useMenuStore((state) => state.signedInUser);
   const authToken = useMenuStore((state) => state.authToken);
   const accountProfile = useMenuStore((state) => state.accountProfile);
-  const setIsLoginModalOpen = useMenuStore((state) => state.setIsLoginModalOpen);
+  const setIsLoginModalOpen = useMenuStore(
+    (state) => state.setIsLoginModalOpen,
+  );
   const setAuthMode = useMenuStore((state) => state.setAuthMode);
   const selectedProfileOrderId = useMenuStore(
     (state) => state.selectedProfileOrderId,
@@ -150,6 +155,7 @@ function CustomerProfilePage() {
   const setSelectedProfileOrderId = useMenuStore(
     (state) => state.setSelectedProfileOrderId,
   );
+  const { reorderOrderToCart } = useCartActions();
 
   const [orders, setOrders] = useState([]);
   const [selectedOrderId, setSelectedOrderId] = useState("");
@@ -157,6 +163,7 @@ function CustomerProfilePage() {
   const [loading, setLoading] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [isReordering, setIsReordering] = useState(false);
   const [error, setError] = useState("");
 
   const profileData = useMemo(
@@ -276,7 +283,8 @@ function CustomerProfilePage() {
         if (!cancelled) {
           const fallback = orders.find(
             (order) =>
-              order.id === selectedOrderId || order.orderNumber === selectedOrderId,
+              order.id === selectedOrderId ||
+              order.orderNumber === selectedOrderId,
           );
           setSelectedOrder(fallback || null);
         }
@@ -305,12 +313,29 @@ function CustomerProfilePage() {
     setSelectedOrder(order);
   };
 
+  const handleReorderSelectedOrder = async () => {
+    if (!selectedOrder || isReordering) {
+      return;
+    }
+
+    setIsReordering(true);
+
+    try {
+      await reorderOrderToCart(selectedOrder, { openCart: true });
+    } finally {
+      setIsReordering(false);
+    }
+  };
+
   if (!signedInUser || !authToken) {
     return (
       <section className="customer-profile-page">
         <div className="customer-profile-empty">
           <h1>Profile and Order Tracking</h1>
-          <p>Sign in to view your profile, order history, and live tracking timeline.</p>
+          <p>
+            Sign in to view your profile, order history, and live tracking
+            timeline.
+          </p>
           <button
             type="button"
             className="customer-primary-btn"
@@ -327,7 +352,9 @@ function CustomerProfilePage() {
   }
 
   const selectedTimeline = buildTimeline(selectedOrder || {});
-  const selectedItems = Array.isArray(selectedOrder?.items) ? selectedOrder.items : [];
+  const selectedItems = Array.isArray(selectedOrder?.items)
+    ? selectedOrder.items
+    : [];
 
   return (
     <section className="customer-profile-page">
@@ -335,8 +362,8 @@ function CustomerProfilePage() {
         <p className="customer-profile-eyebrow">Customer Dashboard</p>
         <h1>Profile and Order Tracking</h1>
         <p>
-          Review account details, monitor every order stage, and refresh live status
-          updates anytime.
+          Review account details, monitor every order stage, and refresh live
+          status updates anytime.
         </p>
       </header>
 
@@ -390,7 +417,9 @@ function CustomerProfilePage() {
           {loading ? (
             <p className="customer-help-text">Loading your order history...</p>
           ) : orders.length === 0 ? (
-            <p className="customer-help-text">No orders found for this account yet.</p>
+            <p className="customer-help-text">
+              No orders found for this account yet.
+            </p>
           ) : (
             <div className="customer-order-list">
               {orders.map((order) => {
@@ -407,7 +436,9 @@ function CustomerProfilePage() {
                   >
                     <div className="customer-order-item-top">
                       <p>{order.orderNumber}</p>
-                      <span>{String(order.status || "placed").replaceAll("_", " ")}</span>
+                      <span>
+                        {String(order.status || "placed").replaceAll("_", " ")}
+                      </span>
                     </div>
                     <p>
                       {formatDate(order.placedAt, {
@@ -417,7 +448,8 @@ function CustomerProfilePage() {
                       })}
                     </p>
                     <p>
-                      {(Array.isArray(order.items) ? order.items.length : 0)} item(s) - {formatCurrency(order.total)}
+                      {Array.isArray(order.items) ? order.items.length : 0}{" "}
+                      item(s) - {formatCurrency(order.total)}
                     </p>
                   </button>
                 );
@@ -430,13 +462,27 @@ function CustomerProfilePage() {
       <article className="customer-card customer-tracking-card">
         <div className="customer-tracking-head">
           <h2>Order Details and Tracking</h2>
-          {detailLoading ? <span>Syncing detail...</span> : null}
+          <div className="customer-tracking-actions">
+            {detailLoading ? <span>Syncing detail...</span> : null}
+            {selectedOrder ? (
+              <button
+                type="button"
+                className="customer-secondary-btn"
+                onClick={handleReorderSelectedOrder}
+                disabled={isReordering}
+              >
+                {isReordering ? "Reordering..." : "Reorder This Order"}
+              </button>
+            ) : null}
+          </div>
         </div>
 
         {error ? <p className="customer-error-text">{error}</p> : null}
 
         {!selectedOrder ? (
-          <p className="customer-help-text">Select an order to view full tracking details.</p>
+          <p className="customer-help-text">
+            Select an order to view full tracking details.
+          </p>
         ) : (
           <>
             <div className="customer-order-summary-grid">
@@ -451,7 +497,10 @@ function CustomerProfilePage() {
               <div>
                 <span>Current Status</span>
                 <p className="customer-status-pill">
-                  {String(selectedOrder.status || "placed").replaceAll("_", " ")}
+                  {String(selectedOrder.status || "placed").replaceAll(
+                    "_",
+                    " ",
+                  )}
                 </p>
               </div>
               <div>
@@ -479,7 +528,9 @@ function CustomerProfilePage() {
                   className={`customer-timeline-item${stage.isCompleted ? " is-complete" : ""}${stage.isActive ? " is-active" : ""}`}
                 >
                   <div className="customer-timeline-dot">
-                    {stage.isCompleted || stage.isActive ? "OK" : String(index + 1)}
+                    {stage.isCompleted || stage.isActive
+                      ? "OK"
+                      : String(index + 1)}
                   </div>
                   {index < selectedTimeline.length - 1 ? (
                     <div className="customer-timeline-line" />
@@ -499,7 +550,9 @@ function CustomerProfilePage() {
             <div className="customer-items-list">
               <h3>Items in this order</h3>
               {selectedItems.length === 0 ? (
-                <p className="customer-help-text">No items found for this order.</p>
+                <p className="customer-help-text">
+                  No items found for this order.
+                </p>
               ) : (
                 selectedItems.map((item, index) => (
                   <div
@@ -508,7 +561,8 @@ function CustomerProfilePage() {
                   >
                     <p>{item.productName || "Product"}</p>
                     <span>
-                      Qty {Number(item.quantity || 0)} - {formatCurrency(item.price)}
+                      Qty {Number(item.quantity || 0)} -{" "}
+                      {formatCurrency(item.price)}
                     </span>
                   </div>
                 ))

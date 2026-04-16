@@ -979,12 +979,18 @@ function AdminDashboard() {
                           <p className="admin-order-detail-value">{state}</p>
                         </article>
                         <article className="admin-order-detail-item admin-order-detail-item--wide">
-                          <p className="admin-order-detail-label">Update Note</p>
+                          <p className="admin-order-detail-label">
+                            Update Note
+                          </p>
                           <input
                             type="text"
                             value={draft.note ?? order.notes ?? ""}
                             onChange={(event) =>
-                              applyRowDraft(order._id, "note", event.target.value)
+                              applyRowDraft(
+                                order._id,
+                                "note",
+                                event.target.value,
+                              )
                             }
                             placeholder="Optional note for this status update"
                           />

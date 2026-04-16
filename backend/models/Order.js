@@ -203,11 +203,18 @@ const orderSchema = new mongoose.Schema(
 
 orderSchema.pre("save", function syncOrderTotals(next) {
   this.subtotal = Number(
-    this.items.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2),
+    this.items
+      .reduce((sum, item) => sum + item.price * item.quantity, 0)
+      .toFixed(2),
   );
 
   this.total = Number(
-    (this.subtotal + this.shippingFee + this.taxAmount - this.discountAmount).toFixed(2),
+    (
+      this.subtotal +
+      this.shippingFee +
+      this.taxAmount -
+      this.discountAmount
+    ).toFixed(2),
   );
 
   if (this.isNew && this.statusHistory.length === 0) {

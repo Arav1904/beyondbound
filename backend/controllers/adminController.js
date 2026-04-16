@@ -461,8 +461,13 @@ export const getAdminOrders = async (req, res) => {
 export const updateAdminOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, paymentStatus, trackingNumber, note, estimatedDeliveryDate } =
-      req.body;
+    const {
+      status,
+      paymentStatus,
+      trackingNumber,
+      note,
+      estimatedDeliveryDate,
+    } = req.body;
     const hasEstimatedDeliveryInput = Object.prototype.hasOwnProperty.call(
       req.body || {},
       "estimatedDeliveryDate",

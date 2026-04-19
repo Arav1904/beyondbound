@@ -15,7 +15,6 @@ function Navbar() {
   const setAuthMode = useMenuStore((state) => state.setAuthMode);
   const signedInUser = useMenuStore((state) => state.signedInUser);
   const openAccountModal = useMenuStore((state) => state.openAccountModal);
-  const openProfilePage = useMenuStore((state) => state.openProfilePage);
   const logout = useMenuStore((state) => state.logout);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -62,13 +61,6 @@ function Navbar() {
     setMobileOpen(false);
   };
 
-  const goToProfilePage = () => {
-    openProfilePage();
-    setProfileMenuOpen(false);
-    setMobileProfileOpen(false);
-    setMobileOpen(false);
-  };
-
   const handleSignOut = () => {
     window.google?.accounts?.id?.disableAutoSelect?.();
 
@@ -110,7 +102,7 @@ function Navbar() {
   return (
     <>
       <header
-        className="navbar-wrapper"
+        className="navbar-wrapper !fixed !inset-x-0 !top-0 !z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80"
         onMouseLeave={() => {
           // Close any open dropdown menus when the cursor leaves the navbar.
           if (["science", "about", "login"].includes(activeMenu)) {
@@ -118,16 +110,16 @@ function Navbar() {
           }
         }}
       >
-        <nav className="navbar">
+        <nav className="navbar !my-0 !h-14 !w-full !max-w-[1500px] !px-3 sm:!h-16 sm:!px-4 md:!h-[72px] md:!px-7 grid !grid-cols-[auto_1fr_auto] md:!grid-cols-[1fr_auto_1fr] items-center">
           <img
             src={beyondLogo}
             alt="Beyond Bound"
-            className="navbar-logo-separate"
+            className="navbar-logo-separate !block md:!hidden"
             onClick={handleLogoClick}
             style={{ cursor: "pointer" }}
           />
           <div
-            className="navbar-brand"
+            className="navbar-brand !col-start-2 !justify-self-center md:!col-start-1 md:!justify-self-start"
             onClick={handleLogoClick}
             style={{ cursor: "pointer" }}
           >
@@ -135,7 +127,7 @@ function Navbar() {
             BEYOND BOUND<span>®</span>
           </div>
 
-          <ul className="navbar-links">
+          <ul className="navbar-links !hidden md:!flex">
             <li className="menu-item">
               <button
                 type="button"
@@ -193,7 +185,7 @@ function Navbar() {
             </li>
           </ul>
 
-          <div className="navbar-actions">
+          <div className="navbar-actions !hidden md:!flex">
             <button
               type="button"
               className="nav-contact-us-btn"
@@ -240,13 +232,6 @@ function Navbar() {
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      className="profile-dropdown-item"
-                      onClick={goToProfilePage}
-                    >
-                      Profile and Tracking Page
-                    </button>
                     <button
                       type="button"
                       className="profile-dropdown-item"
@@ -300,7 +285,7 @@ function Navbar() {
 
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-transparent text-slate-700 shadow-none transition hover:bg-transparent md:hidden"
+            className="col-start-3 inline-flex h-10 w-10 items-center justify-center justify-self-end rounded-lg bg-transparent text-slate-700 shadow-none transition hover:bg-slate-100 md:!hidden"
             onClick={() => {
               setMobileOpen((prev) => {
                 const next = !prev;
@@ -319,7 +304,7 @@ function Navbar() {
         </nav>
 
         {mobileOpen && (
-          <div className="border-t border-slate-200 bg-white px-4 py-3 md:hidden">
+          <div className="absolute inset-x-0 top-full z-40 max-h-[calc(100vh-56px)] overflow-y-auto border-t border-slate-200 bg-white px-4 py-3 shadow-lg sm:max-h-[calc(100vh-64px)] md:hidden">
             <ul className="space-y-1">
               <li>
                 <button
@@ -427,13 +412,6 @@ function Navbar() {
                     <button
                       type="button"
                       className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
-                      onClick={goToProfilePage}
-                    >
-                      Profile and Tracking Page
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
                       onClick={() => openAccountSection("profile")}
                     >
                       Edit Profile
@@ -485,6 +463,7 @@ function Navbar() {
           </div>
         )}
       </header>
+      <div aria-hidden="true" className="h-14 w-full sm:h-16 md:h-[72px]" />
     </>
   );
 }

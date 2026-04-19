@@ -34,27 +34,3 @@
   box-shadow: 0 10px 22px rgba(15, 31, 61, 0.22);
 }
 
-/* Add padding-top to accommodate fixed navbar on mobile */
-@media (max-width: 768px) {
-  .app {
-    padding-top: clamp(56px, 10vw, 64px);
-  }
-}
-
-@media (max-width: 600px) {
-  .app {
-    padding-top: clamp(52px, 10vw, 60px);
-  }
-}
-
-@media (max-width: 480px) {
-  .app {
-    padding-top: clamp(50px, 10vw, 60px);
-  }
-}
-
-@media (max-width: 360px) {
-  .app {
-    padding-top: clamp(46px, 10vw, 54px);
-  }
-}

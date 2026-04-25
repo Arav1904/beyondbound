@@ -27,7 +27,7 @@ function MeetGlycomics() {
   const fallbackCompareAtPrice = Number(FALLBACK_PRIMARY_PRODUCT.compareAtPrice);
 
   const compareAtPrice =
-    Number(product.compareAtPrice) || fallbackCompareAtPrice || 0;
+    fallbackCompareAtPrice || Number(product.compareAtPrice) || 0;
   const discountPercent =
     compareAtPrice > meetGlycoPrice
       ? Math.round(

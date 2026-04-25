@@ -4,19 +4,30 @@ import reviewImageOne from "../../image 32.png";
 import reviewImageTwo from "../../image 33.png";
 import reviewImageThree from "../../image 34.png";
 import usePrimaryProduct from "../../../hooks/usePrimaryProduct";
-import { buildPrimaryPreorderDraft } from "../../../services/productCatalog";
+import {
+  buildPrimaryPreorderDraft,
+  FALLBACK_PRIMARY_PRODUCT,
+} from "../../../services/productCatalog";
 import useMenuStore from "../../../useMenuStore";
 
 function MeetGlycomics() {
   const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
-  const { product } = usePrimaryProduct();
+  const { product, packSizes } = usePrimaryProduct();
 
-  const meetGlycoPrice = Number(product.price) || 0;
+  const fallbackPrice20 = Number(
+    FALLBACK_PRIMARY_PRODUCT.packSizes.find((size) => size.value === "20")
+      ?.price,
+  );
+  const meetGlycoPrice =
+    Number(packSizes.find((size) => String(size.value) === "20")?.price) ||
+    fallbackPrice20 ||
+    Number(product.price) ||
+    0;
+
+  const fallbackCompareAtPrice = Number(FALLBACK_PRIMARY_PRODUCT.compareAtPrice);
 
   const compareAtPrice =
-    Number(product.compareAtPrice) > Number(product.price)
-      ? Number(product.compareAtPrice)
-      : Number(product.price);
+    Number(product.compareAtPrice) || fallbackCompareAtPrice || 0;
   const discountPercent =
     compareAtPrice > meetGlycoPrice
       ? Math.round(

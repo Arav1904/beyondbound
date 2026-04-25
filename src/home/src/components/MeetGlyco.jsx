@@ -9,13 +9,9 @@ import useMenuStore from "../../../useMenuStore";
 
 function MeetGlycomics() {
   const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
-  const { product, packSizes } = usePrimaryProduct();
+  const { product } = usePrimaryProduct();
 
-  const meetGlycoPrice =
-    Number(
-      packSizes.find((size) => String(size.value) === "20")?.price ??
-        product.price,
-    ) || 0;
+  const meetGlycoPrice = Number(product.price) || 0;
 
   const compareAtPrice =
     Number(product.compareAtPrice) > Number(product.price)

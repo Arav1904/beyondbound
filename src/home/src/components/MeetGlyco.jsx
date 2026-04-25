@@ -9,16 +9,22 @@ import useMenuStore from "../../../useMenuStore";
 
 function MeetGlycomics() {
   const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
-  const { product } = usePrimaryProduct();
+  const { product, packSizes } = usePrimaryProduct();
+
+  const meetGlycoPrice =
+    Number(
+      packSizes.find((size) => String(size.value) === "20")?.price ??
+        product.price,
+    ) || 0;
 
   const compareAtPrice =
     Number(product.compareAtPrice) > Number(product.price)
       ? Number(product.compareAtPrice)
       : Number(product.price);
   const discountPercent =
-    compareAtPrice > Number(product.price)
+    compareAtPrice > meetGlycoPrice
       ? Math.round(
-          ((compareAtPrice - Number(product.price)) / compareAtPrice) * 100,
+          ((compareAtPrice - meetGlycoPrice) / compareAtPrice) * 100,
         )
       : 0;
 
@@ -97,9 +103,7 @@ function MeetGlycomics() {
 
             <div className="glyco-pricing" aria-label="Pricing">
               <span className="glyco-price-old-text">₹{compareAtPrice}</span>
-              <span className="glyco-price-new-text">
-                ₹{Number(product.price)}
-              </span>
+              <span className="glyco-price-new-text">₹{meetGlycoPrice}</span>
               {discountPercent > 0 ? (
                 <span className="glyco-discount-badge">
                   Save {discountPercent}%

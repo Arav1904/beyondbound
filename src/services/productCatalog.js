@@ -4,8 +4,8 @@ export const FALLBACK_PRIMARY_PRODUCT = {
   name: "Glycomics",
   description:
     "Blood sugar focused metabolism enhancer with clinically informed ingredients.",
-  price: 1925,
-  compareAtPrice: 1984,
+  price: 600,
+  compareAtPrice: 800,
   images: [],
   packSizes: [
     { value: "20", label: "20 Capsules", price: 600 },

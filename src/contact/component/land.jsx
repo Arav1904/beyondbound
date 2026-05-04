@@ -51,8 +51,8 @@ const ContactLand = () => {
               <FontAwesomeIcon icon={faEnvelope} />
             </div>
             <h3 className="card-title">Email</h3>
-            <a href="mailto:hello@beyondbound.in" className="card-email">
-              hello@beyondbound.in
+            <a href="mailto:beyondbound889@gmail.com" className="card-email">
+              beyondbound889@gmail.com
             </a>
             <p className="card-description">
               For detailed queries · 24 hr response
@@ -65,8 +65,8 @@ const ContactLand = () => {
               <FontAwesomeIcon icon={faInstagram} />
             </div>
             <h3 className="card-title">Instagram</h3>
-            <a href="https://instagram.com/beyondbound.in" className="card-handle">
-              @beyondbound.in
+            <a href="https://instagram.com/beyondbound_" className="card-handle">
+              @beyondbound_
             </a>
             <p className="card-description">
               DMs open · product questions welcome

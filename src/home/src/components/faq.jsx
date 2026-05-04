@@ -36,7 +36,7 @@ function FAQ() {
 	const toggle = (i) => setOpenIndex((prev) => (prev === i ? null : i))
 
 	return (
-		<section className="faq-section">
+		<section className="faq-section" id="faq">
 			<div className="faq-inner">
 				<div className="faq-header">
 					<h2 className="faq-title">Frequently asked<br /> questions</h2>

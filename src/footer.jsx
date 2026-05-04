@@ -5,11 +5,43 @@ import {
 	faXTwitter,
 	faLinkedinIn,
 } from "@fortawesome/free-brands-svg-icons";
+import useMenuStore from "./useMenuStore";
 
-const quickLinks = ["About Us", "Products", "Science", "FAQ"];
-const supportLinks = ["Contact", "Shipping", "Returns", "Privacy Policy"];
+const quickLinks = [
+	{ label: "Home", page: "home" },
+	{ label: "About Us", page: "about" },
+	{ label: "Products", page: "products" },
+	{ label: "Science", page: "science" },
+	{ label: "FAQ", page: "home", scrollId: "faq" },
+];
+const supportLinks = [
+	{ label: "Contact", page: "contact" },
+
+];
 
 function Footer() {
+	const setActivePage = useMenuStore((state) => state.setActivePage);
+
+	const handleInternalNav = (event, page, scrollId) => {
+		event.preventDefault();
+
+		if (page) {
+			setActivePage(page);
+		}
+
+		window.requestAnimationFrame(() => {
+			if (scrollId) {
+				const target = document.getElementById(scrollId);
+				if (target) {
+					target.scrollIntoView({ behavior: "smooth", block: "start" });
+					return;
+				}
+			}
+
+			window.scrollTo({ top: 0, behavior: "smooth" });
+		});
+	};
+
 	return (
 		<footer className="border-t border-slate-600/30 bg-[#122849] text-slate-300">
 			<div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
@@ -31,12 +63,15 @@ function Footer() {
 						</h4>
 						<ul className="mt-4 space-y-2.5">
 							{quickLinks.map((link) => (
-								<li key={link}>
+								<li key={link.label}>
 									<a
-										href="#"
+										href={link.scrollId ? `#${link.scrollId}` : "#"}
+										onClick={(event) =>
+											handleInternalNav(event, link.page, link.scrollId)
+										}
 										className="text-sm text-slate-400 transition hover:text-slate-100"
 									>
-										{link}
+										{link.label}
 									</a>
 								</li>
 							))}
@@ -49,12 +84,17 @@ function Footer() {
 						</h4>
 						<ul className="mt-4 space-y-2.5">
 							{supportLinks.map((link) => (
-								<li key={link}>
+								<li key={link.label}>
 									<a
 										href="#"
+										onClick={
+											link.page
+												? (event) => handleInternalNav(event, link.page)
+												: undefined
+										}
 										className="text-sm text-slate-400 transition hover:text-slate-100"
 									>
-										{link}
+										{link.label}
 									</a>
 								</li>
 							))}
@@ -71,28 +111,28 @@ function Footer() {
 
 						<div className="mt-5 flex flex-wrap gap-2.5" aria-label="Social links">
 							<a
-								href="#"
+								href="https://www.facebook.com/"
 								className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-400/30 bg-white/5 text-sm text-slate-300 transition hover:border-slate-100/60 hover:bg-white/10 hover:text-slate-100"
 								aria-label="Facebook"
 							>
 								<FontAwesomeIcon icon={faFacebookF} />
 							</a>
 							<a
-								href="#"
+								href="https://www.instagram.com/beyondbound_/"
 								className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-400/30 bg-white/5 text-sm text-slate-300 transition hover:border-slate-100/60 hover:bg-white/10 hover:text-slate-100"
 								aria-label="Instagram"
 							>
 								<FontAwesomeIcon icon={faInstagram} />
 							</a>
 							<a
-								href="#"
+								href="https://x.com/"
 								className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-400/30 bg-white/5 text-sm text-slate-300 transition hover:border-slate-100/60 hover:bg-white/10 hover:text-slate-100"
 								aria-label="X"
 							>
 								<FontAwesomeIcon icon={faXTwitter} />
 							</a>
 							<a
-								href="#"
+								href="https://www.linkedin.com/company/beyond-bound/"
 								className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-400/30 bg-white/5 text-sm text-slate-300 transition hover:border-slate-100/60 hover:bg-white/10 hover:text-slate-100"
 								aria-label="LinkedIn"
 							>

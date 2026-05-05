@@ -113,6 +113,7 @@
 	color: rgba(255, 255, 255, 0.9);
 }
 
+
 .site-footer__socials {
 	margin-top: auto;
 	display: flex;
@@ -171,6 +172,7 @@
 	color: rgba(255, 255, 255, 0.4);
 }
 
+
 @media (max-width: 1400px) {
 	.site-footer__inner {
 		padding: 0 48px;
@@ -223,6 +225,7 @@
 		font-size: 15px;
 		line-height: 1.6;
 	}
+
 }
 
 @media (max-width: 768px) {
@@ -281,4 +284,5 @@
 		font-size: 13px;
 		line-height: 1.5;
 	}
+
 }

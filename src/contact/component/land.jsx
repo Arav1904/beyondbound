@@ -37,8 +37,8 @@ const ContactLand = () => {
               <FontAwesomeIcon icon={faWhatsapp} />
             </div>
             <h3 className="card-title">WhatsApp</h3>
-            <a href="https://wa.me/919876543210" className="card-phone">
-              +91 98765 43210
+            <a href="https://wa.me/916396190643" className="card-phone">
+              +91 6396190643
             </a>
             <p className="card-description">
               Fastest · usually replies in 2 hrs

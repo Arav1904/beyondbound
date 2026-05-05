@@ -25,6 +25,7 @@ const metrics = [
 
 function TransformationSection() {
   const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
+  const setActivePage = useMenuStore((state) => state.setActivePage);
   const { product } = usePrimaryProduct();
 
   const handleShopNow = () => {
@@ -35,6 +36,11 @@ function TransformationSection() {
         fallbackImage: transformationImage,
       }),
     );
+  };
+
+  const handleLearnMore = () => {
+    setActivePage("science");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -64,6 +70,7 @@ function TransformationSection() {
               <button
                 type="button"
                 className="transform-btn transform-btn--secondary"
+                onClick={handleLearnMore}
               >
                 Learn More
               </button>

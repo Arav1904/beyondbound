@@ -1,7 +1,15 @@
 import '../css/aboutBeyond.css'
 import aboutImage from '../../imglogo.jpeg'
+import useMenuStore from '../../../useMenuStore'
 
 function AboutBeyond() {
+	const setActivePage = useMenuStore((state) => state.setActivePage)
+
+	const handleLearnMore = () => {
+		setActivePage('science')
+		window.scrollTo({ top: 0, behavior: 'smooth' })
+	}
+
 	return (
 		<section className="about-section" aria-labelledby="about-beyond-title">
 			<div className="about-solution">
@@ -30,7 +38,7 @@ function AboutBeyond() {
 							</p>
 						</div>
 
-						<button type="button" className="about-learn-btn">
+						<button type="button" className="about-learn-btn" onClick={handleLearnMore}>
 							Learn more →
 						</button>
 					</div>

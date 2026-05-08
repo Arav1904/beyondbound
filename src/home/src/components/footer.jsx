@@ -14,6 +14,8 @@ const supportLinks = [{ label: 'Contact', page: 'contact' }]
 function Footer() {
 	const setActivePage = useMenuStore((state) => state.setActivePage)
 	const [isPolicyOpen, setIsPolicyOpen] = useState(false)
+	const [isPrivacyOpen, setIsPrivacyOpen] = useState(false)
+	const [isPrivacyAccepted, setIsPrivacyAccepted] = useState(false)
 	const policyDate = useMemo(
 		() =>
 			new Date().toLocaleDateString('en-IN', {
@@ -42,6 +44,11 @@ function Footer() {
 
 			window.scrollTo({ top: 0, behavior: 'smooth' })
 		})
+	}
+
+	const openPrivacyPolicy = () => {
+		setIsPrivacyOpen(true)
+		setIsPrivacyAccepted(false)
 	}
 
 	return (
@@ -86,6 +93,17 @@ function Footer() {
 									</a>
 								</li>
 							))}
+							<li>
+								<button
+									type="button"
+									className="site-footer__link text-left hover:text-white/90"
+									onClick={openPrivacyPolicy}
+									aria-expanded={isPrivacyOpen}
+									aria-controls="footer-privacy-policy"
+								>
+									Privacy Policy
+								</button>
+							</li>
 							<li>
 								<button
 									type="button"
@@ -265,6 +283,287 @@ function Footer() {
 								<p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
 								Note: By making a payment on our website, you agree to abide by this Payment Policy.
 							</p>
+								</div>
+							</div>
+						</section>
+					</div>
+				) : null}
+
+				{isPrivacyOpen ? (
+					<div
+						className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6"
+						onClick={() => setIsPrivacyOpen(false)}
+						role="presentation"
+					>
+						<section
+							id="footer-privacy-policy"
+							className="max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.28)] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+							aria-label="Privacy policy"
+							onClick={(event) => event.stopPropagation()}
+						>
+							<div className="sticky top-0 z-10 border-b border-slate-200/80 bg-white/95 px-5 py-4 backdrop-blur sm:px-6 lg:px-8">
+								<div className="flex items-center justify-between gap-3">
+									<h4 className="text-base font-semibold text-slate-900 sm:text-lg">
+										Terms, Privacy, and Policies
+									</h4>
+									<button
+										type="button"
+										className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-700"
+										onClick={() => setIsPrivacyOpen(false)}
+										aria-label="Close privacy policy"
+									>
+										X
+									</button>
+								</div>
+							</div>
+							<div className="px-5 pb-6 pt-4 sm:px-6 lg:px-8">
+								<p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400 sm:text-sm">
+									Effective Date: {policyDate}
+								</p>
+
+								<section className="mt-4" aria-labelledby="terms-conditions">
+									<h5 id="terms-conditions" className="text-sm font-semibold text-slate-800 sm:text-base">
+										Terms and Conditions
+									</h5>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										Welcome to BeyondBound. These Terms and Conditions outline the rules and regulations for the
+										use of BeyondBound's website. By accessing this website, we assume you accept these terms and
+										conditions in full. Do not continue to use BeyondBound's website if you do not accept all of the
+										terms and conditions stated on this page. This website is managed by AYURHELIX PRIVATE LIMITED.
+									</p>
+								</section>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">1. Intellectual Property Rights</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										Unless otherwise stated, BeyondBound and/or its licensors own the intellectual property rights
+										for all material on this website. All intellectual property rights are reserved. You may view
+										and/or print pages from https://www.beyondbound.info/ for your own personal use subject to
+										restrictions set in these terms and conditions.
+									</p>
+									<p className="mt-2 text-sm font-semibold text-slate-700 sm:text-base">You must not:</p>
+									<ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-slate-600 sm:text-base">
+										<li>Republish material from this website.</li>
+										<li>Sell, rent, or sub-license material from the website.</li>
+										<li>Reproduce, duplicate, or copy material from the website.</li>
+										<li>Redistribute content from BeyondBound (unless content is specifically made for redistribution).</li>
+									</ul>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">2. User Content</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										In these Terms and Conditions, "Your Content" shall mean any audio, video, text, images, or
+										other material you choose to display on this website. By displaying Your Content, you grant
+										BeyondBound a non-exclusive, worldwide, irrevocable, royalty-free license to use, reproduce,
+										adapt, publish, translate, and distribute it in any and all media.
+									</p>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										Your Content must be your own and must not be infringing on any third party's rights. BeyondBound
+										reserves the right to remove any of Your Content from this website at any time, and for any reason,
+										without notice.
+									</p>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">3. Privacy Policy</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										Please refer to our Privacy Policy below for information on how we collect, use, and disclose
+										information from our users. Your use of the website signifies your acknowledgment of and agreement
+										to our Privacy Policy.
+									</p>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">4. Limitation of Liability</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										In no event shall BeyondBound, nor any of its officers, directors, and employees, be liable to you
+										for anything arising out of or in any way connected with your use of this website, whether such
+										liability is under contract, tort, or otherwise. BeyondBound, including its officers, directors,
+										and employees, shall not be liable for any indirect, consequential, or special liability arising
+										out of or in any way related to your use of this website.
+									</p>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">5. Indemnification</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										You hereby indemnify to the fullest extent BeyondBound from and against any and all liabilities,
+										costs, demands, causes of action, damages, and expenses (including reasonable attorney's fees)
+										arising out of or in any way related to your breach of any of the provisions of these Terms.
+									</p>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">6. Severability</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										If any provision of these Terms is found to be unenforceable or invalid under any applicable law,
+										such unenforceability or invalidity shall not render these Terms unenforceable or invalid as a
+										whole, and such provisions shall be deleted without affecting the remaining provisions herein.
+									</p>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">7. Variation of Terms</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										BeyondBound is permitted to revise these Terms at any time as it sees fit, and by using this
+										website you are expected to review such Terms on a regular basis to ensure you understand all
+										terms and conditions governing the use of this website.
+									</p>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">8. Governing Law &amp; Jurisdiction</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										These Terms will be governed by and construed in accordance with the laws of the jurisdiction in
+										which BeyondBound operates, and you submit to the non-exclusive jurisdiction of India.
+									</p>
+								</div>
+
+								<section className="mt-6 border-t border-slate-200/80 pt-4" aria-labelledby="privacy-policy">
+									<h5 id="privacy-policy" className="text-sm font-semibold text-slate-800 sm:text-base">
+										Privacy Policy
+									</h5>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										At BeyondBound, accessible from https://www.beyondbound.info/, one of our main priorities is the
+										privacy of our visitors. This Privacy Policy document contains types of information that is
+										collected and recorded by BeyondBound and how we use it.
+									</p>
+								</section>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">1. Information We Collect</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										The personal information that you are asked to provide, and the reasons why you are asked to
+										provide it, will be made clear to you at the point we ask you to provide your personal information.
+									</p>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										Direct Information: If you contact us directly via our email (official@beyondbound.info), we may
+										receive additional information about you such as your name, email address, phone number, the
+										contents of the message and/or attachments you may send us, and any other information you may
+										choose to provide.
+									</p>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										Account Information: If you register for an account, we may ask for your contact information,
+										including items such as name, company name, address, email address, and telephone number.
+									</p>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">2. How We Use Your Information</h6>
+									<ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-slate-600 sm:text-base">
+										<li>Provide, operate, and maintain our website.</li>
+										<li>Improve, personalize, and expand our website.</li>
+										<li>Understand and analyze how you use our website.</li>
+										<li>Develop new products, services, features, and functionality.</li>
+										<li>
+											Communicate with you, either directly or through one of our partners, including for customer
+											service, to provide you with updates and other information relating to the website, and for
+											marketing and promotional purposes.
+										</li>
+										<li>Send you emails.</li>
+										<li>Find and prevent fraud.</li>
+									</ul>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">3. Log Files</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										BeyondBound follows a standard procedure of using log files. These files log visitors when they
+										visit websites. The information collected by log files includes internet protocol (IP) addresses,
+										browser type, Internet Service Provider (ISP), date and time stamp, referring/exit pages, and
+										possibly the number of clicks. These are not linked to any information that is personally
+										identifiable.
+									</p>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">4. Cookies and Web Beacons</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										Like any other website, BeyondBound uses "cookies". These cookies are used to store information
+										including visitors' preferences, and the pages on the website that the visitor accessed or visited.
+										The information is used to optimize the users' experience by customizing our web page content
+										based on visitors' browser type and/or other information.
+									</p>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">5. Third-Party Privacy Policies</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										BeyondBound's Privacy Policy does not apply to other advertisers or websites. Thus, we are advising
+										you to consult the respective Privacy Policies of these third-party ad servers for more detailed
+										information. It may include their practices and instructions about how to opt-out of certain options.
+									</p>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">6. GDPR Data Protection Rights (For EU Users)</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										We would like to make sure you are fully aware of all of your data protection rights. Every user is
+										entitled to the following:
+									</p>
+									<ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-slate-600 sm:text-base">
+										<li>The right to access - You have the right to request copies of your personal data.</li>
+										<li>The right to rectification - You have the right to request that we correct any information you believe is inaccurate.</li>
+										<li>The right to erasure - You have the right to request that we erase your personal data, under certain conditions.</li>
+										<li>The right to restrict processing - You have the right to request that we restrict the processing of your personal data, under certain conditions.</li>
+									</ul>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">7. Children's Information</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										Another part of our priority is adding protection for children while using the internet. We
+										encourage parents and guardians to observe, participate in, and/or monitor and guide their online
+										activity. BeyondBound does not knowingly collect any Personal Identifiable Information from children
+										under the age of 13.
+									</p>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">8. Consent</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										By using our website, you hereby consent to our Privacy Policy and agree to its terms.
+									</p>
+								</div>
+
+								<div className="mt-6 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">Shipping Policy</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										All orders will be delivered within 5-7 business days.
+									</p>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">Refund Policy</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										We do not provide any kind of refund due to the nature of business.
+									</p>
+								</div>
+
+								<div className="mt-5 border-t border-slate-200/80 pt-4">
+									<h6 className="text-sm font-semibold text-slate-800 sm:text-base">Contact Us</h6>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										If you have additional questions or require more information about our Privacy Policy, do not
+										hesitate to contact us at:
+									</p>
+									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+										Email: official@beyondbound.info
+									</p>
+								</div>
+
+								<div className="mt-6 border-t border-slate-200/80 pt-4">
+									<label className="flex items-start gap-3 text-sm text-slate-600 sm:text-base">
+										<input
+											type="checkbox"
+											className="mt-1 h-4 w-4 rounded border-slate-300 text-slate-900"
+											checked={isPrivacyAccepted}
+											onChange={(event) => setIsPrivacyAccepted(event.target.checked)}
+										/>
+										<span>
+											I have read and accept the Terms and Conditions and Privacy Policy.
+										</span>
+									</label>
 								</div>
 							</div>
 						</section>

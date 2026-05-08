@@ -9,7 +9,7 @@ export const FALLBACK_PRIMARY_PRODUCT = {
   images: [],
   packSizes: [
     { value: "20", label: "20 Capsules", price: 600 },
-    { value: "60", label: "60 Capsules", price: 1925 },
+    { value: "60", label: "60 Capsules", price: 1599 },
   ],
   isPreorderEnabled: true,
   estimatedDispatchDays: 10,

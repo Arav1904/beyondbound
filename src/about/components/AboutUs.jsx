@@ -7,6 +7,7 @@ import HowWeFormulate from './HowWeFormulate';
 import WhatWeStandBy from './WhatWeStandBy';
 import OurTeam from './OurTeam';
 import Partner from './Partner';
+import '../css/AboutUs.css';
 
 const AboutUs = () => {
   return (

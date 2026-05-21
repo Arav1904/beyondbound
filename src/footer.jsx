@@ -24,6 +24,7 @@ function Footer() {
 	const [isPolicyOpen, setIsPolicyOpen] = useState(false);
 	const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 	const [isPrivacyAccepted, setIsPrivacyAccepted] = useState(false);
+	const [isEntityOpen, setIsEntityOpen] = useState(false);
 	const policyDate = useMemo(
 		() =>
 			new Date().toLocaleDateString("en-IN", {
@@ -60,7 +61,7 @@ function Footer() {
 	};
 
 	return (
-		<footer className="border-t border-slate-600/30 bg-[#122849] text-slate-300">
+		<footer className="relative border-t border-slate-600/30 bg-[#122849] text-slate-300">
 			<div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
 				<div className="grid grid-cols-2 gap-8 md:grid-cols-2 xl:grid-cols-[1.25fr_1fr_1fr_1.15fr]">
 					<div className="col-span-2 xl:col-span-1">
@@ -180,6 +181,59 @@ function Footer() {
 						</div>
 					</div>
 				</div>
+
+				<div className="absolute bottom-4 right-4 z-10 sm:bottom-6 sm:right-6">
+					<button
+						type="button"
+						className="inline-flex items-center gap-2 rounded-full border border-slate-300/40 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-100 transition hover:border-slate-200/70 hover:bg-white/20"
+						onClick={() => setIsEntityOpen((open) => !open)}
+						aria-expanded={isEntityOpen}
+						aria-controls="official-entity-card"
+					>
+						Official Entity
+					</button>
+				</div>
+
+				{isEntityOpen ? (
+					<div
+						className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6"
+						onClick={() => setIsEntityOpen(false)}
+						role="presentation"
+					>
+						<section
+							id="official-entity-card"
+							className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-5 text-left font-['Times_New_Roman'] text-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.25)]"
+							role="dialog"
+							aria-label="Official entity"
+							onClick={(event) => event.stopPropagation()}
+						>
+							<div className="flex items-start justify-between gap-4">
+								<div>
+									<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+										Company
+									</p>
+									<p className="mt-2 text-sm font-semibold text-slate-900">
+										Ayurhelix pvt ltd
+									</p>
+								</div>
+								<button
+									type="button"
+									className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
+									onClick={() => setIsEntityOpen(false)}
+									aria-label="Close official entity"
+								>
+									X
+								</button>
+							</div>
+							<p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+								GST Number
+							</p>
+							<p className="mt-2 text-sm font-semibold text-slate-900">
+								05ABDCA5612K1ZU
+							</p>
+						</section>
+					</div>
+				) : null}
 
 				{isPolicyOpen ? (
 					<div

@@ -74,7 +74,7 @@ const toNonNegativeNumber = (value, fallback = 0) => {
 };
 
 const buildDefaultPackSizes = (price) => {
-  const primaryPrice = toNonNegativeNumber(price, 1925);
+  const primaryPrice = toNonNegativeNumber(price, 1599);
 
   return [
     {

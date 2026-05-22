@@ -3,22 +3,25 @@ import "../css/OurStory.css";
 import bottleAbout from "../assets/bottleabout.png";
 import { ChevronDown } from "lucide-react";
 import usePrimaryProduct from "../../hooks/usePrimaryProduct";
-import { buildPrimaryPreorderDraft } from "../../services/productCatalog";
+import { buildPrimaryCartItem } from "../../services/productCatalog";
 import useMenuStore from "../../useMenuStore";
+import useCartActions from "../../hooks/useCartActions";
 
 const OurStory = () => {
   const [expandedItem, setExpandedItem] = useState(null);
-  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
+  const openCheckout = useMenuStore((state) => state.openCheckout);
   const { product } = usePrimaryProduct();
+  const { addProductToCart } = useCartActions();
 
-  const handleShopNow = () => {
-    openPreOrderModal(
-      buildPrimaryPreorderDraft(product, {
+  const handleShopNow = async () => {
+    await addProductToCart(
+      buildPrimaryCartItem(product, {
         sizeValue: "20",
         quantity: 1,
         fallbackImage: bottleAbout,
       }),
     );
+    openCheckout();
   };
 
   return (
@@ -125,7 +128,7 @@ const OurStory = () => {
               )}
             </div>
             <button onClick={handleShopNow} className="shop-now-btn">
-              Pre-order now →
+              Buy now {"->"}
             </button>
           </div>
 

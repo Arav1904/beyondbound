@@ -2,12 +2,14 @@ import React from "react";
 import "./GlycomicsCard.css";
 import bottleImg from "../home/bottles.png";
 import usePrimaryProduct from "../hooks/usePrimaryProduct";
-import { buildPrimaryPreorderDraft } from "../services/productCatalog";
+import { buildPrimaryCartItem } from "../services/productCatalog";
 import useMenuStore from "../useMenuStore";
+import useCartActions from "../hooks/useCartActions";
 
 const GlycomicsCard = () => {
-  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
+  const openCheckout = useMenuStore((state) => state.openCheckout);
   const { product } = usePrimaryProduct();
+  const { addProductToCart } = useCartActions();
 
   const data = [
     { bad: "Energy crashes after meals", good: "Steady energy all day" },
@@ -17,14 +19,15 @@ const GlycomicsCard = () => {
     { bad: "Restless, broken sleep", good: "More consistent sleep" },
   ];
 
-  const handleAddToCart = () => {
-    openPreOrderModal(
-      buildPrimaryPreorderDraft(product, {
+  const handleAddToCart = async () => {
+    await addProductToCart(
+      buildPrimaryCartItem(product, {
         sizeValue: "20",
         quantity: 1,
         fallbackImage: bottleImg,
       }),
     );
+    openCheckout();
   };
 
   return (
@@ -58,7 +61,7 @@ const GlycomicsCard = () => {
       </div>
 
       <button type="button" className="cart-button" onClick={handleAddToCart}>
-        <span className="cart-icon">🛒</span> PRE-ORDER NOW
+        <span className="cart-icon">🛒</span> BUY NOW
       </button>
     </div>
   );

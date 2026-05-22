@@ -15,8 +15,8 @@ const TrackOrder = ({ isOpen, orderId, onToggle }) => {
       date: '15 Mar',
       status: 'shipped',
       steps: [
-        { label: 'Pre-order requested', completed: true },
-        { label: 'Pre-order confirmed', completed: true },
+        { label: 'Order placed', completed: true },
+        { label: 'Order confirmed', completed: true },
         { label: 'Processing', completed: true },
         { label: 'Shipped', completed: true },
         { label: 'Delivered', completed: false }
@@ -38,7 +38,7 @@ const TrackOrder = ({ isOpen, orderId, onToggle }) => {
           <input
             type="text"
             className="track-search-input"
-            placeholder="Pre-order ID (e.g. #1092) or registered phone number"
+            placeholder="Order ID (e.g. #1092) or registered phone number"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
@@ -46,7 +46,7 @@ const TrackOrder = ({ isOpen, orderId, onToggle }) => {
             className="check-status-btn"
             onClick={handleCheckStatus}
           >
-            Check pre-order status
+            Check order status
           </button>
         </div>
       </div>

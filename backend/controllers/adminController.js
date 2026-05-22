@@ -12,8 +12,6 @@ const ORDER_STATUSES = [
   "placed",
   "confirmed",
   "packed",
-  "preorder_requested",
-  "preorder_confirmed",
   "processing",
   "shipped",
   "out_for_delivery",
@@ -25,8 +23,6 @@ const PENDING_ORDER_STATUSES = [
   "placed",
   "confirmed",
   "packed",
-  "preorder_requested",
-  "preorder_confirmed",
   "processing",
   "shipped",
   "out_for_delivery",
@@ -672,7 +668,6 @@ export const createAdminProduct = async (req, res) => {
       tags: Array.isArray(req.body?.tags) ? req.body.tags : [],
       images,
       packSizes,
-      isPreorderEnabled: req.body?.isPreorderEnabled !== false,
       estimatedDispatchDays,
       isActive: req.body?.isActive !== false,
       updatedBy: req.userId,
@@ -688,7 +683,6 @@ export const createAdminProduct = async (req, res) => {
       metadata: {
         name: product.name,
         price: product.price,
-        isPreorderEnabled: product.isPreorderEnabled,
       },
     });
 
@@ -769,10 +763,6 @@ export const updateAdminProduct = async (req, res) => {
       product.images = [req.body.image.trim()];
     }
 
-    if (typeof req.body?.isPreorderEnabled === "boolean") {
-      product.isPreorderEnabled = req.body.isPreorderEnabled;
-    }
-
     if (req.body?.estimatedDispatchDays !== undefined) {
       const estimatedDispatchDays = Number.parseInt(
         req.body.estimatedDispatchDays,
@@ -802,7 +792,6 @@ export const updateAdminProduct = async (req, res) => {
         price: product.price,
         inventory: product.inventory,
         isActive: product.isActive,
-        isPreorderEnabled: product.isPreorderEnabled,
       },
     });
 

@@ -5,8 +5,8 @@ Beyond Bound is a React + Vite storefront with a Node/Express + MongoDB backend 
 - Google sign-in auth
 - Account profile and address management
 - Cart persistence per account
-- Pre-order lifecycle and order history
-- Admin dashboard (users, pre-orders, products, support, testimonials, analytics, audit logs)
+- Order lifecycle and order history
+- Admin dashboard (users, orders, products, support, testimonials, analytics, audit logs)
 
 ## Project Structure
 
@@ -94,6 +94,6 @@ npm run bootstrap:admin
 
 This creates or updates the account in `ADMIN_BOOTSTRAP_EMAIL` as role `admin`.
 
-## Pre-order Mode
+## Order Workflow
 
-The system is configured for pre-orders (not direct checkout payment flow). Frontend CTAs and backend status lifecycle use pre-order semantics.
+The system is configured for standard ecommerce orders with cart checkout and order status tracking.

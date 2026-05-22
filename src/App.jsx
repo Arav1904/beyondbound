@@ -18,7 +18,7 @@ import AccountModal from "./login/components/AccountModal.jsx";
 import CartDrawer from "./cart/CartDrawer.jsx";
 import bottleImg from "./home/bottle.jpeg";
 import { getCurrentSession } from "./services/cartApi";
-import PreOrderModal from "./preorder/PreOrderModal.jsx";
+import CheckoutModal from "./checkout/CheckoutModal.jsx";
 
 function App() {
   const activePage = useMenuStore((state) => state.activePage);
@@ -38,9 +38,7 @@ function App() {
   const logout = useMenuStore((state) => state.logout);
   const isCartOpen = useMenuStore((state) => state.isCartOpen);
   const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
-  const isPreOrderModalOpen = useMenuStore(
-    (state) => state.isPreOrderModalOpen,
-  );
+  const isCheckoutOpen = useMenuStore((state) => state.isCheckoutOpen);
   const cartTotalItems = useMenuStore((state) => state.cartTotalItems);
   const cartMessage = useMenuStore((state) => state.cartMessage);
   const clearCartMessage = useMenuStore((state) => state.clearCartMessage);
@@ -192,7 +190,7 @@ function App() {
       )}
 
       {isCartOpen ? <CartDrawer /> : null}
-      {isPreOrderModalOpen ? <PreOrderModal /> : null}
+      {isCheckoutOpen ? <CheckoutModal /> : null}
     </div>
   );
 }

@@ -120,15 +120,7 @@ export async function mergeGuestCart(token, items) {
 }
 
 export async function placeOrder(token, payload = {}) {
-  return apiRequest("/orders/preorder", {
-    method: "POST",
-    token,
-    body: payload,
-  });
-}
-
-export async function submitPreorderForm(token, payload = {}) {
-  return apiRequest("/orders/preorder-form", {
+  return apiRequest("/orders/place", {
     method: "POST",
     token,
     body: payload,

@@ -78,7 +78,7 @@ export async function submitSupportTicket(payload) {
 }
 
 export async function placeOrder(token, payload = {}) {
-  return apiRequest("/orders/preorder", {
+  return apiRequest("/orders/place", {
     method: "POST",
     token,
     body: payload,

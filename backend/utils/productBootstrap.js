@@ -15,12 +15,11 @@ const DEFAULT_PRIMARY_PRODUCT = {
     { value: "20", label: "20 Capsules", price: 600 },
     { value: "60", label: "60 Capsules", price: 1925 },
   ],
-  isPreorderEnabled: true,
   estimatedDispatchDays: 10,
   isActive: true,
 };
 
-const enableProductForPreorder = async (product) => {
+const ensureActiveProduct = async (product) => {
   if (!product) {
     return null;
   }
@@ -28,11 +27,6 @@ const enableProductForPreorder = async (product) => {
   let changed = false;
   if (product.isActive === false) {
     product.isActive = true;
-    changed = true;
-  }
-
-  if (product.isPreorderEnabled === false) {
-    product.isPreorderEnabled = true;
     changed = true;
   }
 
@@ -46,7 +40,6 @@ const enableProductForPreorder = async (product) => {
 export const ensurePrimaryProductExists = async () => {
   const activePrimary = await Product.findOne({
     isActive: true,
-    isPreorderEnabled: true,
     $or: [{ slug: "glycomics" }, { tags: { $in: ["primary", "featured"] } }],
   }).sort({ updatedAt: -1 });
 
@@ -54,20 +47,19 @@ export const ensurePrimaryProductExists = async () => {
     return activePrimary;
   }
 
-  const anyActivePreorder = await Product.findOne({
+  const anyActiveProduct = await Product.findOne({
     isActive: true,
-    isPreorderEnabled: true,
   }).sort({ updatedAt: -1 });
 
-  if (anyActivePreorder) {
-    return anyActivePreorder;
+  if (anyActiveProduct) {
+    return anyActiveProduct;
   }
 
   const existingBySlug = await Product.findOne({
     slug: DEFAULT_PRIMARY_PRODUCT.slug,
   });
   if (existingBySlug) {
-    return enableProductForPreorder(existingBySlug);
+    return ensureActiveProduct(existingBySlug);
   }
 
   try {
@@ -77,7 +69,7 @@ export const ensurePrimaryProductExists = async () => {
       const duplicate = await Product.findOne({
         slug: DEFAULT_PRIMARY_PRODUCT.slug,
       });
-      return enableProductForPreorder(duplicate);
+      return ensureActiveProduct(duplicate);
     }
 
     throw error;

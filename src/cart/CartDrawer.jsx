@@ -17,7 +17,7 @@ function CartDrawer() {
   const setCartSyncing = useMenuStore((state) => state.setCartSyncing);
   const setCartFromServer = useMenuStore((state) => state.setCartFromServer);
   const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
-  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
+  const openCheckout = useMenuStore((state) => state.openCheckout);
   const setAuthMode = useMenuStore((state) => state.setAuthMode);
   const setIsLoginModalOpen = useMenuStore(
     (state) => state.setIsLoginModalOpen,
@@ -89,9 +89,9 @@ function CartDrawer() {
     clearCartLocal();
   };
 
-  const handlePreOrder = () => {
+  const handleCheckout = () => {
     if (!isAuthenticated) {
-      setCartMessage("Please sign in to continue your pre-order.");
+      setCartMessage("Please sign in to continue checkout.");
       setAuthMode("login");
       setIsLoginModalOpen(true);
       return;
@@ -101,20 +101,8 @@ function CartDrawer() {
       return;
     }
 
-    const firstItem = cartItems[0];
-    openPreOrderModal(
-      firstItem
-        ? {
-            productId: firstItem.productId,
-            productName: firstItem.productName,
-            size: firstItem.size,
-            quantity: firstItem.quantity,
-            image: firstItem.image,
-            unitPrice: firstItem.price,
-          }
-        : null,
-    );
     setIsCartOpen(false);
+    openCheckout();
   };
 
   return (
@@ -234,10 +222,10 @@ function CartDrawer() {
           <button
             type="button"
             className="cart-checkout-btn"
-            onClick={handlePreOrder}
+            onClick={handleCheckout}
             disabled={cartItems.length === 0}
           >
-            Open Pre-Order Form
+            Checkout
           </button>
         </footer>
       </aside>

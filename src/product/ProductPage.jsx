@@ -4,16 +4,15 @@ import backImg from "../home/back.jpg";
 import sideImg from "../home/side.jpg";
 import labelImg from "../home/101.png";
 import usePrimaryProduct from "../hooks/usePrimaryProduct";
-import {
-  buildPrimaryPreorderDraft,
-  getPrimaryImage,
-} from "../services/productCatalog";
+import { buildPrimaryCartItem, getPrimaryImage } from "../services/productCatalog";
 import useMenuStore from "../useMenuStore";
+import useCartActions from "../hooks/useCartActions";
 
 import "./ProductPage.css";
 const ProductPage = () => {
-  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
+  const openCheckout = useMenuStore((state) => state.openCheckout);
   const { product, packSizes } = usePrimaryProduct();
+  const { addProductToCart } = useCartActions();
   const images = [frontImg, backImg, sideImg, labelImg];
   const [mainImage, setMainImage] = useState(frontImg);
   const [quantity, setQuantity] = useState(1);
@@ -51,14 +50,15 @@ const ProductPage = () => {
     setActiveAccordion(activeAccordion === index ? null : index);
   };
 
-  const handleAddToCart = () => {
-    openPreOrderModal(
-      buildPrimaryPreorderDraft(product, {
+  const handleBuyNow = async () => {
+    await addProductToCart(
+      buildPrimaryCartItem(product, {
         sizeValue: resolvedSelectedSize,
         quantity,
         fallbackImage: primaryImage,
       }),
     );
+    openCheckout();
   };
 
   return (
@@ -93,7 +93,7 @@ const ProductPage = () => {
         {/* Right: Product Details */}
         <div className="details-section">
           <div className="badge-row">
-            <span className="badge stock-badge">Pre-order Open</span>
+            <span className="badge stock-badge">Available Now</span>
           </div>
 
           <h1 className="product-title">{product.name}</h1>
@@ -143,14 +143,14 @@ const ProductPage = () => {
             <button
               type="button"
               className="add-to-cart-btn"
-              onClick={handleAddToCart}
+              onClick={handleBuyNow}
             >
-              Pre-order Now
+              Buy Now
             </button>
           </div>
 
           <a href="#" className="shipping-link">
-            Pre-order dispatch and return policy
+            Shipping and return policy
           </a>
 
           <div className="accordion-section" role="list">

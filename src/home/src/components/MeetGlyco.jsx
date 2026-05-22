@@ -5,14 +5,16 @@ import reviewImageTwo from "../../image 33.png";
 import reviewImageThree from "../../image 34.png";
 import usePrimaryProduct from "../../../hooks/usePrimaryProduct";
 import {
-  buildPrimaryPreorderDraft,
+  buildPrimaryCartItem,
   FALLBACK_PRIMARY_PRODUCT,
 } from "../../../services/productCatalog";
 import useMenuStore from "../../../useMenuStore";
+import useCartActions from "../../../hooks/useCartActions";
 
 function MeetGlycomics() {
-  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
+  const openCheckout = useMenuStore((state) => state.openCheckout);
   const { product, packSizes } = usePrimaryProduct();
+  const { addProductToCart } = useCartActions();
 
   const fallbackPrice20 = Number(
     FALLBACK_PRIMARY_PRODUCT.packSizes.find((size) => size.value === "20")
@@ -35,14 +37,15 @@ function MeetGlycomics() {
         )
       : 0;
 
-  const handleShopNow = () => {
-    openPreOrderModal(
-      buildPrimaryPreorderDraft(product, {
+  const handleShopNow = async () => {
+    await addProductToCart(
+      buildPrimaryCartItem(product, {
         sizeValue: "20",
         quantity: 1,
         fallbackImage: bottleImg,
       }),
     );
+    openCheckout();
   };
 
   return (
@@ -119,7 +122,7 @@ function MeetGlycomics() {
             </div>
 
             <button type="button" className="glyco-btn" onClick={handleShopNow}>
-              <span className="glyco-btn-label">Pre-order now →</span>
+              <span className="glyco-btn-label">Buy now {"->"}</span>
             </button>
 
             <p className="glyco-note">

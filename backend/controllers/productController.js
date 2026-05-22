@@ -69,7 +69,6 @@ const toPublicProduct = (product) => {
     images: product.images,
     tags: product.tags,
     packSizes,
-    isPreorderEnabled: product.isPreorderEnabled !== false,
     estimatedDispatchDays: Number(product.estimatedDispatchDays || 0),
     isInStock: Number(product.inventory || 0) > 0,
     updatedAt: product.updatedAt,
@@ -81,11 +80,6 @@ export const getPublicProducts = async (req, res) => {
     const { page, limit, skip } = parsePagination(req.query);
     const category = String(req.query.category || "").trim();
     const search = String(req.query.search || "").trim();
-    const preorderOnly =
-      String(req.query.preorderOnly || "")
-        .trim()
-        .toLowerCase() === "true";
-
     if (!category && !search) {
       await ensurePrimaryProductExists();
     }
@@ -94,10 +88,6 @@ export const getPublicProducts = async (req, res) => {
 
     if (category) {
       filters.category = category;
-    }
-
-    if (preorderOnly) {
-      filters.isPreorderEnabled = true;
     }
 
     if (search) {
@@ -144,21 +134,19 @@ export const getPrimaryProduct = async (_req, res) => {
 
     let product = await Product.findOne({
       isActive: true,
-      isPreorderEnabled: true,
       $or: [{ slug: "glycomics" }, { tags: { $in: ["primary", "featured"] } }],
     }).sort({ updatedAt: -1 });
 
     if (!product) {
       product = await Product.findOne({
         isActive: true,
-        isPreorderEnabled: true,
       }).sort({ updatedAt: -1 });
     }
 
     if (!product) {
       return res.status(404).json({
         success: false,
-        error: "No active pre-order products found",
+        error: "No active products found",
       });
     }
 

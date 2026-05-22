@@ -5,17 +5,16 @@ import sideImg from "../assets/side.jpg";
 import labelImg from "../assets/101.png";
 import { ShieldIcon, ArrowRight } from "lucide-react";
 import usePrimaryProduct from "../../../hooks/usePrimaryProduct";
-import {
-  buildPrimaryPreorderDraft,
-  getPrimaryImage,
-} from "../../../services/productCatalog";
+import { buildPrimaryCartItem, getPrimaryImage } from "../../../services/productCatalog";
 import useMenuStore from "../../../useMenuStore";
+import useCartActions from "../../../hooks/useCartActions";
 
 import "../css/productDetailSection.css";
 
 const ProductDetailSection = () => {
-  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
+  const openCheckout = useMenuStore((state) => state.openCheckout);
   const { product, packSizes } = usePrimaryProduct();
+  const { addProductToCart } = useCartActions();
   const images = [frontImg, backImg, sideImg, labelImg];
   const [mainImage, setMainImage] = useState(frontImg);
   const [quantity, setQuantity] = useState(1);
@@ -53,14 +52,15 @@ const ProductDetailSection = () => {
     setActiveAccordion(activeAccordion === index ? null : index);
   };
 
-  const handleShopNow = () => {
-    openPreOrderModal(
-      buildPrimaryPreorderDraft(product, {
+  const handleShopNow = async () => {
+    await addProductToCart(
+      buildPrimaryCartItem(product, {
         sizeValue: resolvedSelectedSize,
         quantity,
         fallbackImage: primaryImage,
       }),
     );
+    openCheckout();
   };
 
   return (
@@ -95,7 +95,7 @@ const ProductDetailSection = () => {
         {/* Right: Product Details */}
         <div className="details-section">
           <div className="badge-row">
-            <span className="badge stock-badge">Pre-order Open</span>
+            <span className="badge stock-badge">Available Now</span>
             <span className="badge refund-badge">
               <ShieldIcon size={"16px"} /> 100% Refund Guarantee
             </span>
@@ -150,12 +150,12 @@ const ProductDetailSection = () => {
               className="add-to-cart-btn"
               onClick={handleShopNow}
             >
-              PRE-ORDER NOW <ArrowRight />
+              BUY NOW <ArrowRight />
             </button>
           </div>
 
           <a href="#" className="shipping-link">
-            Pre-order dispatch and return policy
+            Shipping and return policy
           </a>
 
           <div className="accordion-section" role="list">

@@ -4,13 +4,15 @@ import TrustStandards from "./trust";
 import { ArrowRight, Star } from "lucide-react";
 import bottleImg from "../home/bottles.png";
 import usePrimaryProduct from "../hooks/usePrimaryProduct";
-import { buildPrimaryPreorderDraft } from "../services/productCatalog";
+import { buildPrimaryCartItem } from "../services/productCatalog";
 import useMenuStore from "../useMenuStore";
+import useCartActions from "../hooks/useCartActions";
 
 const LandingDetails = () => {
   const [openIndex, setOpenIndex] = useState(null);
-  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
+  const openCheckout = useMenuStore((state) => state.openCheckout);
   const { product } = usePrimaryProduct();
+  const { addProductToCart } = useCartActions();
 
   const testimonials = [
     {
@@ -50,14 +52,15 @@ const LandingDetails = () => {
     },
   ];
 
-  const handleShopNow = () => {
-    openPreOrderModal(
-      buildPrimaryPreorderDraft(product, {
+  const handleShopNow = async () => {
+    await addProductToCart(
+      buildPrimaryCartItem(product, {
         sizeValue: "20",
         quantity: 1,
         fallbackImage: bottleImg,
       }),
     );
+    openCheckout();
   };
 
   return (
@@ -118,7 +121,7 @@ const LandingDetails = () => {
             <br /> Should Know About Glycomics
           </h2>
           <button type="button" className="cart-btn-ld" onClick={handleShopNow}>
-            Pre-order Now <ArrowRight />
+            Buy Now <ArrowRight />
           </button>
         </div>
         <div className="faq-right-ld">

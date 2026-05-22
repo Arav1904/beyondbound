@@ -102,7 +102,7 @@ mongoose
   .connect(
     process.env.MONGO_URI ||
       process.env.MONGODB_URI ||
-      "mongodb://localhost:27017/beyondbound_preorders",
+      "mongodb://localhost:27017/beyond-bound",
   )
   .then(() => {
     mongoConnected = true;
@@ -154,8 +154,6 @@ app.get("/", (req, res) => {
       authMe: "/api/auth/me",
       cart: "/api/cart",
       orders: "/api/orders",
-      preorderForm: "/api/orders/preorder-form",
-      preorderFromCart: "/api/orders/preorder",
       support: "/api/support",
       admin: "/api/admin",
       products: "/api/products",

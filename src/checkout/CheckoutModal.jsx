@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import useMenuStore from "../useMenuStore";
-import usePrimaryProduct from "../hooks/usePrimaryProduct";
-import { buildPrimaryPreorderDraft } from "../services/productCatalog";
-import { submitPreorderForm } from "../services/cartApi";
-import "./PreOrderModal.css";
-
-const SIZE_OPTIONS = ["20", "60"];
+import { placeOrder } from "../services/cartApi";
+import "./CheckoutModal.css";
 
 const emptyAddress = () => ({
   line1: "",
@@ -25,61 +21,36 @@ const toPositiveInt = (value, fallback = 1) => {
   return parsed;
 };
 
-const normalizeSizeValue = (value) => {
-  const normalized = String(value || "").trim();
-  return SIZE_OPTIONS.includes(normalized) ? normalized : SIZE_OPTIONS[0];
-};
-
-function PreOrderModal() {
+function CheckoutModal() {
   const authToken = useMenuStore((state) => state.authToken);
   const signedInUser = useMenuStore((state) => state.signedInUser);
   const accountProfile = useMenuStore((state) => state.accountProfile);
-  const preOrderDraft = useMenuStore((state) => state.preOrderDraft);
-  const closePreOrderModal = useMenuStore((state) => state.closePreOrderModal);
+  const cartItems = useMenuStore((state) => state.cartItems);
+  const cartSubtotal = useMenuStore((state) => state.cartSubtotal);
+  const closeCheckout = useMenuStore((state) => state.closeCheckout);
   const setAuthMode = useMenuStore((state) => state.setAuthMode);
   const setIsLoginModalOpen = useMenuStore(
     (state) => state.setIsLoginModalOpen,
   );
   const setCartMessage = useMenuStore((state) => state.setCartMessage);
+  const clearCartLocal = useMenuStore((state) => state.clearCartLocal);
+  const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
 
-  const { product } = usePrimaryProduct();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    productId: "",
-    productSlug: "",
-    productName: "",
-    size: SIZE_OPTIONS[0],
-    quantity: 1,
-    notes: "",
     name: "",
     email: "",
     phone: "",
     address: emptyAddress(),
+    notes: "",
   });
 
-  const fallbackDraft = useMemo(
-    () =>
-      buildPrimaryPreorderDraft(product, {
-        sizeValue: SIZE_OPTIONS[0],
-        quantity: 1,
-      }),
-    [product],
+  const isAuthenticated = Boolean(authToken && signedInUser);
+  const cartItemCount = useMemo(
+    () => cartItems.reduce((sum, item) => sum + toPositiveInt(item.quantity, 1), 0),
+    [cartItems],
   );
-
-  const effectiveDraft = useMemo(() => {
-    if (
-      preOrderDraft &&
-      (preOrderDraft.productId || preOrderDraft.productSlug)
-    ) {
-      return {
-        ...fallbackDraft,
-        ...preOrderDraft,
-      };
-    }
-
-    return fallbackDraft;
-  }, [fallbackDraft, preOrderDraft]);
 
   useEffect(() => {
     const nextAddress = {
@@ -89,13 +60,6 @@ function PreOrderModal() {
 
     setFormData((previous) => ({
       ...previous,
-      productId: String(
-        effectiveDraft.productId || effectiveDraft.productSlug || "",
-      ),
-      productSlug: String(effectiveDraft.productSlug || ""),
-      productName: String(effectiveDraft.productName || "Glycomics"),
-      size: normalizeSizeValue(effectiveDraft.size),
-      quantity: toPositiveInt(effectiveDraft.quantity, 1),
       name: String(accountProfile?.name || signedInUser?.name || ""),
       email: String(accountProfile?.email || signedInUser?.email || ""),
       phone: String(accountProfile?.phone || signedInUser?.phone || ""),
@@ -105,9 +69,7 @@ function PreOrderModal() {
     }));
 
     setError("");
-  }, [accountProfile, effectiveDraft, signedInUser]);
-
-  const isAuthenticated = Boolean(authToken && signedInUser);
+  }, [accountProfile, signedInUser]);
 
   const updateField = (field, value) => {
     setFormData((previous) => ({
@@ -127,7 +89,7 @@ function PreOrderModal() {
   };
 
   const openLogin = () => {
-    closePreOrderModal();
+    closeCheckout();
     setAuthMode("login");
     setIsLoginModalOpen(true);
   };
@@ -135,6 +97,11 @@ function PreOrderModal() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
+
+    if (cartItems.length === 0) {
+      setError("Your cart is empty. Add items before checking out.");
+      return;
+    }
 
     const requiredFields = [
       formData.name,
@@ -144,36 +111,17 @@ function PreOrderModal() {
       formData.address.city,
       formData.address.state,
       formData.address.postalCode,
-      formData.productId,
     ].map((value) => String(value || "").trim());
 
     if (requiredFields.some((value) => value.length === 0)) {
-      setError("Please fill all required fields before submitting.");
-      return;
-    }
-
-    const normalizedSize = normalizeSizeValue(formData.size);
-    if (normalizedSize !== String(formData.size || "").trim()) {
-      setError("Please choose a valid size (20 or 60).");
+      setError("Please fill all required fields before placing your order.");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const response = await submitPreorderForm(authToken, {
-        productId: formData.productId,
-        productSlug: formData.productSlug,
-        productName: formData.productName,
-        productIdentifier:
-          String(formData.productSlug || "").trim() ||
-          String(formData.productId || "").trim() ||
-          String(formData.productName || "").trim(),
-        size: normalizedSize,
-        quantity: toPositiveInt(formData.quantity, 1),
-        notes: formData.notes,
-        name: formData.name,
-        email: formData.email,
+      const response = await placeOrder(authToken, {
         phone: formData.phone,
         address: {
           line1: formData.address.line1,
@@ -183,88 +131,68 @@ function PreOrderModal() {
           postalCode: formData.address.postalCode,
           country: formData.address.country,
         },
+        notes: formData.notes,
       });
 
       const orderNumber =
         response?.data?.orderNumber ||
         response?.orderNumber ||
         response?.data?.id ||
-        "requested";
-      setCartMessage(`Pre-order ${orderNumber} submitted successfully.`);
-      closePreOrderModal();
+        "placed";
+
+      clearCartLocal();
+      setCartMessage(`Order ${orderNumber} placed successfully.`);
+      setIsCartOpen(false);
+      closeCheckout();
     } catch (submitError) {
-      setError(submitError.message || "Could not submit pre-order right now.");
+      setError(submitError.message || "Could not place order right now.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="preorder-modal-overlay" onClick={closePreOrderModal}>
+    <div className="checkout-modal-overlay" onClick={closeCheckout}>
       <div
-        className="preorder-modal-card"
+        className="checkout-modal-card"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="preorder-modal-header">
-          <h2>Pre-Order Form</h2>
+        <div className="checkout-modal-header">
+          <h2>Checkout</h2>
           <button
             type="button"
-            className="preorder-close-btn"
-            onClick={closePreOrderModal}
+            className="checkout-close-btn"
+            onClick={closeCheckout}
           >
             x
           </button>
         </div>
 
         {!isAuthenticated ? (
-          <div className="preorder-auth-state">
-            <p>Please sign in to submit your pre-order.</p>
+          <div className="checkout-auth-state">
+            <p>Please sign in to complete your order.</p>
             <button
               type="button"
-              className="preorder-submit-btn"
+              className="checkout-submit-btn"
               onClick={openLogin}
             >
               Sign In to Continue
             </button>
           </div>
         ) : (
-          <form className="preorder-form" onSubmit={handleSubmit}>
-            <div className="preorder-grid preorder-grid-two">
-              <label>
-                Product
-                <input type="text" value={formData.productName} readOnly />
-              </label>
-              <label>
-                Size
-                <select
-                  value={formData.size}
-                  onChange={(event) => updateField("size", event.target.value)}
-                  required
-                >
-                  {SIZE_OPTIONS.map((sizeOption) => (
-                    <option key={sizeOption} value={sizeOption}>
-                      {sizeOption}
-                    </option>
-                  ))}
-                </select>
-              </label>
+          <form className="checkout-form" onSubmit={handleSubmit}>
+            <div className="checkout-summary">
+              <div className="checkout-summary-row">
+                <span>Items</span>
+                <span>{cartItemCount}</span>
+              </div>
+              <div className="checkout-summary-row">
+                <span>Subtotal</span>
+                <span>₹{cartSubtotal.toFixed(2)}</span>
+              </div>
             </div>
 
-            <label>
-              Quantity
-              <input
-                type="number"
-                min="1"
-                max="20"
-                value={formData.quantity}
-                onChange={(event) =>
-                  updateField("quantity", event.target.value)
-                }
-                required
-              />
-            </label>
-
-            <div className="preorder-grid preorder-grid-two">
+            <div className="checkout-grid checkout-grid-two">
               <label>
                 Full Name
                 <input
@@ -314,15 +242,13 @@ function PreOrderModal() {
               />
             </label>
 
-            <div className="preorder-grid preorder-grid-three">
+            <div className="checkout-grid checkout-grid-three">
               <label>
                 City
                 <input
                   type="text"
                   value={formData.address.city}
-                  onChange={(event) =>
-                    updateAddress("city", event.target.value)
-                  }
+                  onChange={(event) => updateAddress("city", event.target.value)}
                   required
                 />
               </label>
@@ -331,9 +257,7 @@ function PreOrderModal() {
                 <input
                   type="text"
                   value={formData.address.state}
-                  onChange={(event) =>
-                    updateAddress("state", event.target.value)
-                  }
+                  onChange={(event) => updateAddress("state", event.target.value)}
                   required
                 />
               </label>
@@ -360,14 +284,14 @@ function PreOrderModal() {
               />
             </label>
 
-            {error ? <p className="preorder-error">{error}</p> : null}
+            {error ? <p className="checkout-error">{error}</p> : null}
 
             <button
               type="submit"
-              className="preorder-submit-btn"
+              className="checkout-submit-btn"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Submitting..." : "Submit Pre-Order"}
+              {isSubmitting ? "Placing Order..." : "Place Order"}
             </button>
           </form>
         )}
@@ -376,4 +300,4 @@ function PreOrderModal() {
   );
 }
 
-export default PreOrderModal;
+export default CheckoutModal;

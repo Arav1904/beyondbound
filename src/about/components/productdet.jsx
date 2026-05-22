@@ -3,12 +3,14 @@ import "../css/productdet.css";
 import withGlycoImg from "../assets/withglyco.jpeg";
 import withoutGlycoImg from "../assets/withoutglyco.jpeg";
 import usePrimaryProduct from "../../hooks/usePrimaryProduct";
-import { buildPrimaryPreorderDraft } from "../../services/productCatalog";
+import { buildPrimaryCartItem } from "../../services/productCatalog";
 import useMenuStore from "../../useMenuStore";
+import useCartActions from "../../hooks/useCartActions";
 
 export default function ProductDet() {
-  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
+  const openCheckout = useMenuStore((state) => state.openCheckout);
   const { product } = usePrimaryProduct();
+  const { addProductToCart } = useCartActions();
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
@@ -58,14 +60,15 @@ export default function ProductDet() {
     }
   };
 
-  const handleAddToCart = () => {
-    openPreOrderModal(
-      buildPrimaryPreorderDraft(product, {
+  const handleAddToCart = async () => {
+    await addProductToCart(
+      buildPrimaryCartItem(product, {
         sizeValue: "20",
         quantity: 1,
         fallbackImage: withGlycoImg,
       }),
     );
+    openCheckout();
   };
 
   return (
@@ -201,7 +204,7 @@ export default function ProductDet() {
           className="add-to-cart-btn"
           onClick={handleAddToCart}
         >
-          PRE-ORDER NOW
+          BUY NOW
         </button>
       </div>
     </div>

@@ -1,6 +1,6 @@
 # Beyond Bound Backend
 
-Express + MongoDB API for auth, cart, pre-orders, products, support, testimonials, admin dashboard, and audit logs.
+Express + MongoDB API for auth, cart, orders, products, support, testimonials, admin dashboard, and audit logs.
 
 ## Quick Start
 
@@ -89,9 +89,8 @@ Authenticated user:
 - `DELETE /api/cart/items/:itemId`
 - `DELETE /api/cart`
 - `POST /api/cart/merge`
-- `POST /api/orders/preorder-form`
-- `POST /api/orders/preorder` (preorder from cart)
-- `POST /api/orders/place` (legacy alias)
+- `POST /api/orders` (place order from cart)
+- `POST /api/orders/place` (alias)
 - `GET /api/orders/my`
 
 Admin (`requireAdmin` + allowlist):
@@ -123,16 +122,15 @@ Admin (`requireAdmin` + allowlist):
 
 ## Notes
 
-- Order lifecycle now runs in pre-order mode (`preorder_requested`, `preorder_confirmed`, etc.)
-- Legacy order statuses (`placed`, `confirmed`, `packed`) are still accepted for compatibility
-- Audit logging is enabled for auth, support, testimonials, pre-order creation, and admin mutations
+- Order lifecycle uses standard purchase statuses (`placed`, `confirmed`, `packed`, etc.)
+- Audit logging is enabled for auth, support, testimonials, order creation, and admin mutations
 
 ## Automated Confirmation Webhook
 
-If `ORDER_CONFIRMATION_WEBHOOK_URL` is configured, the backend will POST a webhook payload immediately after successful pre-order creation from:
+If `ORDER_CONFIRMATION_WEBHOOK_URL` is configured, the backend will POST a webhook payload immediately after successful order creation from:
 
-- `POST /api/orders/preorder`
-- `POST /api/orders/preorder-form`
+- `POST /api/orders`
+- `POST /api/orders/place`
 
 The payload includes fields designed for no-code mapping, such as:
 

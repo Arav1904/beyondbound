@@ -58,8 +58,6 @@ const statusHistorySchema = new mongoose.Schema(
         "placed",
         "confirmed",
         "packed",
-        "preorder_requested",
-        "preorder_confirmed",
         "processing",
         "shipped",
         "out_for_delivery",
@@ -151,8 +149,6 @@ const orderSchema = new mongoose.Schema(
         "placed",
         "confirmed",
         "packed",
-        "preorder_requested",
-        "preorder_confirmed",
         "processing",
         "shipped",
         "out_for_delivery",
@@ -160,7 +156,7 @@ const orderSchema = new mongoose.Schema(
         "cancelled",
         "refunded",
       ],
-      default: "preorder_requested",
+      default: "placed",
       index: true,
     },
     paymentStatus: {
@@ -220,7 +216,7 @@ orderSchema.pre("save", function syncOrderTotals(next) {
   if (this.isNew && this.statusHistory.length === 0) {
     this.statusHistory.push({
       status: this.status,
-      note: "Pre-order request created",
+      note: "Order placed",
       at: new Date(),
     });
   }

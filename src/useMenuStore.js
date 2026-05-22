@@ -147,8 +147,7 @@ const useMenuStore = create(
       cartTotalItems: 0,
       cartSubtotal: 0,
       isCartOpen: false,
-      isPreOrderModalOpen: false,
-      preOrderDraft: null,
+      isCheckoutOpen: false,
       isCartSyncing: false,
       cartMessage: "",
 
@@ -321,19 +320,13 @@ const useMenuStore = create(
           cartSubtotal: 0,
         }),
       setIsCartOpen: (isOpen) => set({ isCartOpen: isOpen }),
-      openPreOrderModal: (draft = null) =>
+      openCheckout: () =>
         set({
-          isPreOrderModalOpen: true,
-          preOrderDraft: draft && typeof draft === "object" ? draft : null,
+          isCheckoutOpen: true,
         }),
-      closePreOrderModal: () =>
+      closeCheckout: () =>
         set({
-          isPreOrderModalOpen: false,
-          preOrderDraft: null,
-        }),
-      setPreOrderDraft: (draft = null) =>
-        set({
-          preOrderDraft: draft && typeof draft === "object" ? draft : null,
+          isCheckoutOpen: false,
         }),
       setCartSyncing: (isSyncing) => set({ isCartSyncing: isSyncing }),
       setCartMessage: (message) => set({ cartMessage: message }),

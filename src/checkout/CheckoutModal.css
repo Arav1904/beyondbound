@@ -1,4 +1,4 @@
-.preorder-modal-overlay {
+.checkout-modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.55);
@@ -9,8 +9,8 @@
   padding: 16px;
 }
 
-.preorder-modal-card {
-  width: min(680px, 100%);
+.checkout-modal-card {
+  width: min(720px, 100%);
   max-height: 92vh;
   overflow: auto;
   background: #ffffff;
@@ -19,20 +19,20 @@
   padding: 18px;
 }
 
-.preorder-modal-header {
+.checkout-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
 }
 
-.preorder-modal-header h2 {
+.checkout-modal-header h2 {
   margin: 0;
   font-size: 1.25rem;
   color: #0f172a;
 }
 
-.preorder-close-btn {
+.checkout-close-btn {
   border: none;
   background: #f1f5f9;
   color: #0f172a;
@@ -42,21 +42,20 @@
   cursor: pointer;
 }
 
-.preorder-form {
+.checkout-form {
   display: grid;
   gap: 10px;
 }
 
-.preorder-form label {
+.checkout-form label {
   display: grid;
   gap: 6px;
   font-size: 0.88rem;
   color: #334155;
 }
 
-.preorder-form input,
-.preorder-form select,
-.preorder-form textarea {
+.checkout-form input,
+.checkout-form textarea {
   width: 100%;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
@@ -66,20 +65,20 @@
   background: #ffffff;
 }
 
-.preorder-grid {
+.checkout-grid {
   display: grid;
   gap: 10px;
 }
 
-.preorder-grid-two {
+.checkout-grid-two {
   grid-template-columns: 1fr 1fr;
 }
 
-.preorder-grid-three {
+.checkout-grid-three {
   grid-template-columns: 1fr 1fr 1fr;
 }
 
-.preorder-submit-btn {
+.checkout-submit-btn {
   border: none;
   background: #0f766e;
   color: #ffffff;
@@ -90,30 +89,47 @@
   cursor: pointer;
 }
 
-.preorder-submit-btn:disabled {
+.checkout-submit-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-.preorder-error {
+.checkout-error {
   margin: 0;
   color: #b91c1c;
   font-size: 0.84rem;
 }
 
-.preorder-auth-state {
+.checkout-auth-state {
   display: grid;
   gap: 12px;
 }
 
-.preorder-auth-state p {
+.checkout-auth-state p {
   margin: 0;
   color: #334155;
 }
 
+.checkout-summary {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 6px;
+  background: #f8fafc;
+}
+
+.checkout-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #0f172a;
+}
+
 @media (max-width: 640px) {
-  .preorder-grid-two,
-  .preorder-grid-three {
+  .checkout-grid-two,
+  .checkout-grid-three {
     grid-template-columns: 1fr;
   }
 }

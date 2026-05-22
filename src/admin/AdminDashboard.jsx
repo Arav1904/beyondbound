@@ -35,8 +35,6 @@ const ORDER_STATUSES = [
   "placed",
   "confirmed",
   "packed",
-  "preorder_requested",
-  "preorder_confirmed",
   "processing",
   "shipped",
   "out_for_delivery",
@@ -128,7 +126,6 @@ function AdminDashboard() {
     inventory: "",
     image: "",
     description: "",
-    isPreorderEnabled: true,
     estimatedDispatchDays: 10,
   });
 
@@ -438,7 +435,6 @@ function AdminDashboard() {
         inventory: Number(productDraft.inventory),
         image: productDraft.image,
         description: productDraft.description,
-        isPreorderEnabled: productDraft.isPreorderEnabled,
         estimatedDispatchDays: Number(productDraft.estimatedDispatchDays),
       });
       setProductDraft({
@@ -448,7 +444,6 @@ function AdminDashboard() {
         inventory: "",
         image: "",
         description: "",
-        isPreorderEnabled: true,
         estimatedDispatchDays: 10,
       });
       showSuccess("Product created");
@@ -469,10 +464,6 @@ function AdminDashboard() {
         inventory: draft.inventory ?? product.inventory,
         estimatedDispatchDays:
           draft.estimatedDispatchDays ?? product.estimatedDispatchDays,
-        isPreorderEnabled:
-          typeof draft.isPreorderEnabled === "boolean"
-            ? draft.isPreorderEnabled
-            : product.isPreorderEnabled,
         isActive:
           typeof draft.isActive === "boolean"
             ? draft.isActive
@@ -1147,19 +1138,6 @@ function AdminDashboard() {
               }))
             }
           />
-          <label className="admin-inline-checkbox">
-            <input
-              type="checkbox"
-              checked={Boolean(productDraft.isPreorderEnabled)}
-              onChange={(event) =>
-                setProductDraft((prev) => ({
-                  ...prev,
-                  isPreorderEnabled: event.target.checked,
-                }))
-              }
-            />
-            Pre-order enabled
-          </label>
         </div>
         <button type="submit" disabled={saving}>
           Create Product
@@ -1175,7 +1153,6 @@ function AdminDashboard() {
               <th>Price</th>
               <th>Inventory</th>
               <th>Dispatch Days</th>
-              <th>Pre-order</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -1229,25 +1206,6 @@ function AdminDashboard() {
                         )
                       }
                     />
-                  </td>
-                  <td>
-                    <select
-                      value={
-                        typeof draft.isPreorderEnabled === "boolean"
-                          ? String(draft.isPreorderEnabled)
-                          : String(product.isPreorderEnabled !== false)
-                      }
-                      onChange={(event) =>
-                        applyRowDraft(
-                          product._id,
-                          "isPreorderEnabled",
-                          event.target.value === "true",
-                        )
-                      }
-                    >
-                      <option value="true">enabled</option>
-                      <option value="false">disabled</option>
-                    </select>
                   </td>
                   <td>
                     <select
@@ -1454,7 +1412,7 @@ function AdminDashboard() {
           <p className="admin-eyebrow">Control Center</p>
           <h1>Beyond Bound Admin</h1>
           <p className="admin-subline">
-            Manage users, pre-orders, testimonials, products, support, audit
+            Manage users, orders, testimonials, products, support, audit
             logs, and analytics in one place.
           </p>
         </div>

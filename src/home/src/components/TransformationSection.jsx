@@ -2,8 +2,9 @@ import "../css/transformationSection.css";
 
 import transformationImage from "../../docglycos1.jpeg";
 import usePrimaryProduct from "../../../hooks/usePrimaryProduct";
-import { buildPrimaryPreorderDraft } from "../../../services/productCatalog";
+import { buildPrimaryCartItem } from "../../../services/productCatalog";
 import useMenuStore from "../../../useMenuStore";
+import useCartActions from "../../../hooks/useCartActions";
 
 const metrics = [
   {
@@ -24,18 +25,20 @@ const metrics = [
 ];
 
 function TransformationSection() {
-  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
+  const openCheckout = useMenuStore((state) => state.openCheckout);
   const setActivePage = useMenuStore((state) => state.setActivePage);
   const { product } = usePrimaryProduct();
+  const { addProductToCart } = useCartActions();
 
-  const handleShopNow = () => {
-    openPreOrderModal(
-      buildPrimaryPreorderDraft(product, {
+  const handleShopNow = async () => {
+    await addProductToCart(
+      buildPrimaryCartItem(product, {
         sizeValue: "20",
         quantity: 1,
         fallbackImage: transformationImage,
       }),
     );
+    openCheckout();
   };
 
   const handleLearnMore = () => {
@@ -55,8 +58,7 @@ function TransformationSection() {
 
             <p className="transform-copy">
               Join thousands taking control of their glucose health with
-              pharmaceutical-grade berberine. Pre-order today and reserve the
-              next dispatch window.
+              pharmaceutical-grade berberine. Order today for fast dispatch.
             </p>
 
             <div className="transform-actions">
@@ -65,7 +67,7 @@ function TransformationSection() {
                 className="transform-btn transform-btn--primary"
                 onClick={handleShopNow}
               >
-                Pre-order Now
+                Buy Now
               </button>
               <button
                 type="button"

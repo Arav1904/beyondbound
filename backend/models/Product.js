@@ -90,10 +90,6 @@ const productSchema = new mongoose.Schema(
         { value: "20", label: "20 Capsules", price: 600 },
       ],
     },
-    isPreorderEnabled: {
-      type: Boolean,
-      default: true,
-    },
     estimatedDispatchDays: {
       type: Number,
       default: 10,

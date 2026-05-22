@@ -11,7 +11,6 @@ export const FALLBACK_PRIMARY_PRODUCT = {
     { value: "20", label: "20 Capsules", price: 600 },
     { value: "60", label: "60 Capsules", price: 1599 },
   ],
-  isPreorderEnabled: true,
   estimatedDispatchDays: 10,
 };
 
@@ -74,7 +73,6 @@ export const normalizePrimaryProduct = (product) => {
     images: Array.isArray(product.images)
       ? product.images.filter(Boolean)
       : FALLBACK_PRIMARY_PRODUCT.images,
-    isPreorderEnabled: product.isPreorderEnabled !== false,
     estimatedDispatchDays: toNonNegativeNumber(
       product.estimatedDispatchDays,
       FALLBACK_PRIMARY_PRODUCT.estimatedDispatchDays,
@@ -118,25 +116,3 @@ export const buildPrimaryCartItem = (
   };
 };
 
-export const buildPrimaryPreorderDraft = (
-  product,
-  { sizeValue = "20", quantity = 1, fallbackImage = "" } = {},
-) => {
-  const normalized = normalizePrimaryProduct(product);
-  const sizes = normalizePackSizes(normalized);
-  const selectedSize =
-    sizes.find((size) => size.value === String(sizeValue)) ||
-    sizes[sizes.length - 1] ||
-    FALLBACK_PRIMARY_PRODUCT.packSizes[1];
-
-  return {
-    productId: String(normalized.id || normalized.slug || "glycomics"),
-    productSlug: String(normalized.slug || "glycomics"),
-    productName: String(normalized.name || "Glycomics"),
-    image: getPrimaryImage(normalized, fallbackImage),
-    size: String(selectedSize.value || ""),
-    sizeLabel: String(selectedSize.label || ""),
-    quantity: toPositiveInt(quantity, 1),
-    unitPrice: toNonNegativeNumber(selectedSize.price, normalized.price),
-  };
-};

@@ -76,7 +76,7 @@ const toPayload = (order, context = {}) => {
   const address = customer.address || {};
 
   return {
-    event_name: "order.preorder_requested",
+    event_name: "order.placed",
     source: ORDER_CONFIRMATION_WEBHOOK_SOURCE,
     source_endpoint: toSafeString(context.sourceEndpoint),
     flow: toSafeString(context.flow),
@@ -107,7 +107,7 @@ const toPayload = (order, context = {}) => {
   };
 };
 
-export const notifyPreorderConfirmationWebhook = async (order, context = {}) => {
+export const notifyOrderPlacedWebhook = async (order, context = {}) => {
   if (!ORDER_CONFIRMATION_WEBHOOK_URL) {
     return {
       sent: false,

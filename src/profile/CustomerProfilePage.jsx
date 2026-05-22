@@ -15,9 +15,7 @@ const TIMELINE_STAGES = [
 
 const STATUS_TO_STAGE = {
   placed: "placed",
-  preorder_requested: "placed",
   confirmed: "confirmed",
-  preorder_confirmed: "confirmed",
   packed: "packed",
   processing: "packed",
   shipped: "shipped",

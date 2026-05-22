@@ -2,26 +2,29 @@ import React from "react";
 import "./CTA.css";
 import useMenuStore from "../useMenuStore";
 import usePrimaryProduct from "../hooks/usePrimaryProduct";
-import { buildPrimaryPreorderDraft } from "../services/productCatalog";
+import { buildPrimaryCartItem } from "../services/productCatalog";
+import useCartActions from "../hooks/useCartActions";
 
 const CTA = () => {
-  const openPreOrderModal = useMenuStore((state) => state.openPreOrderModal);
+  const openCheckout = useMenuStore((state) => state.openCheckout);
   const { product } = usePrimaryProduct();
+  const { addProductToCart } = useCartActions();
 
   const benefits = [
     "100% refund guarantee",
-    "Priority pre-order dispatch",
-    "Secure reservation",
+    "Priority dispatch",
+    "Secure checkout",
     "AYUSH certified",
   ];
 
-  const handlePreOrder = () => {
-    openPreOrderModal(
-      buildPrimaryPreorderDraft(product, {
+  const handleBuyNow = async () => {
+    await addProductToCart(
+      buildPrimaryCartItem(product, {
         sizeValue: "20",
         quantity: 1,
       }),
     );
+    openCheckout();
   };
 
   return (
@@ -42,8 +45,8 @@ const CTA = () => {
           </p>
 
           <div className="cta-buttons">
-            <button className="cta-btn primary" onClick={handlePreOrder}>
-              Pre-order Glycomics
+            <button className="cta-btn primary" onClick={handleBuyNow}>
+              Buy Glycomics
             </button>
             <button className="cta-btn secondary">
               Book a free consultation

@@ -25,7 +25,7 @@ const metrics = [
 ];
 
 function TransformationSection() {
-  const openCheckout = useMenuStore((state) => state.openCheckout);
+  const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
   const setActivePage = useMenuStore((state) => state.setActivePage);
   const { product } = usePrimaryProduct();
   const { addProductToCart } = useCartActions();
@@ -38,7 +38,7 @@ function TransformationSection() {
         fallbackImage: transformationImage,
       }),
     );
-    openCheckout();
+    setIsCartOpen(true);
   };
 
   const handleLearnMore = () => {

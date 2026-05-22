@@ -6,7 +6,7 @@ import { buildPrimaryCartItem } from "../services/productCatalog";
 import useCartActions from "../hooks/useCartActions";
 
 const CTA = () => {
-  const openCheckout = useMenuStore((state) => state.openCheckout);
+  const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
   const { product } = usePrimaryProduct();
   const { addProductToCart } = useCartActions();
 
@@ -24,7 +24,7 @@ const CTA = () => {
         quantity: 1,
       }),
     );
-    openCheckout();
+    setIsCartOpen(true);
   };
 
   return (

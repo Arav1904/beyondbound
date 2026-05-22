@@ -7,7 +7,7 @@ import useMenuStore from "../useMenuStore";
 import useCartActions from "../hooks/useCartActions";
 
 const GlycomicsCard = () => {
-  const openCheckout = useMenuStore((state) => state.openCheckout);
+  const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
   const { product } = usePrimaryProduct();
   const { addProductToCart } = useCartActions();
 
@@ -27,7 +27,7 @@ const GlycomicsCard = () => {
         fallbackImage: bottleImg,
       }),
     );
-    openCheckout();
+    setIsCartOpen(true);
   };
 
   return (

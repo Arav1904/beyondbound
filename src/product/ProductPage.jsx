@@ -10,7 +10,7 @@ import useCartActions from "../hooks/useCartActions";
 
 import "./ProductPage.css";
 const ProductPage = () => {
-  const openCheckout = useMenuStore((state) => state.openCheckout);
+  const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
   const { product, packSizes } = usePrimaryProduct();
   const { addProductToCart } = useCartActions();
   const images = [frontImg, backImg, sideImg, labelImg];
@@ -58,7 +58,7 @@ const ProductPage = () => {
         fallbackImage: primaryImage,
       }),
     );
-    openCheckout();
+    setIsCartOpen(true);
   };
 
   return (

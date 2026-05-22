@@ -44,7 +44,7 @@ const ComparisonCard = ({ title, items, variant }) => {
 };
 
 const GlycomicsComparison = () => {
-  const openCheckout = useMenuStore((state) => state.openCheckout);
+  const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
   const { product } = usePrimaryProduct();
   const { addProductToCart } = useCartActions();
 
@@ -73,7 +73,7 @@ const GlycomicsComparison = () => {
         fallbackImage: bottleImg,
       }),
     );
-    openCheckout();
+    setIsCartOpen(true);
   };
 
   return (

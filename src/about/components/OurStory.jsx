@@ -9,7 +9,7 @@ import useCartActions from "../../hooks/useCartActions";
 
 const OurStory = () => {
   const [expandedItem, setExpandedItem] = useState(null);
-  const openCheckout = useMenuStore((state) => state.openCheckout);
+  const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
   const { product } = usePrimaryProduct();
   const { addProductToCart } = useCartActions();
 
@@ -21,7 +21,7 @@ const OurStory = () => {
         fallbackImage: bottleAbout,
       }),
     );
-    openCheckout();
+    setIsCartOpen(true);
   };
 
   return (

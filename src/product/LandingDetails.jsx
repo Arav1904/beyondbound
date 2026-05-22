@@ -83,7 +83,10 @@ const LandingDetails = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {testimonials.map((t, i) => (
-            <div key={i} className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
+            <div
+              key={i}
+              className="bg-white p-6 rounded-lg shadow-md border border-gray-100"
+            >
               <div className="flex gap-1 mb-4">
                 <Star size={18} fill="#c9a87c" color="#c9a87c" />
                 <Star size={18} fill="#c9a87c" color="#c9a87c" />
@@ -91,11 +94,15 @@ const LandingDetails = () => {
                 <Star size={18} fill="#c9a87c" color="#c9a87c" />
                 <Star size={18} fill="#c9a87c" color="#c9a87c" />
               </div>
-              <p className="text-gray-700 text-base leading-relaxed mb-6 italic">"{t.text}"</p>
+              <p className="text-gray-700 text-base leading-relaxed mb-6 italic">
+                "{t.text}"
+              </p>
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0"></div>
                 <div className="min-w-0">
-                  <div className="font-semibold text-gray-900 text-sm">{t.name}</div>
+                  <div className="font-semibold text-gray-900 text-sm">
+                    {t.name}
+                  </div>
                   <div className="text-gray-500 text-xs">Verified Customer</div>
                 </div>
               </div>

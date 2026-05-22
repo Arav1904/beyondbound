@@ -7,8 +7,9 @@ const ORDER_CONFIRMATION_WEBHOOK_SECRET = String(
 ).trim();
 
 const ORDER_CONFIRMATION_WEBHOOK_SOURCE =
-  String(process.env.ORDER_CONFIRMATION_WEBHOOK_SOURCE || "beyond-bound-backend").trim() ||
-  "beyond-bound-backend";
+  String(
+    process.env.ORDER_CONFIRMATION_WEBHOOK_SOURCE || "beyond-bound-backend",
+  ).trim() || "beyond-bound-backend";
 
 const DEFAULT_TIMEOUT_MS = 5000;
 const configuredTimeout = Number.parseInt(

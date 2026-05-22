@@ -1412,8 +1412,8 @@ function AdminDashboard() {
           <p className="admin-eyebrow">Control Center</p>
           <h1>Beyond Bound Admin</h1>
           <p className="admin-subline">
-            Manage users, orders, testimonials, products, support, audit
-            logs, and analytics in one place.
+            Manage users, orders, testimonials, products, support, audit logs,
+            and analytics in one place.
           </p>
         </div>
       </section>

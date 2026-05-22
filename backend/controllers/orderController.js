@@ -34,7 +34,6 @@ const toMongoObjectId = (value) => {
   return new mongoose.Types.ObjectId(value);
 };
 
-
 const generateOrderNumber = () => {
   const date = new Date();
   const year = date.getFullYear();
@@ -347,4 +346,3 @@ export const getMyOrderById = async (req, res) => {
     });
   }
 };
-

@@ -1,30 +1,34 @@
-import React, { useState } from 'react';
-import '../css/track-order.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationCircle, faRotateLeft, faFileInvoice } from '@fortawesome/free-solid-svg-icons';
+import React, { useState } from "react";
+import "../css/track-order.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faExclamationCircle,
+  faRotateLeft,
+  faFileInvoice,
+} from "@fortawesome/free-solid-svg-icons";
 
 const TrackOrder = ({ isOpen, orderId, onToggle }) => {
   const [searchInput, setSearchInput] = useState(orderId);
 
   // Mock order data - replace with actual API call
   const orders = {
-    '#1092': {
-      id: '#1092',
-      product: 'Glycomics x 2',
-      price: '₹3,850',
-      date: '15 Mar',
-      status: 'shipped',
+    "#1092": {
+      id: "#1092",
+      product: "Glycomics x 2",
+      price: "₹3,850",
+      date: "15 Mar",
+      status: "shipped",
       steps: [
-        { label: 'Order placed', completed: true },
-        { label: 'Order confirmed', completed: true },
-        { label: 'Processing', completed: true },
-        { label: 'Shipped', completed: true },
-        { label: 'Delivered', completed: false }
-      ]
-    }
+        { label: "Order placed", completed: true },
+        { label: "Order confirmed", completed: true },
+        { label: "Processing", completed: true },
+        { label: "Shipped", completed: true },
+        { label: "Delivered", completed: false },
+      ],
+    },
   };
 
-  const orderData = orders[searchInput] || orders['#1092'];
+  const orderData = orders[searchInput] || orders["#1092"];
 
   const handleCheckStatus = () => {
     onToggle(searchInput);
@@ -42,10 +46,7 @@ const TrackOrder = ({ isOpen, orderId, onToggle }) => {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
-          <button 
-            className="check-status-btn"
-            onClick={handleCheckStatus}
-          >
+          <button className="check-status-btn" onClick={handleCheckStatus}>
             Check order status
           </button>
         </div>
@@ -63,7 +64,8 @@ const TrackOrder = ({ isOpen, orderId, onToggle }) => {
               </p>
             </div>
             <div className={`status-badge status-${orderData.status}`}>
-              {orderData.status.charAt(0).toUpperCase() + orderData.status.slice(1)}
+              {orderData.status.charAt(0).toUpperCase() +
+                orderData.status.slice(1)}
             </div>
           </div>
 
@@ -71,13 +73,19 @@ const TrackOrder = ({ isOpen, orderId, onToggle }) => {
           <div className="timeline-container">
             {orderData.steps.map((step, index) => (
               <div key={index} className="timeline-item">
-                <div className={`timeline-dot ${step.completed ? 'completed' : ''}`}>
+                <div
+                  className={`timeline-dot ${step.completed ? "completed" : ""}`}
+                >
                   {step.completed && <span className="checkmark">✓</span>}
                 </div>
                 {index < orderData.steps.length - 1 && (
-                  <div className={`timeline-line ${step.completed ? 'completed' : ''}`}></div>
+                  <div
+                    className={`timeline-line ${step.completed ? "completed" : ""}`}
+                  ></div>
                 )}
-                <div className={`timeline-label ${step.completed ? 'completed' : ''}`}>
+                <div
+                  className={`timeline-label ${step.completed ? "completed" : ""}`}
+                >
                   {step.label}
                 </div>
               </div>
@@ -87,7 +95,10 @@ const TrackOrder = ({ isOpen, orderId, onToggle }) => {
           {/* Action Buttons */}
           <div className="action-buttons">
             <button className="action-btn">
-              <FontAwesomeIcon icon={faExclamationCircle} className="action-icon" />
+              <FontAwesomeIcon
+                icon={faExclamationCircle}
+                className="action-icon"
+              />
               <span>Report delivery issue</span>
             </button>
             <button className="action-btn">

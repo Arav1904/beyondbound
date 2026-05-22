@@ -304,9 +304,7 @@ function AccountModal() {
               })}
             </div>
           ) : (
-            <p className="account-placeholder-copy">
-              No orders placed yet.
-            </p>
+            <p className="account-placeholder-copy">No orders placed yet.</p>
           )}
 
           <div className="account-form-actions account-form-actions--start">

@@ -48,7 +48,8 @@ function CheckoutModal() {
 
   const isAuthenticated = Boolean(authToken && signedInUser);
   const cartItemCount = useMemo(
-    () => cartItems.reduce((sum, item) => sum + toPositiveInt(item.quantity, 1), 0),
+    () =>
+      cartItems.reduce((sum, item) => sum + toPositiveInt(item.quantity, 1), 0),
     [cartItems],
   );
 
@@ -256,7 +257,9 @@ function CheckoutModal() {
                 <input
                   type="text"
                   value={formData.address.city}
-                  onChange={(event) => updateAddress("city", event.target.value)}
+                  onChange={(event) =>
+                    updateAddress("city", event.target.value)
+                  }
                   required
                 />
               </label>
@@ -265,7 +268,9 @@ function CheckoutModal() {
                 <input
                   type="text"
                   value={formData.address.state}
-                  onChange={(event) => updateAddress("state", event.target.value)}
+                  onChange={(event) =>
+                    updateAddress("state", event.target.value)
+                  }
                   required
                 />
               </label>

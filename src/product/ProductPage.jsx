@@ -4,7 +4,10 @@ import backImg from "../home/back.jpg";
 import sideImg from "../home/side.jpg";
 import labelImg from "../home/101.png";
 import usePrimaryProduct from "../hooks/usePrimaryProduct";
-import { buildPrimaryCartItem, getPrimaryImage } from "../services/productCatalog";
+import {
+  buildPrimaryCartItem,
+  getPrimaryImage,
+} from "../services/productCatalog";
 import useMenuStore from "../useMenuStore";
 import useCartActions from "../hooks/useCartActions";
 

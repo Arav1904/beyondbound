@@ -26,15 +26,15 @@ function MeetGlycomics() {
     Number(product.price) ||
     0;
 
-  const fallbackCompareAtPrice = Number(FALLBACK_PRIMARY_PRODUCT.compareAtPrice);
+  const fallbackCompareAtPrice = Number(
+    FALLBACK_PRIMARY_PRODUCT.compareAtPrice,
+  );
 
   const compareAtPrice =
     fallbackCompareAtPrice || Number(product.compareAtPrice) || 0;
   const discountPercent =
     compareAtPrice > meetGlycoPrice
-      ? Math.round(
-          ((compareAtPrice - meetGlycoPrice) / compareAtPrice) * 100,
-        )
+      ? Math.round(((compareAtPrice - meetGlycoPrice) / compareAtPrice) * 100)
       : 0;
 
   const handleShopNow = async () => {

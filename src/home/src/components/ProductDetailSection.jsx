@@ -5,7 +5,10 @@ import sideImg from "../assets/side.jpg";
 import labelImg from "../assets/101.png";
 import { ShieldIcon, ArrowRight } from "lucide-react";
 import usePrimaryProduct from "../../../hooks/usePrimaryProduct";
-import { buildPrimaryCartItem, getPrimaryImage } from "../../../services/productCatalog";
+import {
+  buildPrimaryCartItem,
+  getPrimaryImage,
+} from "../../../services/productCatalog";
 import useMenuStore from "../../../useMenuStore";
 import useCartActions from "../../../hooks/useCartActions";
 

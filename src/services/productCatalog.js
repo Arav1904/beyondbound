@@ -115,4 +115,3 @@ export const buildPrimaryCartItem = (
     image: getPrimaryImage(normalized, fallbackImage),
   };
 };
-

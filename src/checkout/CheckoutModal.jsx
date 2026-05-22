@@ -122,6 +122,14 @@ function CheckoutModal() {
 
     try {
       const response = await placeOrder(authToken, {
+        items: cartItems.map((item) => ({
+          productId: item.productId,
+          productName: item.productName,
+          size: item.size,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image,
+        })),
         phone: formData.phone,
         address: {
           line1: formData.address.line1,

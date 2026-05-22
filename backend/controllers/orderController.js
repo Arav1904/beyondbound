@@ -17,6 +17,15 @@ const parsePagination = (query) => {
   };
 };
 
+const toPositiveInt = (value, fallback = 1) => {
+  const parsed = Number.parseInt(value, 10);
+  if (Number.isNaN(parsed) || parsed < 1) {
+    return fallback;
+  }
+
+  return parsed;
+};
+
 const toMongoObjectId = (value) => {
   if (!mongoose.Types.ObjectId.isValid(value)) {
     return null;
@@ -56,6 +65,34 @@ const normalizeAddress = (address, fallback = {}) => ({
   country:
     String(address?.country || fallback?.country || "India").trim() || "India",
 });
+
+const normalizeOrderItems = (items = []) => {
+  if (!Array.isArray(items)) {
+    return [];
+  }
+
+  return items
+    .map((item) => {
+      const productId = String(item?.productId || item?.id || "").trim();
+      const productName = String(item?.productName || item?.name || "").trim();
+      if (!productId || !productName) {
+        return null;
+      }
+
+      const quantity = toPositiveInt(item?.quantity, 1);
+      const price = Number(item?.price ?? 0);
+
+      return {
+        productId,
+        productName,
+        size: String(item?.size || "").trim(),
+        quantity,
+        price: Number.isFinite(price) && price >= 0 ? price : 0,
+        image: String(item?.image || "").trim(),
+      };
+    })
+    .filter(Boolean);
+};
 
 const toPublicStatusHistory = (statusHistory = []) => {
   if (!Array.isArray(statusHistory)) {
@@ -119,16 +156,18 @@ const toPublicOrder = (order) => ({
 export const placeOrder = async (req, res) => {
   try {
     const mongoUserId = toMongoObjectId(req.userId);
-    if (!mongoUserId) {
-      return res.status(400).json({
-        success: false,
-        error: "Please sign in to checkout.",
-      });
+
+    let items = [];
+    let cart = null;
+
+    if (mongoUserId) {
+      cart = await Cart.findOne({ userId: mongoUserId });
+      items = Array.isArray(cart?.items) ? cart.items : [];
+    } else {
+      items = normalizeOrderItems(req.body?.items);
     }
 
-    const cart = await Cart.findOne({ userId: mongoUserId });
-
-    if (!cart || cart.items.length === 0) {
+    if (!items || items.length === 0) {
       return res.status(400).json({
         success: false,
         error: "Your cart is empty",
@@ -148,7 +187,7 @@ export const placeOrder = async (req, res) => {
         phone: String(req.body?.phone || req.user.phone || "").trim(),
         address: normalizeAddress(req.body?.address, req.user.address),
       },
-      items: cart.items.map((item) => ({
+      items: items.map((item) => ({
         productId: item.productId,
         productName: item.productName,
         size: item.size,
@@ -167,8 +206,10 @@ export const placeOrder = async (req, res) => {
       placedAt: new Date(),
     });
 
-    cart.items = [];
-    await cart.save();
+    if (cart) {
+      cart.items = [];
+      await cart.save();
+    }
 
     await createAuditLog({
       req,

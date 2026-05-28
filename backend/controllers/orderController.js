@@ -104,7 +104,12 @@ const summarizeItems = (items = []) =>
     .join(", ")
     .slice(0, 100);
 
-const computeTotals = ({ items = [], shippingFee = 0, taxAmount = 0, discountAmount = 0 }) => {
+const computeTotals = ({
+  items = [],
+  shippingFee = 0,
+  taxAmount = 0,
+  discountAmount = 0,
+}) => {
   const subtotal = roundMoney(
     items.reduce((sum, item) => sum + item.price * item.quantity, 0),
   );
@@ -119,7 +124,9 @@ const computeTotals = ({ items = [], shippingFee = 0, taxAmount = 0, discountAmo
 };
 
 const getPayuConfig = () => {
-  const env = String(process.env.PAYU_ENV || "test").trim().toLowerCase();
+  const env = String(process.env.PAYU_ENV || "test")
+    .trim()
+    .toLowerCase();
   const baseUrl =
     process.env.PAYU_BASE_URL ||
     (env === "production"
@@ -435,10 +442,7 @@ export const initiatePayuPayment = async (req, res) => {
     const txnId = `BB${Date.now()}${Math.floor(Math.random() * 1e6)
       .toString()
       .padStart(6, "0")}`;
-    const ttlMinutes = toPositiveInt(
-      process.env.PAYU_SESSION_TTL_MINUTES,
-      30,
-    );
+    const ttlMinutes = toPositiveInt(process.env.PAYU_SESSION_TTL_MINUTES, 30);
     const expiresAt = new Date(Date.now() + ttlMinutes * 60 * 1000);
 
     const session = await PaymentSession.create({
@@ -515,7 +519,9 @@ export const handlePayuCallback = async (req, res) => {
 
     const payload = req.body || {};
     const txnId = String(payload.txnid || "").trim();
-    const status = String(payload.status || "").trim().toLowerCase();
+    const status = String(payload.status || "")
+      .trim()
+      .toLowerCase();
     const amount = String(payload.amount || "").trim();
     const hash = String(payload.hash || "").trim();
 

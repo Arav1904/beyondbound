@@ -304,7 +304,9 @@ function CheckoutModal() {
               <input
                 type="text"
                 value={formData.address.postalCode}
-                onChange={(event) => updateAddress("postalCode", event.target.value)}
+                onChange={(event) =>
+                  updateAddress("postalCode", event.target.value)
+                }
                 required
               />
             </label>

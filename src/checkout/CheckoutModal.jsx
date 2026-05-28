@@ -102,7 +102,22 @@ function CheckoutModal() {
     form.method = "POST";
     form.action = action;
 
-    Object.entries(fields).forEach(([key, value]) => {
+    const normalizedFields = {
+      ...fields,
+      // Ensure PayU receives all UDF fields that are included in hash.
+      udf1: fields.udf1 ?? "",
+      udf2: fields.udf2 ?? "",
+      udf3: fields.udf3 ?? "",
+      udf4: fields.udf4 ?? "",
+      udf5: fields.udf5 ?? "",
+      udf6: fields.udf6 ?? "",
+      udf7: fields.udf7 ?? "",
+      udf8: fields.udf8 ?? "",
+      udf9: fields.udf9 ?? "",
+      udf10: fields.udf10 ?? "",
+    };
+
+    Object.entries(normalizedFields).forEach(([key, value]) => {
       const input = document.createElement("input");
       input.type = "hidden";
       input.name = key;

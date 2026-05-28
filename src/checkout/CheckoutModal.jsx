@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import useMenuStore from "../useMenuStore";
-import { placeOrder } from "../services/cartApi";
+import { initiatePayuPayment } from "../services/cartApi";
 import "./CheckoutModal.css";
 
 const emptyAddress = () => ({
@@ -33,8 +33,6 @@ function CheckoutModal() {
     (state) => state.setIsLoginModalOpen,
   );
   const setCartMessage = useMenuStore((state) => state.setCartMessage);
-  const clearCartLocal = useMenuStore((state) => state.clearCartLocal);
-  const setIsCartOpen = useMenuStore((state) => state.setIsCartOpen);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -95,6 +93,27 @@ function CheckoutModal() {
     setIsLoginModalOpen(true);
   };
 
+  const submitPayuForm = ({ action, fields }) => {
+    if (!action || !fields) {
+      throw new Error("Payment gateway is unavailable. Try again later.");
+    }
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = action;
+
+    Object.entries(fields).forEach(([key, value]) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = value ?? "";
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
@@ -122,15 +141,9 @@ function CheckoutModal() {
     setIsSubmitting(true);
 
     try {
-      const response = await placeOrder(authToken, {
-        items: cartItems.map((item) => ({
-          productId: item.productId,
-          productName: item.productName,
-          size: item.size,
-          quantity: item.quantity,
-          price: item.price,
-          image: item.image,
-        })),
+      const payment = await initiatePayuPayment(authToken, {
+        name: formData.name,
+        email: formData.email,
         phone: formData.phone,
         address: {
           line1: formData.address.line1,
@@ -140,19 +153,19 @@ function CheckoutModal() {
           postalCode: formData.address.postalCode,
           country: formData.address.country,
         },
+        items: cartItems.map((item) => ({
+          productId: item.productId,
+          productName: item.productName,
+          size: item.size,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image,
+        })),
         notes: formData.notes,
       });
 
-      const orderNumber =
-        response?.data?.orderNumber ||
-        response?.orderNumber ||
-        response?.data?.id ||
-        "placed";
-
-      clearCartLocal();
-      setCartMessage(`Order ${orderNumber} placed successfully.`);
-      setIsCartOpen(false);
-      closeCheckout();
+      setCartMessage("Redirecting to PayU for payment...");
+      submitPayuForm(payment);
     } catch (submitError) {
       setError(submitError.message || "Could not place order right now.");
     } finally {
@@ -177,137 +190,131 @@ function CheckoutModal() {
           </button>
         </div>
 
-        {!isAuthenticated ? (
-          <div className="checkout-auth-state">
-            <p>Please sign in to complete your order.</p>
-            <button
-              type="button"
-              className="checkout-submit-btn"
-              onClick={openLogin}
-            >
-              Sign In to Continue
-            </button>
+        <form className="checkout-form" onSubmit={handleSubmit}>
+          {!isAuthenticated ? (
+            <div className="checkout-auth-state">
+              <p>Continue as a guest or sign in for faster checkout.</p>
+              <button
+                type="button"
+                className="checkout-submit-btn"
+                onClick={openLogin}
+              >
+                Sign In
+              </button>
+            </div>
+          ) : null}
+
+          <div className="checkout-summary">
+            <div className="checkout-summary-row">
+              <span>Items</span>
+              <span>{cartItemCount}</span>
+            </div>
+            <div className="checkout-summary-row">
+              <span>Subtotal</span>
+              <span>₹{cartSubtotal.toFixed(2)}</span>
+            </div>
           </div>
-        ) : (
-          <form className="checkout-form" onSubmit={handleSubmit}>
-            <div className="checkout-summary">
-              <div className="checkout-summary-row">
-                <span>Items</span>
-                <span>{cartItemCount}</span>
-              </div>
-              <div className="checkout-summary-row">
-                <span>Subtotal</span>
-                <span>₹{cartSubtotal.toFixed(2)}</span>
-              </div>
-            </div>
 
-            <div className="checkout-grid checkout-grid-two">
-              <label>
-                Full Name
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(event) => updateField("name", event.target.value)}
-                  required
-                />
-              </label>
-              <label>
-                Phone
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(event) => updateField("phone", event.target.value)}
-                  required
-                />
-              </label>
-            </div>
-
+          <div className="checkout-grid checkout-grid-two">
             <label>
-              Email
+              Full Name
               <input
-                type="email"
-                value={formData.email}
-                onChange={(event) => updateField("email", event.target.value)}
+                type="text"
+                value={formData.name}
+                onChange={(event) => updateField("name", event.target.value)}
                 required
               />
             </label>
-
             <label>
-              Address Line 1
+              Phone
               <input
-                type="text"
-                value={formData.address.line1}
-                onChange={(event) => updateAddress("line1", event.target.value)}
+                type="tel"
+                value={formData.phone}
+                onChange={(event) => updateField("phone", event.target.value)}
                 required
               />
             </label>
+          </div>
 
+          <label>
+            Email
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(event) => updateField("email", event.target.value)}
+              required
+            />
+          </label>
+
+          <label>
+            Address Line 1
+            <input
+              type="text"
+              value={formData.address.line1}
+              onChange={(event) => updateAddress("line1", event.target.value)}
+              required
+            />
+          </label>
+
+          <label>
+            Address Line 2
+            <input
+              type="text"
+              value={formData.address.line2}
+              onChange={(event) => updateAddress("line2", event.target.value)}
+            />
+          </label>
+
+          <div className="checkout-grid checkout-grid-three">
             <label>
-              Address Line 2
+              City
               <input
                 type="text"
-                value={formData.address.line2}
-                onChange={(event) => updateAddress("line2", event.target.value)}
+                value={formData.address.city}
+                onChange={(event) => updateAddress("city", event.target.value)}
+                required
               />
             </label>
-
-            <div className="checkout-grid checkout-grid-three">
-              <label>
-                City
-                <input
-                  type="text"
-                  value={formData.address.city}
-                  onChange={(event) =>
-                    updateAddress("city", event.target.value)
-                  }
-                  required
-                />
-              </label>
-              <label>
-                State
-                <input
-                  type="text"
-                  value={formData.address.state}
-                  onChange={(event) =>
-                    updateAddress("state", event.target.value)
-                  }
-                  required
-                />
-              </label>
-              <label>
-                Postal Code
-                <input
-                  type="text"
-                  value={formData.address.postalCode}
-                  onChange={(event) =>
-                    updateAddress("postalCode", event.target.value)
-                  }
-                  required
-                />
-              </label>
-            </div>
-
             <label>
-              Notes
-              <textarea
-                rows="3"
-                value={formData.notes}
-                onChange={(event) => updateField("notes", event.target.value)}
-                placeholder="Any special delivery notes"
+              State
+              <input
+                type="text"
+                value={formData.address.state}
+                onChange={(event) => updateAddress("state", event.target.value)}
+                required
               />
             </label>
+            <label>
+              Postal Code
+              <input
+                type="text"
+                value={formData.address.postalCode}
+                onChange={(event) => updateAddress("postalCode", event.target.value)}
+                required
+              />
+            </label>
+          </div>
 
-            {error ? <p className="checkout-error">{error}</p> : null}
+          <label>
+            Notes
+            <textarea
+              rows="3"
+              value={formData.notes}
+              onChange={(event) => updateField("notes", event.target.value)}
+              placeholder="Any special delivery notes"
+            />
+          </label>
 
-            <button
-              type="submit"
-              className="checkout-submit-btn"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Placing Order..." : "Place Order"}
-            </button>
-          </form>
-        )}
+          {error ? <p className="checkout-error">{error}</p> : null}
+
+          <button
+            type="submit"
+            className="checkout-submit-btn"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Placing Order..." : "Place Order"}
+          </button>
+        </form>
       </div>
     </div>
   );

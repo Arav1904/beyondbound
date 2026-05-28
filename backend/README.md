@@ -32,6 +32,16 @@ Optional for automated customer confirmation emails via Zapier/Make webhook:
 - `ORDER_CONFIRMATION_WEBHOOK_SOURCE` (optional, default: `beyond-bound-backend`)
 - `ORDER_CONFIRMATION_WEBHOOK_TIMEOUT_MS` (optional, default: `5000`)
 
+PayU hosted checkout (required when using PayU):
+
+- `PAYU_MERCHANT_KEY`
+- `PAYU_MERCHANT_SALT`
+- `PAYU_CALLBACK_URL` (backend endpoint that receives PayU POST callbacks)
+- `PAYU_RETURN_URL` (frontend page to redirect after callback)
+- `PAYU_ENV` (optional: `test` or `production`)
+- `PAYU_BASE_URL` (optional override for the PayU payment URL)
+- `PAYU_SESSION_TTL_MINUTES` (optional, default: `30`)
+
 3. Run backend
 
 ```bash

@@ -274,14 +274,14 @@ function Footer() {
 								<div className="mt-5 border-t border-slate-200/80 pt-4">
 									<h5 className="text-sm font-semibold text-slate-800 sm:text-base">1. Accepted Payment Methods</h5>
 									<p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
-								We offer secure and convenient payment options through our payment partner PhonePe.
+								We offer secure and convenient payment options through our payment partner PayU.
 								Customers can complete transactions using:
 							</p>
 								<ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-slate-600 sm:text-base">
-								<li>UPI (Google Pay, PhonePe, Paytm, BHIM, etc.)</li>
+								<li>UPI (Google Pay, Paytm, BHIM, etc.)</li>
 								<li>Debit Cards / Credit Cards (Visa, MasterCard, RuPay)</li>
 								<li>Net Banking</li>
-								<li>Wallets (if available via PhonePe)</li>
+								<li>Wallets (subject to PayU availability)</li>
 							</ul>
 								</div>
 								<div className="mt-5 border-t border-slate-200/80 pt-4">

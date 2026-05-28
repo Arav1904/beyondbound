@@ -170,6 +170,25 @@ const orderSchema = new mongoose.Schema(
       default: "cod",
       trim: true,
     },
+    paymentGateway: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    paymentTransactionId: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    paymentReference: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    paymentMetadata: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
     trackingNumber: {
       type: String,
       default: "",

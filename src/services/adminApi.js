@@ -1,3 +1,5 @@
+import { getRuntimeConfig } from "../config/runtimeConfig";
+
 const DEFAULT_LOCAL_API_BASE_URL = "http://localhost:5000/api";
 
 const normalizeBaseUrl = (value) =>
@@ -6,6 +8,12 @@ const normalizeBaseUrl = (value) =>
     .replace(/\/+$/, "");
 
 const resolveApiBaseUrl = () => {
+  const runtimeConfig = getRuntimeConfig();
+  const runtimeBaseUrl = normalizeBaseUrl(runtimeConfig.apiBaseUrl);
+  if (runtimeBaseUrl) {
+    return runtimeBaseUrl;
+  }
+
   const configuredBaseUrl = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL);
   if (configuredBaseUrl) {
     return configuredBaseUrl;

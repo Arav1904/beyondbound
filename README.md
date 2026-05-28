@@ -70,6 +70,39 @@ npm run dev
 npm run dev
 ```
 
+## Production (Hostinger)
+
+Frontend runtime config is loaded from `public/env.js`. This lets you set production values
+without committing `.env` files.
+
+1. Copy the runtime config template and edit values on the server:
+
+```bash
+cp public/env.example.js public/env.js
+```
+
+Example `public/env.js`:
+
+```js
+(function () {
+	window.__APP_CONFIG__ = {
+		API_BASE_URL: "https://www.beyondbound.info/api",
+		GOOGLE_CLIENT_ID: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+	};
+})();
+```
+
+2. Ensure backend env vars are set in Hostinger:
+
+- `MONGODB_URI`
+- `GOOGLE_CLIENT_ID`
+- `JWT_SECRET`
+- `CORS_ORIGIN` (e.g. `https://www.beyondbound.info`)
+- `ADMIN_ALLOWLIST`
+
+The frontend falls back to `VITE_API_BASE_URL` at build time, or `window.location.origin + /api`
+if none is provided.
+
 ## Validation Commands
 
 Frontend:

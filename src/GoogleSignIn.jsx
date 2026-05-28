@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { getRuntimeConfig } from "./config/runtimeConfig";
 
 const GOOGLE_GSI_SCRIPT = "https://accounts.google.com/gsi/client";
 const DEFAULT_GOOGLE_CLIENT_ID =
@@ -47,7 +48,9 @@ function GoogleSignIn({
   buttonOptions = {},
   showSignedInState = true,
 }) {
-  const rawClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const runtimeConfig = getRuntimeConfig();
+  const rawClientId =
+    runtimeConfig.googleClientId || import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const clientId = isValidGoogleClientId(rawClientId)
     ? rawClientId
     : isValidGoogleClientId(DEFAULT_GOOGLE_CLIENT_ID)

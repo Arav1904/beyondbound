@@ -6,12 +6,12 @@ import {
   initiatePayuPayment,
   placeOrder,
 } from "../controllers/orderController.js";
-import { authenticate, authenticateOptional } from "../middleware/auth.js";
+import { authenticate } from "../middleware/auth.js";
 
 const router = express.Router();
 
 router.post("/payu/callback", handlePayuCallback);
-router.post("/payu/initiate", authenticateOptional, initiatePayuPayment);
+router.post("/payu/initiate", authenticate, initiatePayuPayment);
 
 router.use(authenticate);
 router.get("/my", getMyOrders);

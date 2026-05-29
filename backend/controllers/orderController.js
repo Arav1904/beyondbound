@@ -524,6 +524,13 @@ export const placeOrder = async (req, res) => {
 
 export const initiatePayuPayment = async (req, res) => {
   try {
+    if (!req.userId || !req.user) {
+      return res.status(401).json({
+        success: false,
+        error: "Sign in required to start payment",
+      });
+    }
+
     const config = getPayuConfig();
     if (!config.key || !config.salt || !config.callbackUrl) {
       return res.status(500).json({

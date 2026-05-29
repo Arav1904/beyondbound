@@ -48,7 +48,7 @@ const normalizePackSizes = (product) => {
     {
       value: "20",
       label: "20 Capsules",
-      price: 600,
+      price: 1,
     },
   ];
 };

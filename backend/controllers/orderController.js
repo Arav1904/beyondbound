@@ -480,8 +480,8 @@ export const placeOrder = async (req, res) => {
       orderNumber: await createUniqueOrderNumber(),
       userId: mongoUserId,
       customer: {
-        name: req.user.name || "",
-        email: req.user.email || "",
+        name: String(req.body?.name || req.user?.name || "").trim(),
+        email: String(req.body?.email || req.user?.email || "").trim(),
         phone: String(req.body?.phone || req.user.phone || "").trim(),
         address: normalizeAddress(req.body?.address, req.user.address),
       },

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import Cart from "../models/Cart.js";
 import Order from "../models/Order.js";
 import PaymentSession from "../models/PaymentSession.js";
+import Product from "../models/Product.js";
 import { createAuditLog } from "../utils/auditLog.js";
 import { notifyOrderPlacedWebhook } from "../utils/orderConfirmationWebhook.js";
 
@@ -93,6 +94,151 @@ const normalizeOrderItems = (items = []) => {
       };
     })
     .filter(Boolean);
+};
+
+const toNonNegativeNumber = (value, fallback = 0) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return fallback;
+  }
+
+  return parsed;
+};
+
+const getSizeTokens = (value) => {
+  const raw = String(value || "").trim();
+  const numericMatch = raw.match(/\d+/u);
+
+  return {
+    raw,
+    numeric: numericMatch ? String(numericMatch[0]) : "",
+  };
+};
+
+const buildProductIdentifierCandidates = (item = {}) => {
+  const candidates = [];
+  const add = (value) => {
+    const normalized = String(value || "").trim();
+    if (!normalized || candidates.includes(normalized)) {
+      return;
+    }
+    candidates.push(normalized);
+  };
+
+  const productId = String(item.productId || item.id || "").trim();
+  const sizeTokens = getSizeTokens(item.size);
+
+  add(productId);
+
+  if (productId && sizeTokens.raw) {
+    const suffix = `-${sizeTokens.raw}`;
+    if (productId.toLowerCase().endsWith(suffix.toLowerCase())) {
+      add(productId.slice(0, -suffix.length));
+    }
+  }
+
+  if (productId && sizeTokens.numeric) {
+    const suffix = `-${sizeTokens.numeric}`;
+    if (productId.toLowerCase().endsWith(suffix.toLowerCase())) {
+      add(productId.slice(0, -suffix.length));
+    }
+  }
+
+  if (productId) {
+    const withoutTrailingSize = productId.replace(/-\d+$/u, "");
+    if (withoutTrailingSize !== productId) {
+      add(withoutTrailingSize);
+    }
+  }
+
+  return candidates;
+};
+
+const resolvePackPrice = (product, sizeTokens) => {
+  const packSizes = Array.isArray(product?.packSizes) ? product.packSizes : [];
+
+  if (!sizeTokens?.raw && !sizeTokens?.numeric) {
+    return null;
+  }
+
+  const match =
+    packSizes.find(
+      (pack) => String(pack?.value || "").trim() === sizeTokens.raw,
+    ) ||
+    packSizes.find(
+      (pack) => String(pack?.value || "").trim() === sizeTokens.numeric,
+    );
+
+  if (!match) {
+    return null;
+  }
+
+  return toNonNegativeNumber(match.price, null);
+};
+
+const repriceOrderItems = async (items = []) => {
+  if (!Array.isArray(items) || items.length === 0) {
+    return items;
+  }
+
+  const cache = new Map();
+
+  const resolveProduct = async (identifier) => {
+    if (!identifier) {
+      return null;
+    }
+
+    if (cache.has(identifier)) {
+      return cache.get(identifier);
+    }
+
+    const filters = [{ slug: identifier }, { sku: identifier }];
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      filters.push({ _id: identifier });
+    }
+
+    const product = await Product.findOne({
+      isActive: true,
+      $or: filters,
+    });
+
+    cache.set(identifier, product || null);
+    return product || null;
+  };
+
+  const updated = [];
+
+  for (const item of items) {
+    const sizeTokens = getSizeTokens(item?.size);
+    const identifiers = buildProductIdentifierCandidates(item);
+    let product = null;
+
+    for (const identifier of identifiers) {
+      // eslint-disable-next-line no-await-in-loop
+      product = await resolveProduct(identifier);
+      if (product) {
+        break;
+      }
+    }
+
+    if (!product) {
+      updated.push(item);
+      continue;
+    }
+
+    const packPrice = resolvePackPrice(product, sizeTokens);
+    const nextPrice =
+      packPrice !== null
+        ? packPrice
+        : toNonNegativeNumber(product.price, item.price);
+
+    updated.push({
+      ...item,
+      price: nextPrice,
+    });
+  }
+
+  return updated;
 };
 
 const roundMoney = (value) =>
@@ -405,11 +551,12 @@ export const initiatePayuPayment = async (req, res) => {
       });
     }
 
+    const pricedItems = await repriceOrderItems(items);
     const shippingFee = Math.max(0, Number(req.body?.shippingFee) || 0);
     const taxAmount = Math.max(0, Number(req.body?.taxAmount) || 0);
     const discountAmount = Math.max(0, Number(req.body?.discountAmount) || 0);
     const totals = computeTotals({
-      items,
+      items: pricedItems,
       shippingFee,
       taxAmount,
       discountAmount,
@@ -449,7 +596,7 @@ export const initiatePayuPayment = async (req, res) => {
       txnId,
       userId: mongoUserId,
       customer,
-      items: items.map((item) => ({
+      items: pricedItems.map((item) => ({
         productId: item.productId,
         productName: item.productName,
         size: item.size,

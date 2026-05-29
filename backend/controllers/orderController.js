@@ -372,6 +372,26 @@ const toPayuMetadata = (payload = {}) => ({
   payuMoneyId: String(payload.payuMoneyId || ""),
 });
 
+const backfillCustomerFromPayu = (customer = {}, payload = {}) => {
+  const safeCustomer = customer && typeof customer === "object" ? customer : {};
+  const safeAddress =
+    safeCustomer.address && typeof safeCustomer.address === "object"
+      ? safeCustomer.address
+      : { country: "India" };
+
+  const nextName = String(safeCustomer.name || "").trim();
+  const nextEmail = String(safeCustomer.email || "").trim();
+  const nextPhone = String(safeCustomer.phone || "").trim();
+
+  return {
+    ...safeCustomer,
+    name: nextName || String(payload.firstname || "").trim(),
+    email: (nextEmail || String(payload.email || "").trim()).toLowerCase(),
+    phone: nextPhone || String(payload.phone || "").trim(),
+    address: normalizeAddress(safeAddress),
+  };
+};
+
 const toPublicStatusHistory = (statusHistory = []) => {
   if (!Array.isArray(statusHistory)) {
     return [];
@@ -754,10 +774,12 @@ export const handlePayuCallback = async (req, res) => {
 
     let order = await Order.findOne({ paymentTransactionId: txnId });
     if (!order) {
+      const customer = backfillCustomerFromPayu(session.customer, payload);
+
       order = await Order.create({
         orderNumber: await createUniqueOrderNumber(),
         userId: session.userId,
-        customer: session.customer,
+        customer,
         items: session.items,
         shippingFee: session.shippingFee,
         taxAmount: session.taxAmount,

@@ -41,8 +41,12 @@ function App() {
   const isCheckoutOpen = useMenuStore((state) => state.isCheckoutOpen);
   const cartTotalItems = useMenuStore((state) => state.cartTotalItems);
   const cartMessage = useMenuStore((state) => state.cartMessage);
+  const setCartMessage = useMenuStore((state) => state.setCartMessage);
   const clearCartMessage = useMenuStore((state) => state.clearCartMessage);
   const setCartSyncing = useMenuStore((state) => state.setCartSyncing);
+  const setActivePage = useMenuStore((state) => state.setActivePage);
+  const closeCheckout = useMenuStore((state) => state.closeCheckout);
+  const clearCartLocal = useMenuStore((state) => state.clearCartLocal);
   const isAuthenticated = Boolean(signedInUser);
 
   useEffect(() => {
@@ -104,6 +108,45 @@ function App() {
 
     return () => window.clearTimeout(timer);
   }, [cartMessage, clearCartMessage]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const status = String(params.get("status") || "").toLowerCase();
+
+    if (status !== "success" && status !== "failed") {
+      return;
+    }
+
+    const orderNumber = String(params.get("orderNumber") || "").trim();
+    const message =
+      status === "success"
+        ? orderNumber
+          ? `Payment successful. Order #${orderNumber} confirmed.`
+          : "Payment successful. Your order is confirmed."
+        : "Payment failed. Please try again.";
+
+    setCartMessage(message);
+    setActivePage("home");
+    closeCheckout();
+    setIsCartOpen(false);
+
+    if (status === "success") {
+      clearCartLocal();
+    }
+
+    const cleanUrl = `${window.location.origin}${window.location.pathname}`;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }, [
+    clearCartLocal,
+    closeCheckout,
+    setActivePage,
+    setCartMessage,
+    setIsCartOpen,
+  ]);
 
   return (
     <div className="app" style={{ position: "relative" }}>

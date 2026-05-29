@@ -41,7 +41,7 @@ const CTA = () => {
           </h2>
 
           <p className="cta-info">
-            ₹1925 · 60 vegetarian capsules · Free expert consultation
+            ₹1599 · 60 vegetarian capsules · Free expert consultation
           </p>
 
           <div className="cta-buttons">

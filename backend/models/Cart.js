@@ -68,7 +68,9 @@ const cartSchema = new mongoose.Schema(
 cartSchema.pre("save", function syncCartTotals(next) {
   this.totalItems = this.items.reduce((sum, item) => sum + item.quantity, 0);
   this.subtotal = Number(
-    this.items.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2),
+    this.items
+      .reduce((sum, item) => sum + item.price * item.quantity, 0)
+      .toFixed(2),
   );
   next();
 });

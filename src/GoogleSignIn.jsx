@@ -175,8 +175,8 @@ function GoogleSignIn({
   if (!clientId) {
     return (
       <p className="google-signin-missing">
-        Set <code>VITE_GOOGLE_CLIENT_ID</code> in your <code>.env</code> or <code>.env.local</code>{" "}
-        to enable Google Sign-In.
+        Set <code>VITE_GOOGLE_CLIENT_ID</code> in your <code>.env</code> or{" "}
+        <code>.env.local</code> to enable Google Sign-In.
       </p>
     );
   }

@@ -2,11 +2,11 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import Product from "../models/Product.js";
 
-const PRODUCT_ID = "69db7cd129eeea5bd6fde7df";
-const NEW_PRICE = 1599;
+const TARGET_SLUG = "glycomics";
+const NEW_PRICE = 600;
 const NEW_PACK_SIZES = [
-  { value: "20", label: "20 Capsules", price: 1 },
-  { value: "60", label: "60 Capsules", price: 1599 },
+  { value: "20", label: "20 Capsules", price: 600 },
+  { value: "60", label: "60 Capsules", price: 600 },
 ];
 
 const run = async () => {
@@ -20,12 +20,13 @@ const run = async () => {
       "mongodb://localhost:27017/beyond-bound",
   );
 
-  const product = await Product.findById(PRODUCT_ID);
+  const product = await Product.findOne({ slug: TARGET_SLUG });
   if (!product) {
-    throw new Error(`Product not found: ${PRODUCT_ID}`);
+    throw new Error(`Product not found for slug: ${TARGET_SLUG}`);
   }
 
   product.price = NEW_PRICE;
+  product.compareAtPrice = NEW_PRICE;
   product.packSizes = NEW_PACK_SIZES;
   await product.save();
 

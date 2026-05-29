@@ -12,7 +12,7 @@ const DEFAULT_PRIMARY_PRODUCT = {
   images: [],
   tags: ["primary", "featured", "glycomics"],
   packSizes: [
-    { value: "20", label: "20 Capsules", price: 600 },
+    { value: "20", label: "20 Capsules", price: 1 },
     { value: "60", label: "60 Capsules", price: 1599},
   ],
   estimatedDispatchDays: 10,

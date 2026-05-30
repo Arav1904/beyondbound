@@ -78,19 +78,25 @@ const authLimiter = rateLimit({
 // Middleware
 app.set("trust proxy", 1);
 app.use(helmet());
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (isAllowedOrigin(origin)) {
-        callback(null, true);
-        return;
-      }
+const corsMiddleware = cors({
+  origin(origin, callback) {
+    if (isAllowedOrigin(origin)) {
+      callback(null, true);
+      return;
+    }
 
-      callback(new Error("Blocked by CORS policy"));
-    },
-    credentials: true,
-  }),
-);
+    callback(new Error("Blocked by CORS policy"));
+  },
+  credentials: true,
+});
+
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api/orders/payu/callback")) {
+    return next();
+  }
+
+  return corsMiddleware(req, res, next);
+});
 app.use(express.json({ limit: "100kb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));

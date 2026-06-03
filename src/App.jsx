@@ -15,6 +15,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Login from "./login/components/login.jsx";
 import Signup from "./login/components/Signup.jsx";
 import AccountModal from "./login/components/AccountModal.jsx";
+import Confirm from "./login/components/confirm.jsx";
+import PaymentFailed from "./login/components/PaymentFailed.jsx";
 import CartDrawer from "./cart/CartDrawer.jsx";
 import bottleImg from "./home/bottle.jpeg";
 import { getCurrentSession } from "./services/cartApi";
@@ -122,6 +124,7 @@ function App() {
     }
 
     const orderNumber = String(params.get("orderNumber") || "").trim();
+    const nextPage = status === "success" ? "payment-success" : "payment-failed";
     const message =
       status === "success"
         ? orderNumber
@@ -130,16 +133,13 @@ function App() {
         : "Payment failed. Please try again.";
 
     setCartMessage(message);
-    setActivePage("home");
+    setActivePage(nextPage);
     closeCheckout();
     setIsCartOpen(false);
 
     if (status === "success") {
       clearCartLocal();
     }
-
-    const cleanUrl = `${window.location.origin}${window.location.pathname}`;
-    window.history.replaceState({}, document.title, cleanUrl);
   }, [
     clearCartLocal,
     closeCheckout,
@@ -159,6 +159,8 @@ function App() {
         {activePage === "contact" && <Contact />}
         {activePage === "admin" && <AdminDashboard />}
         {activePage === "profile" && <CustomerProfilePage />}
+        {activePage === "payment-success" && <Confirm />}
+        {activePage === "payment-failed" && <PaymentFailed />}
       </div>
       <Footer />
 

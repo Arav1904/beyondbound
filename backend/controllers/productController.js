@@ -43,12 +43,12 @@ const normalizePackSizes = (product) => {
     {
       value: "60",
       label: "60 Capsules",
-      price: toNonNegativeNumber(product.price, 1599),
+      price: toNonNegativeNumber(product.price, 1399),
     },
     {
       value: "20",
       label: "20 Capsules",
-      price: 1,
+      price: 499,
     },
   ];
 };

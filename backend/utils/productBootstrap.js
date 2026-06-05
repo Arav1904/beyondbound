@@ -6,14 +6,14 @@ const DEFAULT_PRIMARY_PRODUCT = {
   description:
     "Blood sugar focused metabolism enhancer with clinically informed ingredients.",
   category: "supplement",
-  price: 600,
-  compareAtPrice: 600,
+  price: 499,
+  compareAtPrice: 599,
   inventory: 100,
   images: [],
   tags: ["primary", "featured", "glycomics"],
   packSizes: [
     { value: "20", label: "20 Capsules", price: 499 },
-    { value: "60", label: "60 Capsules", price: 1399 },
+    { value: "60", label: "60 Capsules", price: 1499 },
   ],
   estimatedDispatchDays: 10,
   isActive: true,

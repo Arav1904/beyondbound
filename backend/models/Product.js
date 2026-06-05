@@ -86,7 +86,7 @@ const productSchema = new mongoose.Schema(
     packSizes: {
       type: [packSizeSchema],
       default: () => [
-        { value: "60", label: "60 Capsules", price: 1399},
+        { value: "60", label: "60 Capsules", price: 1499},
         { value: "20", label: "20 Capsules", price: 499 },
       ],
     },

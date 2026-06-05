@@ -50,6 +50,7 @@ const paymentSessionSchema = new mongoose.Schema(
     discountAmount: { type: Number, default: 0, min: 0 },
     total: { type: Number, default: 0, min: 0 },
     notes: { type: String, default: "", trim: true },
+    returnUrl: { type: String, default: "", trim: true },
     status: {
       type: String,
       enum: ["pending", "success", "failed"],

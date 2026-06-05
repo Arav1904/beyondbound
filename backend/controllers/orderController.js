@@ -324,20 +324,46 @@ const buildPayuResponseHash = ({
   amount,
   txnid,
   key,
+  additionalCharges = "",
+  // UDF fields echoed back by PayU — we send them all empty so they're all ""
+  udf1 = "",
+  udf2 = "",
+  udf3 = "",
+  udf4 = "",
+  udf5 = "",
 }) => {
-  const udfFields = Array.from({ length: 10 }, () => "");
-  const raw = [
+  // PayU response hash (reverse hash) exact formula per PayU docs:
+  // sha512(additionalCharges|SALT|status|udf10|udf9|udf8|udf7|udf6|udf5|udf4|udf3|udf2|udf1|email|firstname|productinfo|amount|txnid|key)
+  //
+  // - additionalCharges is ONLY prepended when it is present in the PayU response
+  // - udf6–udf10 are always empty placeholders (6 pipe delimiters = 5 empty strings)
+  // - udf5→udf1 are in REVERSE order (opposite of the request hash)
+  const parts = [
+    // additionalCharges goes first — only if present/non-empty
+    ...(additionalCharges ? [additionalCharges] : []),
     salt,
     status,
-    ...udfFields,
+    // udf10, udf9, udf8, udf7, udf6 — always empty, but pipe delimiters required
+    "",  // udf10
+    "",  // udf9
+    "",  // udf8
+    "",  // udf7
+    "",  // udf6
+    // udf5 → udf1 in REVERSE order
+    udf5,
+    udf4,
+    udf3,
+    udf2,
+    udf1,
     email,
     firstname,
     productinfo,
     amount,
     txnid,
     key,
-  ].join("|");
+  ];
 
+  const raw = parts.join("|");
   return crypto.createHash("sha512").update(raw).digest("hex");
 };
 
@@ -638,6 +664,7 @@ export const initiatePayuPayment = async (req, res) => {
       discountAmount: totals.discountAmount,
       total: totals.total,
       notes: String(req.body?.notes || "").trim(),
+      returnUrl: config.returnUrl,
       expiresAt,
     });
 
@@ -682,9 +709,29 @@ export const initiatePayuPayment = async (req, res) => {
 };
 
 export const handlePayuCallback = async (req, res) => {
+  const config = getPayuConfig();
+
+  // Helper: redirect browser to the SPA that created this session (local or prod).
+  // Prefer the returnUrl baked into the PaymentSession over the server's own config,
+  // so a session created by the local dev backend redirects back to localhost:5173.
+  const getReturnUrl = (session) =>
+    String(session?.returnUrl || "").trim() || config.returnUrl;
+
+  const redirectToFrontend = (data, session = null, httpStatus = 302) => {
+    const returnUrl = getReturnUrl(session);
+    const redirectUrl = buildRedirectUrl(returnUrl, data);
+    if (redirectUrl) {
+      return res.redirect(httpStatus, redirectUrl);
+    }
+    return res.status(data?.status === "success" ? 200 : 400).json({
+      success: data?.status === "success",
+      data,
+    });
+  };
+
   try {
-    const config = getPayuConfig();
     if (!config.key || !config.salt) {
+      // Config error — can't redirect safely, return JSON for server-side debugging
       return res.status(500).json({
         success: false,
         error: "PayU is not configured on the server",
@@ -699,44 +746,74 @@ export const handlePayuCallback = async (req, res) => {
     const amount = String(payload.amount || "").trim();
     const hash = String(payload.hash || "").trim();
 
+    // Missing required fields from PayU
     if (!txnId || !status || !amount || !hash) {
-      return res.status(400).json({
-        success: false,
-        error: "Missing PayU callback fields",
-      });
+      return redirectToFrontend({ status: "failed", txnId: txnId || "" }, null);
     }
 
+    // Merchant key mismatch — possible spoofing
     if (String(payload.key || "").trim() !== config.key) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid PayU key",
-      });
+      return redirectToFrontend({ status: "failed", txnId }, null);
     }
+
+    // Verify PayU response hash.
+    // Formula (per PayU docs):
+    // sha512(additionalCharges|SALT|status|udf10|udf9|udf8|udf7|udf6|udf5|udf4|udf3|udf2|udf1|email|firstname|productinfo|amount|txnid|key)
+    //
+    // IMPORTANT: Use field values EXACTLY as received from PayU — do NOT trim.
+    // PayU computes its hash server-side before sending. Even a trailing space in
+    // productinfo will cause a mismatch if we trim the value here.
+    const additionalCharges = String(payload.additionalCharges || "");
 
     const expectedHash = buildPayuResponseHash({
       salt: config.salt,
       status,
-      email: String(payload.email || "").trim(),
-      firstname: String(payload.firstname || "").trim(),
-      productinfo: String(payload.productinfo || "").trim(),
+      email: String(payload.email || ""),       // no trim — use exactly as received
+      firstname: String(payload.firstname || ""), // no trim
+      productinfo: String(payload.productinfo || ""), // no trim — may have trailing space
       amount,
       txnid: txnId,
       key: config.key,
+      additionalCharges,
+      // PayU echoes back whatever UDFs we sent — use exact values from payload
+      udf1: String(payload.udf1 || ""),
+      udf2: String(payload.udf2 || ""),
+      udf3: String(payload.udf3 || ""),
+      udf4: String(payload.udf4 || ""),
+      udf5: String(payload.udf5 || ""),
     });
 
-    if (expectedHash.toLowerCase() !== hash.toLowerCase()) {
-      return res.status(400).json({
-        success: false,
-        error: "PayU hash verification failed",
+    // Debug log in development to diagnose hash mismatches
+    if (process.env.NODE_ENV !== "production") {
+      console.log("[payu/callback] Received payload:", {
+        txnid: txnId,
+        status,
+        amount,
+        additionalCharges,
+        email: payload.email,
+        firstname: payload.firstname,
+        productinfo: payload.productinfo,
+        key: payload.key,
+        udf1: payload.udf1,
+        udf2: payload.udf2,
+        udf3: payload.udf3,
+        udf4: payload.udf4,
+        udf5: payload.udf5,
+        receivedHash: hash,
+        expectedHash,
+        hashMatch: expectedHash.toLowerCase() === hash.toLowerCase(),
       });
+    }
+
+    if (expectedHash.toLowerCase() !== hash.toLowerCase()) {
+      console.error("[payu/callback] Hash mismatch — check that all fields are used without trimming");
+      return redirectToFrontend({ status: "failed", txnId }, null);
     }
 
     const session = await PaymentSession.findOne({ txnId });
     if (!session) {
-      return res.status(404).json({
-        success: false,
-        error: "Payment session not found",
-      });
+      // No matching session — cannot link to an order, redirect to failure
+      return redirectToFrontend({ status: "failed", txnId }, null);
     }
 
     const amountMatches =
@@ -744,29 +821,13 @@ export const handlePayuCallback = async (req, res) => {
     if (!amountMatches) {
       session.status = "failed";
       await session.save();
-
-      return res.status(400).json({
-        success: false,
-        error: "Payment amount mismatch",
-      });
+      return redirectToFrontend({ status: "failed", txnId }, session);
     }
-
-    const returnUrl = config.returnUrl;
-    const redirectResponse = (data, statusCode = 200) => {
-      const redirectUrl = buildRedirectUrl(returnUrl, data);
-      if (redirectUrl) {
-        return res.redirect(302, redirectUrl);
-      }
-      return res.status(statusCode).json({
-        success: data?.status === "success",
-        data,
-      });
-    };
 
     if (status !== "success") {
       session.status = "failed";
       await session.save();
-      return redirectResponse({ status: "failed", txnId });
+      return redirectToFrontend({ status: "failed", txnId }, session);
     }
 
     session.status = "success";
@@ -825,18 +886,16 @@ export const handlePayuCallback = async (req, res) => {
       });
     }
 
-    return redirectResponse({
+    return redirectToFrontend({
       status: "success",
       txnId,
       orderId: order._id,
       orderNumber: order.orderNumber,
-    });
+    }, session);
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: "Failed to process PayU callback",
-      message: error.message,
-    });
+    // Unexpected server error — redirect to failure page so user isn't stuck
+    console.error("[payu/callback] Unhandled error:", error);
+    return redirectToFrontend({ status: "failed", txnId: "" }, null);
   }
 };
 

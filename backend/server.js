@@ -13,6 +13,7 @@ import adminRoutes from "./routes/admin.js";
 import supportRoutes from "./routes/support.js";
 import orderRoutes from "./routes/orders.js";
 import productRoutes from "./routes/products.js";
+import { handlePayuCallback } from "./controllers/orderController.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -77,7 +78,35 @@ const authLimiter = rateLimit({
 
 // Middleware
 app.set("trust proxy", 1);
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        // Allow the browser to POST to PayU's hosted checkout page
+        formAction: ["'self'", "https://secure.payu.in", "https://sandboxsecure.payu.in"],
+      },
+    },
+  }),
+);
+
+// PayU callback route — registered BEFORE the global CORS middleware.
+//
+// Why: After payment, PayU redirects the user's browser to the callback URL
+// (surl/furl). The browser sends that POST with Origin: https://secure.payu.in,
+// which is not in allowedOrigins and would be blocked by the global CORS middleware.
+//
+// Security note: CORS is irrelevant for this endpoint's security. PayU's payload
+// is verified by SHA-512 hash comparison inside the handler itself. We do NOT
+// rely on CORS to secure this route.
+app.post(
+  "/api/orders/payu/callback",
+  cors({ origin: "*", credentials: false }),   // allow any origin (PayU, browser)
+  rateLimit({ windowMs: 60 * 1000, max: 30 }), // light rate-limit to prevent abuse
+  express.urlencoded({ extended: true }),        // PayU sends urlencoded POST body
+  express.json({ limit: "100kb" }),
+  handlePayuCallback,
+);
+
 app.use(
   cors({
     origin(origin, callback) {

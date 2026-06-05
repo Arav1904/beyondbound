@@ -74,7 +74,7 @@ const toNonNegativeNumber = (value, fallback = 0) => {
 };
 
 const buildDefaultPackSizes = (price) => {
-  const primaryPrice = toNonNegativeNumber(price, 1599);
+  const primaryPrice = toNonNegativeNumber(price, 1499);
 
   return [
     {
@@ -85,7 +85,7 @@ const buildDefaultPackSizes = (price) => {
     {
       value: "20",
       label: "20 Capsules",
-      price: 1,
+      price: 499,
     },
   ];
 };

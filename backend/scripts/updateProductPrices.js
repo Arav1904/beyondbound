@@ -3,10 +3,10 @@ import mongoose from "mongoose";
 import Product from "../models/Product.js";
 
 const TARGET_SLUG = "glycomics";
-const NEW_PRICE = 1;
+const NEW_PRICE = 1499;
 const NEW_PACK_SIZES = [
   { value: "20", label: "20 Capsules", price: 499 },
-  { value: "60", label: "60 Capsules", price: 1399 },
+  { value: "60", label: "60 Capsules", price: 1499 },
 ];
 
 const run = async () => {

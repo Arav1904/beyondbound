@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import useMenuStore from "../../useMenuStore";
 import { fetchMyOrderById } from "../../services/cartApi";
+import { sendOrderConfirmation } from "../../services/emailService";
 import "../css/confirm.css";
 
 const formatCurrency = (value) => {
@@ -48,6 +49,7 @@ function Confirm() {
 	const [orderDetails, setOrderDetails] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
+	const emailSentRef = useRef(false);
 
 	const params = useMemo(getQueryParams, []);
 	const orderLookupId = params.orderId || params.orderNumber;
@@ -66,6 +68,48 @@ function Confirm() {
 				const data = response?.data || response;
 				if (active) {
 					setOrderDetails(data || null);
+
+					// Fire confirmation email exactly once per page load
+					if (data && !emailSentRef.current) {
+						emailSentRef.current = true;
+						const customer = data.customer || {};
+						const addr = customer.address || {};
+						const addrParts = [
+							addr.line1,
+							addr.line2,
+							addr.city,
+							addr.state,
+							addr.postalCode,
+							addr.country,
+						].filter(Boolean).join(", ");
+
+						sendOrderConfirmation({
+							to_email: customer.email,
+							to_name: customer.name,
+							order_id: data.orderNumber,
+							order_date: data.placedAt
+								? new Date(data.placedAt).toLocaleDateString("en-IN")
+								: new Date().toLocaleDateString("en-IN"),
+							payment_method: String(data.paymentMethod || "payu").toUpperCase(),
+							order_status: "Confirmed",
+							items: Array.isArray(data.items)
+								? data.items.map((item) => ({
+										name: item.productName || "Product",
+										qty: item.quantity || 1,
+										price: item.price || 0,
+								  }))
+								: [],
+							subtotal: `₹${Number(data.subtotal || 0).toFixed(2)}`,
+							shipping_fee:
+								Number(data.shippingFee || 0) === 0
+									? "Free"
+									: `₹${Number(data.shippingFee).toFixed(2)}`,
+							total_amount: `₹${Number(data.total || 0).toFixed(2)}`,
+							shipping_address: addrParts || "Address unavailable",
+						}).catch((emailErr) => {
+							console.error("Order confirmation email failed:", emailErr);
+						});
+					}
 				}
 			})
 			.catch((fetchError) => {

@@ -18,6 +18,7 @@ import {
   updateAdminTestimonial,
   updateAdminUser,
 } from "../services/adminApi";
+import { sendOrderCancellation } from "../services/emailService";
 import "./AdminDashboard.css";
 
 const SECTION_LABELS = {
@@ -385,6 +386,44 @@ function AdminDashboard() {
     try {
       await updateAdminOrderStatus(authToken, order._id, payload);
       showSuccess("Order status updated");
+
+      // Send cancellation email when admin marks an order as cancelled
+      if (status === "cancelled") {
+        const customer = order.customer || {};
+        const addr = customer.address || {};
+        const addrParts = [
+          addr.line1,
+          addr.line2,
+          addr.city,
+          addr.state,
+          addr.postalCode,
+          addr.country,
+        ].filter(Boolean).join(", ");
+
+        sendOrderCancellation({
+          to_email: customer.email,
+          to_name: customer.name,
+          order_id: order.orderNumber,
+          order_date: order.placedAt
+            ? new Date(order.placedAt).toLocaleDateString("en-IN")
+            : new Date().toLocaleDateString("en-IN"),
+          items: Array.isArray(order.items)
+            ? order.items.map((item) => ({
+                name: item.productName || "Product",
+                qty: item.quantity || 1,
+                price: item.price || 0,
+              }))
+            : [],
+          cancellation_reason: payload.note || "Cancelled by admin",
+          refund_amount: `₹${Number(order.total || 0).toFixed(2)}`,
+          refund_timeline: "5-7 business days",
+          total_amount: `₹${Number(order.total || 0).toFixed(2)}`,
+          shipping_address: addrParts || "Address unavailable",
+        }).catch((emailErr) => {
+          console.error("Cancellation email failed:", emailErr);
+        });
+      }
+
       refresh();
     } catch (updateError) {
       setError(updateError.message || "Could not update order");
